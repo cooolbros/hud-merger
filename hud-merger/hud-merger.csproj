@@ -5,6 +5,13 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>hud_merger</RootNamespace>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="Resources\Panels.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

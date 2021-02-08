@@ -1,0 +1,94 @@
+[
+	{
+		"Name": "Class Loadout Panel",
+		"Main": {
+			"FilePath": "resource\\ui\\classloadoutpanel.res"
+		}
+	},
+	{
+		"Name": "Class Selection Menu",
+		"Main": {
+			"FilePath": "resource\\ui\\classselection.res"
+		}
+	},
+	{
+		"Name": "Engineer Metal",
+		"Main": {
+			"FilePath": "resource\\ui\\hudaccountpanel.res",
+			"HUDLayout": null
+		},
+		"Files": []
+	},
+	{
+		"Name": "Ammo",
+		"HUDLayout": "HUDWeaponAmmo",
+		"Main": {
+			"FilePath": "resource\\ui\\hudammoweapons.res",
+			"HUDLayout": "HUDWeaponAmmo"
+		},
+		"Files": []
+	},
+	{
+		"Name": "Damage Numbers",
+		"Main": {
+			"FilePath": "resource\\ui\\huddamageaccount.res",
+			"HUDLayout": null
+		},
+		"Files": []
+	},
+	{
+		"Name": "Health",
+		"Main": {
+			"FilePath": "resource\\ui\\hudplayerhealth.res",
+			"HUDLayout": null
+		},
+		"Files": [
+			{
+				"FilePath": "resource\\ui\\hudhealthaccount.res",
+				"HUDLayout": null
+			}
+		]
+	},
+	{
+		"Name": "UberCharge Label And Meter",
+		"Main": {
+			"FilePath": "resource\\ui\\hudmediccharge.res",
+			"HUDLayout": null
+		},
+		"Files": []
+	},
+	{
+		"Name": "Main Menu",
+		"Main": {
+			"FilePath": "resource\\ui\\mainmenuoverride.res",
+			"HUDLayout": null
+		},
+		"Files": [
+			{
+				"FilePath": "resource\\ui\\pvprankpanel.res",
+				"HUDLayout": null
+			}
+		]
+	},
+	{
+		"Name": "Target ID",
+		"Main": {
+			"FilePath": "resource\\ui\\targetid.res",
+			"HUDLayout": null
+		},
+		"Files": [
+			{
+				"FilePath": "resource\\ui\\spectatorguihealth.res",
+				"HUDLayout": null
+			}
+		]
+	},
+	{
+		"Name": "Team Selection Menu",
+		"Main": {
+			"FilePath": "resource\\ui\\teammenu.res",
+			"HUDLayout": null
+		},
+		"Files": []
+	}
+]

@@ -1,28 +1,215 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace hud_merger
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-    }
+	/// <summary>
+	/// Interaction logic for MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window
+	{
+		private HUD OriginHUD;
+		private HUD TargetHUD;
+		private bool MergeButtonEnabled = false;
+		HUDPanel[] HUDPanels = JsonSerializer.Deserialize<List<HUDPanel>>(File.ReadAllText("Resources\\Panels.json")).ToArray();
+		StackPanel OriginFilesList = new();
+		StackPanel TargetFilesList = new();
+
+		public MainWindow()
+		{
+			InitializeComponent();
+
+			MergeButtonTextBlock.MouseEnter += (object sender, MouseEventArgs e) =>
+			{
+				if (MergeButtonEnabled)
+				{
+					MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_BlueHover"];
+				}
+			};
+			MergeButtonTextBlock.MouseLeave += (object sender, MouseEventArgs e) =>
+			{
+				if (MergeButtonEnabled)
+				{
+					MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_Blue"];
+				}
+			};
+		}
+
+		private string FolderBrowserDialog()
+		{
+			using (System.Windows.Forms.FolderBrowserDialog fbd = new())
+			{
+				fbd.ShowDialog();
+				return fbd.SelectedPath;
+			}
+		}
+
+		private void UpdateFooterState()
+		{
+			if (OriginHUD != null && TargetHUD != null)
+			{
+				MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_Blue"];
+			}
+			else
+			{
+				MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_MergeButtonBackground"];
+			}
+		}
+
+		private void NewOriginHUD(object sender, RoutedEventArgs e)
+		{
+			string Result = FolderBrowserDialog();
+			if (Result == "") return;
+			OriginHUD = new HUD(Result);
+
+			OriginHUDStatusTitle.Content = OriginHUD.Name;
+			OriginHUDStatusInfo.Content = OriginHUD.FolderPath;
+
+			OriginHUDFilesContainer.Children.RemoveAt(0);
+
+			OriginHUDFilesContainer.ColumnDefinitions.Add(new ColumnDefinition());
+			RowDefinition TitleRowDefinition = new();
+			TitleRowDefinition.Height = GridLength.Auto;
+			OriginHUDFilesContainer.RowDefinitions.Add(TitleRowDefinition);
+			OriginHUDFilesContainer.RowDefinitions.Add(new RowDefinition());
+
+			Label TitleLabel = new();
+			TitleLabel.Content = "Available Files";
+			TitleLabel.FontSize = 18;
+			OriginHUDFilesContainer.Children.Add(TitleLabel);
+
+			// Search Box
+			TextBox SearchBox = new();
+			SearchBox.Style = (Style)Application.Current.Resources["SearchBox"];
+			SearchBox.TextChanged += (object sender, TextChangedEventArgs e) =>
+			{
+				string SearchText = SearchBox.Text.ToLower();
+				foreach (Label PanelLabel in OriginFilesList.Children)
+				{
+					if (PanelLabel.Content.ToString().ToLower().Contains(SearchText))
+					{
+						PanelLabel.Visibility = Visibility.Visible;
+					}
+					else
+					{
+						PanelLabel.Visibility = Visibility.Collapsed;
+					}
+				}
+			};
+
+			Grid.SetColumn(SearchBox, 1);
+			OriginHUDFilesContainer.Children.Add(SearchBox);
+
+			ScrollViewer ScrollablePanel = new();
+			Grid.SetRow(ScrollablePanel, 1);
+
+			OriginFilesList.Margin = new Thickness(3);
+
+			foreach (HUDPanel Panel in HUDPanels)
+			{
+				Label PanelLabel = new();
+				PanelLabel.Content = Panel.Name;
+				PanelLabel.Style = (Style)Application.Current.Resources["PanelLabel"];
+				PanelLabel.Visibility = OriginHUD.TestPanel(Panel) ? Visibility.Visible : Visibility.Hidden;
+				OriginFilesList.Children.Add(PanelLabel);
+
+				PanelLabel.MouseEnter += (object sender, MouseEventArgs e) =>
+				{
+					if (!Panel.Armed)
+					{
+						PanelLabel.Background = Brushes.LightGray;
+					}
+				};
+				PanelLabel.MouseLeave += (object sender, MouseEventArgs e) =>
+				{
+					if (!Panel.Armed)
+					{
+						PanelLabel.Background = Brushes.White;
+					}
+				};
+				PanelLabel.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
+				{
+					if (!Panel.Armed)
+					{
+						PanelLabel.Foreground = Brushes.White;
+						PanelLabel.Background = (Brush)Application.Current.Resources["_Blue"];
+
+						if (TargetHUD != null)
+						{
+							Panel.TargetListItem.Visibility = Visibility.Visible;
+						}
+
+						Panel.Armed = true;
+					}
+					else
+					{
+						PanelLabel.Foreground = Brushes.Black;
+						PanelLabel.Background = Brushes.White;
+
+						if (TargetHUD != null)
+						{
+							Panel.TargetListItem.Visibility = Visibility.Collapsed;
+						}
+
+						Panel.Armed = false;
+					}
+				};
+			}
+			ScrollablePanel.Content = OriginFilesList;
+
+			OriginHUDFilesContainer.Children.Add(ScrollablePanel);
+
+			UpdateFooterState();
+		}
+
+		private void NewTargetHUD(object sender, RoutedEventArgs e)
+		{
+			string Result = FolderBrowserDialog();
+			if (Result == "") return;
+			TargetHUD = new HUD(Result);
+
+			TargetHUDStatusTitle.Content = TargetHUD.Name;
+			TargetHUDStatusInfo.Content = TargetHUD.FolderPath;
+
+			TargetHUDFilesContainer.Children.RemoveAt(0);
+
+			RowDefinition TitleRowDefinition = new();
+			TitleRowDefinition.Height = GridLength.Auto;
+			TargetHUDFilesContainer.RowDefinitions.Add(TitleRowDefinition);
+			TargetHUDFilesContainer.RowDefinitions.Add(new RowDefinition());
+
+			Label TitleLabel = new();
+			TitleLabel.Content = "Files To Add";
+			TitleLabel.FontSize = 18;
+			Grid.SetRow(TitleLabel, 0);
+			TargetHUDFilesContainer.Children.Add(TitleLabel);
+
+			ScrollViewer ScrollablePanel = new();
+			Grid.SetRow(ScrollablePanel, 1);
+
+			foreach (HUDPanel Panel in HUDPanels)
+			{
+				Panel.TargetListItem = new Label();
+				Panel.TargetListItem.Content = Panel.Name;
+				Panel.TargetListItem.Style = (Style)Application.Current.Resources["PanelLabel"];
+				Panel.TargetListItem.Visibility = Panel.Armed ? Visibility.Visible : Visibility.Collapsed;
+				TargetFilesList.Children.Add(Panel.TargetListItem);
+			}
+			ScrollablePanel.Content = TargetFilesList;
+			TargetHUDFilesContainer.Children.Add(ScrollablePanel);
+
+			UpdateFooterState();
+		}
+
+		private void MenuItem_Quit(object sender, RoutedEventArgs e)
+		{
+			Application.Current.Shutdown();
+		}
+	}
 }
