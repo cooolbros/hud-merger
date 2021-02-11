@@ -1,5 +1,14 @@
 [
 	{
+		"Name": "Ammo",
+		"Main": {
+			"FilePath": "resource\\ui\\hudammoweapons.res",
+			"HUDLayout": [
+				"HudWeaponAmmo"
+			]
+		}
+	},
+	{
 		"Name": "Class Loadout Panel",
 		"Main": {
 			"FilePath": "resource\\ui\\classloadoutpanel.res"
@@ -12,61 +21,50 @@
 		}
 	},
 	{
-		"Name": "Engineer Metal",
-		"Main": {
-			"FilePath": "resource\\ui\\hudaccountpanel.res",
-			"HUDLayout": null
-		},
-		"Files": []
-	},
-	{
-		"Name": "Ammo",
-		"HUDLayout": "HUDWeaponAmmo",
-		"Main": {
-			"FilePath": "resource\\ui\\hudammoweapons.res",
-			"HUDLayout": "HUDWeaponAmmo"
-		},
-		"Files": []
-	},
-	{
 		"Name": "Damage Numbers",
 		"Main": {
 			"FilePath": "resource\\ui\\huddamageaccount.res",
-			"HUDLayout": null
-		},
-		"Files": []
+			"HUDLayout": [
+				"CDamageAccountPanel"
+			]
+		}
+	},
+	{
+		"Name": "Engineer Metal",
+		"Main": {
+			"FilePath": "resource\\ui\\hudaccountpanel.res",
+			"HUDLayout": [
+				"CHudAccountPanel"
+			]
+		}
 	},
 	{
 		"Name": "Health",
 		"Main": {
-			"FilePath": "resource\\ui\\hudplayerhealth.res",
-			"HUDLayout": null
+			"FilePath": "resource\\ui\\hudplayerhealth.res"
 		},
 		"Files": [
 			{
-				"FilePath": "resource\\ui\\hudhealthaccount.res",
-				"HUDLayout": null
+				"FilePath": "resource\\ui\\hudhealthaccount.res"
 			}
 		]
 	},
 	{
-		"Name": "UberCharge Label And Meter",
+		"Name": "Killfeed",
 		"Main": {
-			"FilePath": "resource\\ui\\hudmediccharge.res",
-			"HUDLayout": null
-		},
-		"Files": []
+			"HUDLayout": [
+				"HudDeathNotice"
+			]
+		}
 	},
 	{
 		"Name": "Main Menu",
 		"Main": {
-			"FilePath": "resource\\ui\\mainmenuoverride.res",
-			"HUDLayout": null
+			"FilePath": "resource\\ui\\mainmenuoverride.res"
 		},
 		"Files": [
 			{
-				"FilePath": "resource\\ui\\pvprankpanel.res",
-				"HUDLayout": null
+				"FilePath": "resource\\ui\\pvprankpanel.res"
 			}
 		]
 	},
@@ -74,21 +72,28 @@
 		"Name": "Target ID",
 		"Main": {
 			"FilePath": "resource\\ui\\targetid.res",
-			"HUDLayout": null
+			"HUDLayout": [
+				"CMainTargetID",
+				"CSpectatorTargetID",
+				"CSecondaryTargetID"
+			]
 		},
 		"Files": [
 			{
-				"FilePath": "resource\\ui\\spectatorguihealth.res",
-				"HUDLayout": null
+				"FilePath": "resource\\ui\\spectatorguihealth.res"
 			}
 		]
 	},
 	{
 		"Name": "Team Selection Menu",
 		"Main": {
-			"FilePath": "resource\\ui\\teammenu.res",
-			"HUDLayout": null
-		},
-		"Files": []
+			"FilePath": "resource\\ui\\teammenu.res"
+		}
+	},
+	{
+		"Name": "UberCharge Label And Meter",
+		"Main": {
+			"FilePath": "resource\\ui\\hudmediccharge.res"
+		}
 	}
 ]

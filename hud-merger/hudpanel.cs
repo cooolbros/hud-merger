@@ -17,16 +17,15 @@ namespace hud_merger
 	public class HUDFile
 	{
 		public string FilePath { get; set; }
-		public string HUDLayout { get; set; }
+		public string[] HUDLayout { get; set; }
 	}
 
-	public class Dependencies
+	public class ClientschemeDependencies
 	{
-		public List<string> Colours;
-		public List<string> Borders;
-		public List<string> Fonts;
-		public List<string> HUDLayoutEntries = new List<string>();
-		public List<string> BinaryFiles = new List<string>();
+		public HashSet<string> Colours { get; set; } = new();
+		public HashSet<string> Borders { get; set; } = new();
+		public HashSet<string> Fonts { get; set; } = new();
+		public HashSet<string> Images { get; set; } = new();
+		public HashSet<string> Audio { get; set; } = new();
 	}
-
 }

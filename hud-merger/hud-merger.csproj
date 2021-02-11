@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Resources\Panels.json">
+    <None Update="Resources\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
