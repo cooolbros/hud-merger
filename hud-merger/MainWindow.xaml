@@ -20,8 +20,8 @@
         <!-- Menu -->
         <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="1">
             <MenuItem Header="_File">
-                <MenuItem Header="Load Origin HUD" />
-                <MenuItem Header="Load Target HUD" />
+                <MenuItem Header="Load Origin HUD" Click="MenuItem_LoadOriginHUD" />
+                <MenuItem Header="Load Target HUD" Click="MenuItem_LoadTargetHUD" />
                 <Separator />
                 <MenuItem Header="Quit" Click="MenuItem_Quit" />
             </MenuItem>

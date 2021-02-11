@@ -42,6 +42,18 @@ namespace hud_merger
 			};
 		}
 
+		private void MenuItem_LoadOriginHUD(object sender, RoutedEventArgs e)
+		{
+			ClearState();
+			NewOriginHUD(sender, e);
+
+		}
+
+		private void MenuItem_LoadTargetHUD(object sender, RoutedEventArgs e)
+		{
+			NewTargetHUD(sender, e);
+		}
+
 		private void MenuItem_Quit(object sender, RoutedEventArgs e)
 		{
 			Application.Current.Shutdown();
@@ -53,6 +65,16 @@ namespace hud_merger
 			{
 				fbd.ShowDialog();
 				return fbd.SelectedPath;
+			}
+		}
+
+		private void ClearState()
+		{
+			OriginFilesList.Children.Clear();
+			TargetFilesList.Children.Clear();
+			foreach (HUDPanel Panel in this.HUDPanels)
+			{
+				Panel.Armed = false;
 			}
 		}
 
@@ -77,7 +99,10 @@ namespace hud_merger
 			OriginHUDStatusTitle.Content = OriginHUD.Name;
 			OriginHUDStatusInfo.Content = OriginHUD.FolderPath;
 
-			OriginHUDFilesContainer.Children.RemoveAt(0);
+			OriginHUDFilesContainer.Children.Clear();
+			OriginHUDFilesContainer.ColumnDefinitions.Clear();
+			OriginHUDFilesContainer.RowDefinitions.Clear();
+
 
 			OriginHUDFilesContainer.ColumnDefinitions.Add(new ColumnDefinition());
 			RowDefinition TitleRowDefinition = new();
@@ -123,7 +148,7 @@ namespace hud_merger
 				PanelLabel.Content = Panel.Name;
 				PanelLabel.Style = (Style)Application.Current.Resources["PanelLabel"];
 				// The killfeed doesnt have a file, only check if a required file is specified
-				PanelLabel.Visibility = Panel.Main.FilePath != null ? (OriginHUD.TestPanel(Panel) ? Visibility.Visible : Visibility.Hidden) : Visibility.Visible; ;
+				PanelLabel.Visibility = Panel.Main.FilePath != null ? (OriginHUD.TestPanel(Panel) ? Visibility.Visible : Visibility.Collapsed) : Visibility.Visible; ;
 				OriginFilesList.Children.Add(PanelLabel);
 
 				PanelLabel.MouseEnter += (object sender, MouseEventArgs e) =>
@@ -184,7 +209,9 @@ namespace hud_merger
 			TargetHUDStatusTitle.Content = TargetHUD.Name;
 			TargetHUDStatusInfo.Content = TargetHUD.FolderPath;
 
-			TargetHUDFilesContainer.Children.RemoveAt(0);
+			TargetHUDFilesContainer.Children.Clear();
+			TargetHUDFilesContainer.ColumnDefinitions.Clear();
+			TargetHUDFilesContainer.RowDefinitions.Clear();
 
 			RowDefinition TitleRowDefinition = new();
 			TitleRowDefinition.Height = GridLength.Auto;
