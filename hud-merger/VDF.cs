@@ -179,14 +179,14 @@ namespace hud_merger
 			string NewLine = "\r\n";
 			foreach (string Key in Obj.Keys)
 			{
-				if (Obj[Key].GetType().Name.Contains("List"))
+				if (Obj[Key].GetType() == typeof(List<dynamic>))
 				{
-					// Object has multiple instances
-					foreach (var Item in Obj[Key])
+					// Item has multiple instances
+					foreach (dynamic Item in Obj[Key])
 					{
 						if (Item.GetType().Name.Contains("Dictionary"))
 						{
-							string[] KeyTokens = Item.Split('%');
+							string[] KeyTokens = Key.Split('%');
 							if (KeyTokens.Length > 1)
 							{
 								// OS Tag

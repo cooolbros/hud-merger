@@ -64,6 +64,9 @@
 		},
 		"Files": [
 			{
+				"FilePath": "resource\\gamemenu.res"
+			},
+			{
 				"FilePath": "resource\\ui\\pvprankpanel.res"
 			}
 		]

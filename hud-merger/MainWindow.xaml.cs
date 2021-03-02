@@ -245,8 +245,11 @@ namespace hud_merger
 		{
 			try
 			{
+				System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 				TargetHUD.Merge(OriginHUD, HUDPanels.Where((Panel) => Panel.Armed).ToArray());
-				System.Windows.MessageBox.Show("Done");
+				sw.Stop();
+
+				System.Diagnostics.Debug.WriteLine("Time taken: {0}ms", sw.Elapsed.TotalMilliseconds);
 			}
 			catch (Exception Error)
 			{

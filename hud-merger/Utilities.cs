@@ -40,7 +40,8 @@ namespace hud_merger
 
 			void AddControls(string FilePath)
 			{
-				Dictionary<string, dynamic> Obj = VDF.Parse(File.ReadAllText(FilePath));
+				// Some HUDs deliberately #base nonexistant file paths for customisation
+				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? VDF.Parse(File.ReadAllText(FilePath)) : new();
 
 				// #base
 				if (Obj.ContainsKey("#base"))

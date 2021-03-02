@@ -35,13 +35,22 @@ namespace hud_merger
 			// Add font files to file list
 			// Copy all files
 
+			(List<string> Files, List<string> HUDLayoutEntries) = HUD.DestructurePanels(Panels);
+			ClientschemeDependencies Dependencies = this.GetDependencies(Origin.FolderPath, Files.ToArray());
+			Dictionary<string, dynamic> NewClientscheme = this.GetDependencyValues(Origin.FolderPath + "\\resource\\clientscheme.res", Dependencies, Files);
+			this.WriteClientscheme(Origin.Name, NewClientscheme);
+			this.WriteHUDLayout(Origin.FolderPath + "\\scripts\\hudlayout.res", HUDLayoutEntries);
+			this.CopyHUDFiles(Origin.FolderPath, Files, Dependencies);
+			this.WriteInfoVDF();
+		}
 
-			#region Create list of all files to evaluate for merge
+		/// <summary>
+		/// Returns a list of Files and HUD Layout entries that should be used for the merge
+		/// </summary>
+		private static (List<string> Files, List<string> HUDLayoutEntries) DestructurePanels(HUDPanel[] Panels)
+		{
 			List<string> Files = new();
 			List<string> HUDLayoutEntries = new();
-
-			ClientschemeDependencies Properties = JsonSerializer.Deserialize<ClientschemeDependencies>(File.ReadAllText("Resources\\Clientscheme.json"));
-
 			foreach (HUDPanel Panel in Panels)
 			{
 				Files.Add(Panel.Main.FilePath);
@@ -60,14 +69,20 @@ namespace hud_merger
 					}
 				}
 			}
+			return (Files, HUDLayoutEntries);
+		}
 
-			#endregion
-
-			#region Iterate all files and #base files recursively, then add clientscheme related properties to Dependencies set
+		/// <summary>
+		/// Returns a set of all clientscheme dependencies used by provided HUD files
+		/// </summary>
+		private ClientschemeDependencies GetDependencies(string OriginFolderPath, string[] Files)
+		{
+			ClientschemeDependencies Properties = JsonSerializer.Deserialize<ClientschemeDependencies>(File.ReadAllText("Resources\\Clientscheme.json"));
 			ClientschemeDependencies Dependencies = new();
+
 			void AddDependencies(string FilePath)
 			{
-				Dictionary<string, dynamic> Obj = VDF.Parse(File.ReadAllText(FilePath));
+				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? VDF.Parse(File.ReadAllText(FilePath)) : new();
 
 				// #base
 				if (Obj.ContainsKey("#base"))
@@ -103,48 +118,29 @@ namespace hud_merger
 						}
 						else
 						{
-							// Colours
-							foreach (string DefaultPropertyKey in Properties.Colours)
-							{
-								if (Key == DefaultPropertyKey)
-								{
-									Dependencies.Colours.Add(Obj[Key]);
-								}
-							}
+							Type T = typeof(ClientschemeDependencies);
 
-							// Borders
-							foreach (string DefaultPropertyKey in Properties.Borders)
+							foreach (System.Reflection.PropertyInfo TypeKey in T.GetProperties())
 							{
-								if (Key == DefaultPropertyKey)
-								{
-									Dependencies.Borders.Add(Obj[Key]);
-								}
-							}
+								dynamic CurrentPropertiesList = TypeKey.GetValue(Properties);
+								dynamic CurrentDependenciesList = TypeKey.GetValue(Dependencies) as HashSet<string>;
 
-							// Fonts
-							foreach (string DefaultPropertyKey in Properties.Fonts)
-							{
-								if (Key == DefaultPropertyKey)
+								foreach (string DefaultPropertyKey in CurrentPropertiesList)
 								{
-									Dependencies.Fonts.Add(Obj[Key]);
-								}
-							}
+									if (Key == DefaultPropertyKey)
+									{
+										// dynamic Value = TypeKey.GetValue(Dependencies);
 
-							// Images
-							foreach (string DefaultPropertyKey in Properties.Images)
-							{
-								if (Key == DefaultPropertyKey)
-								{
-									Dependencies.Images.Add(Obj[Key]);
-								}
-							}
+										if (Obj[Key].GetType().Name.Contains("List"))
+										{
+											// Prompt user to decide which option to use (or pick 0?)
 
-							// Audio
-							foreach (string DefaultPropertyKey in Properties.Audio)
-							{
-								if (Key == DefaultPropertyKey)
-								{
-									Dependencies.Audio.Add(Obj[Key]);
+										}
+										else
+										{
+											CurrentDependenciesList.Add(Obj[Key]);
+										}
+									}
 								}
 							}
 						}
@@ -157,23 +153,22 @@ namespace hud_merger
 			// Evaluate files requested for merge
 			foreach (string HUDFile in Files)
 			{
-				string SourceFileName = Origin.FolderPath + "\\" + HUDFile;
+				string SourceFileName = OriginFolderPath + "\\" + HUDFile;
 				if (File.Exists(SourceFileName))
 				{
 					AddDependencies(SourceFileName);
 				}
 			}
 
-			#endregion
+			return Dependencies;
+		}
 
-			#region Load origin HUD Clientscheme
-
-			string OriginClientschemePath = Origin.FolderPath + "\\resource\\clientscheme.res";
+		/// <summary>
+		/// Returns the clientscheme values from a provided set of ClientschemeDependencies
+		/// </summary>
+		private Dictionary<string, dynamic> GetDependencyValues(string OriginClientschemePath, ClientschemeDependencies Dependencies, List<string> Files)
+		{
 			Dictionary<string, dynamic> OriginClientscheme = Utilities.LoadControls(OriginClientschemePath);
-
-			#endregion
-
-			#region Add all required properties in Dependencies from OriginClientscheme to NewClientscheme
 
 			Dictionary<string, dynamic> NewClientscheme = new();
 			NewClientscheme.Add("Colors", new Dictionary<string, dynamic>());
@@ -209,7 +204,15 @@ namespace hud_merger
 					NewClientscheme["Fonts"].Add(FontProperty, FontDefinition);
 					foreach (dynamic FontDefinitionNumber in FontDefinition.Keys)
 					{
-						FontNames.Add(FontDefinition?[FontDefinitionNumber]?["name"]);
+						foreach (string FontDefinitionProperty in FontDefinition?[FontDefinitionNumber]?.Keys)
+						{
+							// Some HUDs only have a name with an operating system tag like `name ... [$WINDOWS]`
+							if (FontDefinitionProperty.ToLower().Contains("name"))
+							{
+								FontNames.Add(FontDefinition?[FontDefinitionNumber]?[FontDefinitionProperty]);
+							}
+						}
+
 					}
 				}
 			}
@@ -236,18 +239,16 @@ namespace hud_merger
 				}
 			}
 
-			#endregion
+			return NewClientscheme;
+		}
 
-			#region Add all required HUD Layout entries from OriginHUDLayout to NewHUDLayout
-
-			string OriginHUDLayoutPath = Origin.FolderPath + "\\scripts\\hudlayout.res";
+		private void WriteHUDLayout(string OriginHUDLayoutPath, List<string> HUDLayoutEntries)
+		{
 			Dictionary<string, dynamic> OriginHUDLayout = Utilities.LoadControls(OriginHUDLayoutPath);
 
 			string ThisHUDLayoutPath = $"{this.FolderPath}\\scripts\\hudlayout.res";
 			Dictionary<string, dynamic> NewHUDLayout = Utilities.LoadControls(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\hudlayout.res");
-			// Dont Utilities.Merge because the default hudlayout contains os tags for $WIN32 which will override regular xpos ypos properties
 
-			// it is common for custom huds to remove os tags so override entries
 			foreach (string HUDLayoutEntry in HUDLayoutEntries)
 			{
 				if (OriginHUDLayout?["Resource/HudLayout.res"].ContainsKey(HUDLayoutEntry))
@@ -256,63 +257,46 @@ namespace hud_merger
 				}
 				else
 				{
-					System.Diagnostics.Debug.WriteLine($"{Origin.Name}'s hudlayout does not contain {HUDLayoutEntry}!");
+					// System.Diagnostics.Debug.WriteLine($"{Origin.Name}'s hudlayout does not contain {HUDLayoutEntry}!");
 				}
 			}
 
-			#endregion
+			Directory.CreateDirectory($"{this.FolderPath}\\scripts");
+			File.WriteAllText($"{this.FolderPath}\\scripts\\hudlayout.res", VDF.Stringify(NewHUDLayout));
+		}
 
-			#region Write files
-
-			foreach (string ImagePath in Dependencies.Images)
-			{
-				string[] Folders = System.Text.RegularExpressions.Regex.Split(ImagePath, "[\\\\/]+");
-				Files.Add($"{Origin.FolderPath}\\materials\\vgui\\{String.Join("\\", Folders)}.vmt");
-				Files.Add($"{Origin.FolderPath}\\materials\\vgui\\{String.Join("\\", Folders)}.vtf");
-			}
-
-			foreach (string AudioPath in Dependencies.Audio)
-			{
-				string[] Folders = System.Text.RegularExpressions.Regex.Split(AudioPath, "[\\\\/]+");
-				Files.Add($"{Origin.FolderPath}\\sound\\{String.Join("\\", Folders)}");
-			}
-
-			foreach (string FilePath in Files)
-			{
-				string SourceFileName = $"{Origin.FolderPath}\\{FilePath}";
-				if (File.Exists(SourceFileName))
-				{
-					string DestFileName = $"{this.FolderPath}\\{FilePath}";
-					Directory.CreateDirectory(Path.GetDirectoryName(DestFileName));
-					File.Copy(SourceFileName, DestFileName, true);
-				}
-			}
-
-			// Clientscheme
+		/// <summary>
+		/// Applies NewClientscheme to this HUD using #base
+		/// </summary>
+		private void WriteClientscheme(string OriginName, Dictionary<string, dynamic> NewClientscheme)
+		{
 			bool WriteBaseStatement = true;
 			if (File.Exists($"{this.FolderPath}\\resource\\clientscheme.res"))
 			{
 				// 'this' HUD already has a hudlayout
-				foreach (string Line in File.ReadAllLines($"{this.FolderPath}\\resource\\clientscheme.res"))
+				string[] Lines = File.ReadAllLines($"{this.FolderPath}\\resource\\clientscheme.res");
+				int i = 0;
+				while (WriteBaseStatement && i < Lines.Length)
 				{
-					if (Line.Contains($"clientscheme_{Origin.Name}.res"))
+					if (Lines[i].Contains($"clientscheme_{OriginName}.res"))
 					{
 						WriteBaseStatement = false;
-						break;
 					}
+					i++;
 				}
 			}
 			else
 			{
 				// If clientscheme doesn't exist it is crucial to have one with default tf properties
-				File.Copy("Resources/clientscheme.res", $"{this.FolderPath}\\resource\\clientscheme.res");
+				File.Copy("Resources\\clientscheme.res", $"{this.FolderPath}\\resource\\clientscheme.res");
 			}
 
 			if (WriteBaseStatement)
 			{
 				File.AppendAllLines($"{this.FolderPath}\\resource\\clientscheme.res", new string[]
 				{
-				$"\"#base\" \"clientscheme_{Origin.Name}.res\""
+					"",
+					$"\"#base\" \"clientscheme_{OriginName}.res\""
 				});
 			}
 
@@ -320,12 +304,42 @@ namespace hud_merger
 			Dictionary<string, dynamic> NewClientschemeContainer = new();
 			NewClientschemeContainer["Scheme"] = NewClientscheme;
 			Directory.CreateDirectory($"{this.FolderPath}\\resource");
-			File.WriteAllText($"{this.FolderPath}\\resource\\clientscheme_{Origin.Name}.res", VDF.Stringify(NewClientschemeContainer));
+			File.WriteAllText($"{this.FolderPath}\\resource\\clientscheme_{OriginName}.res", VDF.Stringify(NewClientschemeContainer));
+		}
 
-			// HUD Layout
-			Directory.CreateDirectory($"{this.FolderPath}\\scripts");
-			File.WriteAllText($"{this.FolderPath}\\scripts\\hudlayout.res", VDF.Stringify(NewHUDLayout));
+		private void CopyHUDFiles(string OriginFolderPath, List<string> Files, ClientschemeDependencies Dependencies)
+		{
+			foreach (string ImagePath in Dependencies.Images)
+			{
+				string[] Folders = System.Text.RegularExpressions.Regex.Split(ImagePath, "[\\\\/]+");
+				Files.Add($"{OriginFolderPath}\\materials\\vgui\\{String.Join("\\", Folders)}.vmt");
+				Files.Add($"{OriginFolderPath}\\materials\\vgui\\{String.Join("\\", Folders)}.vtf");
+			}
 
+			foreach (string AudioPath in Dependencies.Audio)
+			{
+				string[] Folders = System.Text.RegularExpressions.Regex.Split(AudioPath, "[\\\\/]+");
+				Files.Add($"{OriginFolderPath}\\sound\\{String.Join("\\", Folders)}");
+			}
+
+			string[] FilesArray = Files.ToArray();
+			foreach (string FilePath in FilesArray)
+			{
+				string SourceFileName = $"{OriginFolderPath}\\{FilePath}";
+				if (File.Exists(SourceFileName))
+				{
+					string DestFileName = $"{this.FolderPath}\\{FilePath}";
+					Directory.CreateDirectory(Path.GetDirectoryName(DestFileName));
+					File.Copy(SourceFileName, DestFileName, true);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Writes an info.vdf file to the current HUD if it doesn't exist
+		/// </summary>
+		private void WriteInfoVDF()
+		{
 			// UI Version
 			if (!File.Exists($"{this.FolderPath}\\info.vdf"))
 			{
@@ -334,8 +348,6 @@ namespace hud_merger
 				InfoVDF[this.Name]["ui_version"] = 3;
 				File.WriteAllText($"{this.FolderPath}\\info.vdf", VDF.Stringify(InfoVDF));
 			}
-
-			#endregion
 		}
 	}
 }
