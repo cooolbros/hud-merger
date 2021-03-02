@@ -40,7 +40,7 @@ namespace hud_merger
 			Dictionary<string, dynamic> NewClientscheme = this.GetDependencyValues(Origin.FolderPath + "\\resource\\clientscheme.res", Dependencies, Files);
 			this.WriteClientscheme(Origin.Name, NewClientscheme);
 			this.WriteHUDLayout(Origin.FolderPath + "\\scripts\\hudlayout.res", HUDLayoutEntries);
-			this.WriteEvents(Origin.FolderPath, Events, Origin.Name);
+			this.WriteHUDAnimations(Origin.FolderPath, Events, Origin.Name);
 			this.CopyHUDFiles(Origin.FolderPath, Files, Dependencies);
 			this.WriteInfoVDF();
 		}
@@ -280,7 +280,7 @@ namespace hud_merger
 		private void WriteClientscheme(string OriginName, Dictionary<string, dynamic> NewClientscheme)
 		{
 			bool WriteBaseStatement = true;
-			if (File.Exists($"{this.FolderPath}\\resource\\clientscheme.res"))
+			if (Utilities.TestPath($"{this.FolderPath}\\resource\\clientscheme.res"))
 			{
 				// 'this' HUD already has a hudlayout
 				string[] Lines = File.ReadAllLines($"{this.FolderPath}\\resource\\clientscheme.res");
@@ -297,6 +297,7 @@ namespace hud_merger
 			else
 			{
 				// If clientscheme doesn't exist it is crucial to have one with default tf properties
+				Directory.CreateDirectory($"{this.FolderPath}\\resource");
 				File.Copy("Resources\\clientscheme.res", $"{this.FolderPath}\\resource\\clientscheme.res");
 			}
 
@@ -319,7 +320,7 @@ namespace hud_merger
 		/// <summary>
 		/// Events
 		/// </summary>
-		private void WriteEvents(string OriginFolderPath, List<string> Events, string HUDName)
+		private void WriteHUDAnimations(string OriginFolderPath, List<string> Events, string HUDName)
 		{
 			string OriginHUDAnimationsManifestPath = OriginFolderPath + "\\scripts\\hudanimations_manifest.txt";
 
@@ -345,6 +346,20 @@ namespace hud_merger
 			}
 
 			File.WriteAllText($"{this.FolderPath}\\scripts\\hudanimations_{HUDName}.txt", HUDAnimations.Stringify(NewHUDAnimations));
+
+			// Include origin animations file (Fake stringify VDF because we want to put the new animations file at the start to overwrite default tf2 animations)
+			List<string> NewManifestLines = new()
+			{
+				$"hudanimations_manifest",
+				$"{{",
+				$"\t\"file\"\t\t\"scripts/hudanimations_{HUDName}.txt\""
+			};
+			foreach (string FilePath in HUDAnimationsManifestList)
+			{
+				NewManifestLines.Add($"\t\"file\"\t\t\"{FilePath}\"");
+			}
+			NewManifestLines.Add($"}}");
+			File.WriteAllLines($"{this.FolderPath}\\scripts\\hudanimations_manifest.txt", NewManifestLines);
 		}
 
 		/// <summary>

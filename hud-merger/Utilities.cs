@@ -78,5 +78,25 @@ namespace hud_merger
 			AddControls(FilePath);
 			return Origin;
 		}
+
+		public static bool TestPath(string FilePath)
+		{
+			string FolderPath = "";
+			string[] Folders = System.Text.RegularExpressions.Regex.Split(FilePath, "[\\/]+");
+			Folders[^1] = "";
+			for (int i = 0; i < Folders.Length - 1; i++)
+			{
+				FolderPath += Folders[i] + "\\";
+				if (!Directory.Exists(FolderPath))
+				{
+					return false;
+				}
+			}
+			if (!File.Exists(FilePath))
+			{
+				return false;
+			}
+			return true;
+		}
 	}
 }

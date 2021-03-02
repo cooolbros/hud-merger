@@ -69,7 +69,7 @@ namespace hud_merger
 					{
 						if (Str[j + 1] == '/')
 						{
-							while (Str[j] != '\n')
+							while (Str[j] != '\n' && j < Str.Length)
 							{
 								j++;
 							}
