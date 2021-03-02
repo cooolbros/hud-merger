@@ -35,11 +35,12 @@ namespace hud_merger
 			// Add font files to file list
 			// Copy all files
 
-			(List<string> Files, List<string> HUDLayoutEntries) = HUD.DestructurePanels(Panels);
+			(List<string> Files, List<string> HUDLayoutEntries, List<string> Events) = HUD.DestructurePanels(Panels);
 			ClientschemeDependencies Dependencies = this.GetDependencies(Origin.FolderPath, Files.ToArray());
 			Dictionary<string, dynamic> NewClientscheme = this.GetDependencyValues(Origin.FolderPath + "\\resource\\clientscheme.res", Dependencies, Files);
 			this.WriteClientscheme(Origin.Name, NewClientscheme);
 			this.WriteHUDLayout(Origin.FolderPath + "\\scripts\\hudlayout.res", HUDLayoutEntries);
+			this.WriteEvents(Origin.FolderPath, Events, Origin.Name);
 			this.CopyHUDFiles(Origin.FolderPath, Files, Dependencies);
 			this.WriteInfoVDF();
 		}
@@ -47,10 +48,11 @@ namespace hud_merger
 		/// <summary>
 		/// Returns a list of Files and HUD Layout entries that should be used for the merge
 		/// </summary>
-		private static (List<string> Files, List<string> HUDLayoutEntries) DestructurePanels(HUDPanel[] Panels)
+		private static (List<string> Files, List<string> HUDLayoutEntries, List<string> Events) DestructurePanels(HUDPanel[] Panels)
 		{
 			List<string> Files = new();
 			List<string> HUDLayoutEntries = new();
+			List<string> Events = new();
 			foreach (HUDPanel Panel in Panels)
 			{
 				Files.Add(Panel.Main.FilePath);
@@ -68,8 +70,15 @@ namespace hud_merger
 						Files.Add(HUDFile.FilePath);
 					}
 				}
+				if (Panel.Main.Events != null)
+				{
+					foreach (string Event in Panel.Main.Events)
+					{
+						Events.Add(Event);
+					}
+				}
 			}
-			return (Files, HUDLayoutEntries);
+			return (Files, HUDLayoutEntries, Events);
 		}
 
 		/// <summary>
@@ -307,6 +316,40 @@ namespace hud_merger
 			File.WriteAllText($"{this.FolderPath}\\resource\\clientscheme_{OriginName}.res", VDF.Stringify(NewClientschemeContainer));
 		}
 
+		/// <summary>
+		/// Events
+		/// </summary>
+		private void WriteEvents(string OriginFolderPath, List<string> Events, string HUDName)
+		{
+			string OriginHUDAnimationsManifestPath = OriginFolderPath + "\\scripts\\hudanimations_manifest.txt";
+
+			Dictionary<string, dynamic> Manifest = VDF.Parse(File.ReadAllText(File.Exists(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\hudanimations_manifest.txt"));
+			dynamic HUDAnimationsManifestList = Manifest["hudanimations_manifest"]["file"];
+
+			Dictionary<string, List<IHUDAnimation>> NewHUDAnimations = new();
+
+			foreach (string FilePath in HUDAnimationsManifestList)
+			{
+				if (File.Exists(OriginFolderPath + "\\" + FilePath))
+				{
+					Dictionary<string, List<IHUDAnimation>> AnimationsFile = HUDAnimations.Parse(File.ReadAllText(OriginFolderPath + "\\" + FilePath));
+					foreach (string Event in AnimationsFile.Keys)
+					{
+						if (Events.Contains(Event))
+						{
+							NewHUDAnimations[Event] = AnimationsFile[Event];
+						}
+					}
+				}
+
+			}
+
+			File.WriteAllText($"{this.FolderPath}\\scripts\\hudanimations_{HUDName}.txt", HUDAnimations.Stringify(NewHUDAnimations));
+		}
+
+		/// <summary>
+		/// Copies list of HUD Files with no processing
+		/// </summary>
 		private void CopyHUDFiles(string OriginFolderPath, List<string> Files, ClientschemeDependencies Dependencies)
 		{
 			foreach (string ImagePath in Dependencies.Images)

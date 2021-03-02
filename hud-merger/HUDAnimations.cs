@@ -31,6 +31,21 @@ namespace hud_merger
 		public float Delay { get; set; }
 	}
 
+	class SetVisible : IHUDAnimation
+	{
+		public string Type { get; set; }
+		public string Element { get; set; }
+		public float Delay { get; set; }
+		public float Duration { get; set; }
+	}
+
+	class FireCommand : IHUDAnimation
+	{
+		public string Type { get; set; }
+		public string Delay { get; set; }
+		public float Command { get; set; }
+	}
+
 	static class HUDAnimations
 	{
 		public static Dictionary<string, List<IHUDAnimation>> Parse(string Str)
@@ -183,6 +198,21 @@ namespace hud_merger
 					Animation.Type = AnimationType;
 					Animation.Event = Next();
 					Animation.Delay = float.Parse(Next());
+				}
+				else if (AnimationType == "SetVisible")
+				{
+					Animation = new SetVisible();
+					Animation.Type = AnimationType;
+					Animation.Element = Next();
+					Animation.Delay = float.Parse(Next());
+					Animation.Duration = float.Parse(Next());
+				}
+				else if (AnimationType == "FireCommand")
+				{
+					Animation = new FireCommand();
+					Animation.Type = AnimationType;
+					Animation.Delay = float.Parse(Next());
+					Animation.Command = Next();
 				}
 				else
 				{

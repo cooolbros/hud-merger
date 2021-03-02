@@ -5,6 +5,11 @@
 			"FilePath": "resource\\ui\\hudammoweapons.res",
 			"HUDLayout": [
 				"HudWeaponAmmo"
+			],
+			"Events": [
+				"HudLowAmmoPulse",
+				"HudLowAmmoPulseLoop",
+				"HudLowAmmoPulseStop"
 			]
 		}
 	},
@@ -41,7 +46,15 @@
 	{
 		"Name": "Health",
 		"Main": {
-			"FilePath": "resource\\ui\\hudplayerhealth.res"
+			"FilePath": "resource\\ui\\hudplayerhealth.res",
+			"Events": [
+				"HudHealthBonusPulse",
+				"HudHealthBonusPulseLoop",
+				"HudHealthBonusPulseStop",
+				"HudHealthDyingPulse",
+				"HudHealthDyingPulseLoop",
+				"HudHealthDyingPulseStop"
+			]
 		},
 		"Files": [
 			{

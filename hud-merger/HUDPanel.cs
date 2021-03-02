@@ -18,6 +18,7 @@ namespace hud_merger
 	{
 		public string FilePath { get; set; }
 		public string[] HUDLayout { get; set; }
+		public string[] Events { get; set; }
 	}
 
 	public class ClientschemeDependencies
