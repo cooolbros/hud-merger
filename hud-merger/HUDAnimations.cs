@@ -2,53 +2,125 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+// sample animation script
+//
+//
+// commands:
+//	Animate <panel name> <variable> <target value> <interpolator> <start time> <duration>
+//		variables:
+//			FgColor
+//			BgColor
+//			Position
+//			Size
+//			Blur		(hud panels only)
+//			TextColor	(hud panels only)
+//			Ammo2Color	(hud panels only)
+//			Alpha		(hud weapon selection only)
+//			SelectionAlpha  (hud weapon selection only)
+//			TextScan	(hud weapon selection only)
+//
+//		interpolator:
+//			Linear
+//			Accel - starts moving slow, ends fast
+//			Deaccel - starts moving fast, ends slow
+//			Spline - simple ease in/out curve
+//			Pulse - < freq > over the duration, the value is pulsed (cosine) freq times ending at the dest value (assuming freq is integral)
+//			Flicker - < randomness factor 0.0 to 1.0 > over duration, each frame if random # is less than factor, use end value, otherwise use prev value
+//			Gain - < bias > Lower bias values bias towards 0.5 and higher bias values bias away from it.
+//			Bias - < bias > Lower values bias the curve towards 0 and higher values bias it towards 1.
+//
+//	RunEvent <event name> <start time>
+//		starts another even running at the specified time
+//
+//	StopEvent <event name> <start time>
+//		stops another event that is current running at the specified time
+//
+//	StopAnimation <panel name> <variable> <start time>
+//		stops all animations refering to the specified variable in the specified panel
+//
+//	StopPanelAnimations <panel name> <start time>
+//		stops all active animations operating on the specified panel
+//
+//  SetFont <panel name> <fontparameter> <fontname from scheme> <set time>
+//
+//	SetTexture <panel name> <textureidname> <texturefilename> <set time>
+//
+//  SetString <panel name> <string varname> <stringvalue> <set time>
+
 namespace hud_merger
 {
-	interface IHUDAnimation { }
-
-	class Animate : IHUDAnimation
+	class HUDAnimation
 	{
 		public string Type { get; set; }
+		public string OSTag { get; set; }
+	}
+
+	class Animate : HUDAnimation
+	{
 		public string Element { get; set; }
 		public string Property { get; set; }
 		public string Value { get; set; }
 		public string Interpolator { get; set; }
-		public float Delay { get; set; }
-		public float Duration { get; set; }
-	}
-
-	class RunEvent : IHUDAnimation
-	{
-		public string Type { get; set; }
-		public string Event { get; set; }
-		public float Delay { get; set; }
-	}
-
-	class StopEvent : IHUDAnimation
-	{
-		public string Type { get; set; }
-		public string Event { get; set; }
-		public float Delay { get; set; }
-	}
-
-	class SetVisible : IHUDAnimation
-	{
-		public string Type { get; set; }
-		public string Element { get; set; }
-		public float Delay { get; set; }
-		public float Duration { get; set; }
-	}
-
-	class FireCommand : IHUDAnimation
-	{
-		public string Type { get; set; }
+		public string Frequency { get; set; }
+		public string Bias { get; set; }
 		public string Delay { get; set; }
-		public float Command { get; set; }
+		public string Duration { get; set; }
+	}
+
+	class RunEvent : HUDAnimation
+	{
+		public string Event { get; set; }
+		public string Delay { get; set; }
+	}
+
+	class StopEvent : HUDAnimation
+	{
+		public string Event { get; set; }
+		public string Delay { get; set; }
+	}
+
+	class SetVisible : HUDAnimation
+	{
+		public string Element { get; set; }
+		public string Delay { get; set; }
+		public string Duration { get; set; }
+	}
+
+	class FireCommand : HUDAnimation
+	{
+		public string Delay { get; set; }
+		public string Command { get; set; }
+	}
+
+	class RunEventChild : HUDAnimation
+	{
+		public string Element { get; set; }
+		public string Event { get; set; }
+		public string Delay { get; set; }
+	}
+
+	class SetInputEnabled : HUDAnimation
+	{
+		public string Element { get; set; }
+		public int Visible { get; set; }
+		public string Delay { get; set; }
+	}
+
+	class PlaySound : HUDAnimation
+	{
+		public string Delay { get; set; }
+		public string Sound { get; set; }
+	}
+
+	class StopPanelAnimations : HUDAnimation
+	{
+		public string Element { get; set; }
+		public string Delay { get; set; }
 	}
 
 	static class HUDAnimations
 	{
-		public static Dictionary<string, List<IHUDAnimation>> Parse(string Str)
+		public static Dictionary<string, List<HUDAnimation>> Parse(string Str)
 		{
 			int i = 0;
 			char[] WhiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
@@ -63,13 +135,13 @@ namespace hud_merger
 					return "EOF";
 				}
 
-				while ((WhiteSpaceIgnore.Contains(Str[j]) || Str[j] == '/') && j <= Str.Length - 1)
+				while ((WhiteSpaceIgnore.Contains(Str[j]) || Str[j] == '/') && j < Str.Length - 1)
 				{
 					if (Str[j] == '/')
 					{
 						if (Str[j + 1] == '/')
 						{
-							while (Str[j] != '\n' && j < Str.Length)
+							while (Str[j] != '\n' && j < Str.Length - 1)
 							{
 								j++;
 							}
@@ -89,7 +161,7 @@ namespace hud_merger
 				{
 					// Read until next quote (ignore opening quote)
 					j++;
-					while (Str[j] != '"' && j < Str.Length)
+					while (Str[j] != '"' && j < Str.Length - 1)
 					{
 						if (Str[j] == '\n')
 						{
@@ -103,7 +175,7 @@ namespace hud_merger
 				else
 				{
 					// Read until whitespace (or end of file)
-					while (!WhiteSpaceIgnore.Contains(Str[j]) && j < Str.Length - 1)
+					while (j < Str.Length && !WhiteSpaceIgnore.Contains(Str[j]))
 					{
 						if (Str[j] == '"')
 						{
@@ -127,9 +199,9 @@ namespace hud_merger
 				return CurrentToken;
 			}
 
-			Dictionary<string, List<IHUDAnimation>> ParseFile()
+			Dictionary<string, List<HUDAnimation>> ParseFile()
 			{
-				Dictionary<string, List<IHUDAnimation>> Animations = new();
+				Dictionary<string, List<HUDAnimation>> Animations = new();
 
 				string CurrentToken = Next();
 
@@ -145,9 +217,9 @@ namespace hud_merger
 				return Animations;
 			}
 
-			List<IHUDAnimation> ParseEvent()
+			List<HUDAnimation> ParseEvent()
 			{
-				List<IHUDAnimation> Event = new();
+				List<HUDAnimation> Event = new();
 				string NextToken = Next();
 				if (NextToken == "{")
 				{
@@ -170,53 +242,107 @@ namespace hud_merger
 				return Event;
 			}
 
-			IHUDAnimation ParseAnimation(string AnimationType)
+			void SetInterpolator(Animate Animation)
+			{
+				string Interpolator = Next().ToLower();
+				if (Interpolator == "pulse")
+				{
+					Animation.Interpolator = Interpolator;
+					Animation.Frequency = Next();
+				}
+				else if (new string[] { "gain", "bias" }.Contains(Interpolator))
+				{
+					Animation.Interpolator = Interpolator[0].ToString().ToUpper() + Interpolator.Substring(1, Interpolator.Length - 1);
+					Animation.Bias = Next();
+				}
+				else
+				{
+					Animation.Interpolator = Interpolator;
+				}
+			}
+
+
+			HUDAnimation ParseAnimation(string AnimationType)
 			{
 				dynamic Animation;
+				AnimationType = AnimationType.ToLower();
 
-				if (AnimationType == "Animate")
+				if (AnimationType == "animate")
 				{
 					Animation = new Animate();
 					Animation.Type = AnimationType;
 					Animation.Element = Next();
 					Animation.Property = Next();
 					Animation.Value = Next();
-					Animation.Interpolator = Next();
-					Animation.Delay = float.Parse(Next());
-					Animation.Duration = float.Parse(Next());
+					SetInterpolator(Animation);
+					Animation.Delay = Next();
+					Animation.Duration = Next();
 				}
-				else if (AnimationType == "RunEvent")
+				else if (AnimationType == "runevent")
 				{
 					Animation = new RunEvent();
 					Animation.Type = AnimationType;
 					Animation.Event = Next();
-					Animation.Delay = float.Parse(Next());
+					Animation.Delay = Next();
 				}
-				else if (AnimationType == "StopEvent")
+				else if (AnimationType == "stopevent")
 				{
 					Animation = new StopEvent();
 					Animation.Type = AnimationType;
 					Animation.Event = Next();
-					Animation.Delay = float.Parse(Next());
+					Animation.Delay = Next();
 				}
-				else if (AnimationType == "SetVisible")
+				else if (AnimationType == "setvisible")
 				{
 					Animation = new SetVisible();
 					Animation.Type = AnimationType;
 					Animation.Element = Next();
-					Animation.Delay = float.Parse(Next());
-					Animation.Duration = float.Parse(Next());
+					Animation.Delay = Next();
+					Animation.Duration = Next();
 				}
-				else if (AnimationType == "FireCommand")
+				else if (AnimationType == "firecommand")
 				{
 					Animation = new FireCommand();
 					Animation.Type = AnimationType;
-					Animation.Delay = float.Parse(Next());
+					Animation.Delay = Next();
 					Animation.Command = Next();
+				}
+				else if (AnimationType == "runeventchild")
+				{
+					Animation = new RunEventChild();
+					Animation.Type = AnimationType;
+					Animation.Element = Next();
+					Animation.Event = Next();
+					Animation.Delay = Next();
+				}
+				else if (AnimationType == "setinputenabled")
+				{
+					Animation = new SetInputEnabled();
+					Animation.Element = Next();
+					Animation.Visible = int.Parse(Next());
+					Animation.Delay = Next();
+				}
+				else if (AnimationType == "playsound")
+				{
+					Animation = new PlaySound();
+					Animation.Delay = Next();
+					Animation.Sound = Next();
+				}
+				else if (AnimationType == "stoppanelanimations")
+				{
+					Animation = new StopPanelAnimations();
+					Animation.Element = Next();
+					Animation.Delay = Next();
 				}
 				else
 				{
+					System.Diagnostics.Debug.WriteLine(Str.Substring(i - 25, 25));
 					throw new Exception($"Unexpected {AnimationType} at position {i}");
+				}
+
+				if (Next(true).StartsWith('['))
+				{
+					Animation.OSTag = Next();
 				}
 
 				return Animation;
@@ -225,7 +351,7 @@ namespace hud_merger
 			return ParseFile();
 		}
 
-		public static string Stringify(Dictionary<string, List<IHUDAnimation>> Animations)
+		public static string Stringify(Dictionary<string, List<HUDAnimation>> Animations)
 		{
 			string Str = "";
 			char Tab = '\t';
@@ -236,20 +362,62 @@ namespace hud_merger
 				return System.Text.RegularExpressions.Regex.IsMatch(Str, "\\s") ? $"\"{Str}\"" : Str;
 			}
 
+			string GetInterpolator(Animate Animation)
+			{
+				string Interpolator = Animation.Interpolator.ToLower();
+				switch (Interpolator)
+				{
+					case "Pulse":
+						return $"Pulse {Animation.Frequency}";
+					case "Gain":
+					case "Bias":
+						return $"Gain {Animation.Bias}";
+					default:
+						return $"{Animation.Interpolator}";
+				}
+			}
+
 			foreach (string Event in Animations.Keys)
 			{
 				Str += $"event {Event}{NewLine}{{{NewLine}";
 				foreach (dynamic Execution in Animations[Event])
 				{
 					Str += Tab;
-					if (Execution is Animate)
+					Type T = Execution.GetType();
+					if (T == typeof(Animate))
 					{
-						Str += $"Animate {FormatWhiteSpace(Execution.Element)} {FormatWhiteSpace(Execution.Property)} {FormatWhiteSpace(Execution.Value)} {FormatWhiteSpace(Execution.Interpolator)} {Execution.Delay} {Execution.Duration}";
+						Str += $"Animate {FormatWhiteSpace(Execution.Element)} {FormatWhiteSpace(Execution.Property)} {FormatWhiteSpace(Execution.Value)} {GetInterpolator(Execution)} {Execution.Delay} {Execution.Duration}";
 					}
-					else
+					else if (T == typeof(RunEvent) || T == typeof(StopEvent))
 					{
-						Str += $"{FormatWhiteSpace(Execution.Type)} {FormatWhiteSpace(Execution.Event)} {Execution.Delay}";
+						Str += $"RunEvent {FormatWhiteSpace(Execution.Event)} {Execution.Delay}";
 					}
+					else if (T == typeof(SetVisible))
+					{
+						Str += $"SetVisible {FormatWhiteSpace(Execution.Element)} {Execution.Delay} {Execution.Duration}";
+					}
+					else if (T == typeof(FireCommand))
+					{
+						Str += $"FireCommand {Execution.Delay} {FormatWhiteSpace(Execution.Command)}";
+					}
+					else if (T == typeof(RunEventChild))
+					{
+						Str += $"RunEventChild {FormatWhiteSpace(Execution.Element)} {FormatWhiteSpace(Execution.Event)} {Execution.Delay}";
+					}
+					else if (T == typeof(SetVisible))
+					{
+						Str += $"SetVisible {FormatWhiteSpace(Execution.Element)} {Execution.Visible} {Execution.Delay}";
+					}
+					else if (T == typeof(PlaySound))
+					{
+						Str += $"PlaySound {Execution.Delay} {FormatWhiteSpace(Execution.Sound)}";
+					}
+
+					if (Execution.OSTag != null)
+					{
+						Str += " " + Execution.OSTag;
+					}
+
 					Str += NewLine;
 				}
 				Str += $"}}{NewLine}";

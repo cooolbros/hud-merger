@@ -232,6 +232,8 @@ namespace hud_merger
 				Panel.TargetListItem = new Label();
 				Panel.TargetListItem.Content = Panel.Name;
 				Panel.TargetListItem.Style = (Style)Application.Current.Resources["PanelLabel"];
+				Panel.TargetListItem.Foreground = Brushes.White;
+				Panel.TargetListItem.Background = (Brush)Application.Current.Resources["_Blue"];
 				Panel.TargetListItem.Visibility = Panel.Armed ? Visibility.Visible : Visibility.Collapsed;
 				TargetFilesList.Children.Add(Panel.TargetListItem);
 			}
@@ -246,6 +248,7 @@ namespace hud_merger
 			try
 			{
 				TargetHUD.Merge(OriginHUD, HUDPanels.Where((Panel) => Panel.Armed).ToArray());
+				System.Diagnostics.Debug.WriteLine("Done!");
 			}
 			catch (Exception Error)
 			{

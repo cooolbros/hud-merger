@@ -211,7 +211,7 @@ namespace hud_merger
 							else
 							{
 								// No OS Tag
-								Str += $"{new String(Tab, Tabs)}{Key}\t{Item}{NewLine}";
+								Str += $"{new String(Tab, Tabs)}\"{Key}\"\t\"{Item}\"{NewLine}";
 							}
 						}
 					}
