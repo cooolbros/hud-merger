@@ -51,6 +51,7 @@ namespace hud_merger
 
 		private void MenuItem_LoadTargetHUD(object sender, RoutedEventArgs e)
 		{
+			TargetFilesList.Children.Clear();
 			NewTargetHUD(sender, e);
 		}
 

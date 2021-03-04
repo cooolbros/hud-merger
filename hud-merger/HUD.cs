@@ -5,9 +5,15 @@ using System.Text.Json;
 
 namespace hud_merger
 {
+	/// <summary>
+	/// Represents a custom HUD
+	/// </summary>
 	public class HUD
 	{
+		/// <summary>HUD Name (name of HUD folder)</summary>
 		public string Name;
+
+		/// <summary>Absolute path to HUD Folder</summary>
 		public string FolderPath;
 
 		public HUD(string FolderPath)
@@ -17,11 +23,13 @@ namespace hud_merger
 			this.FolderPath = FolderPath;
 		}
 
+		/// <summary>Returns whether the provided HUDPanel is 'in' this HUD</summary>
 		public bool TestPanel(HUDPanel Panel)
 		{
 			return File.Exists(this.FolderPath + "\\" + Panel.Main.FilePath);
 		}
 
+		/// <summary>Merges an array of HUDPanels from another HUD into this HUD</summary>
 		public void Merge(HUD Origin, HUDPanel[] Panels)
 		{
 			// How to merge:
@@ -144,7 +152,7 @@ namespace hud_merger
 							foreach (System.Reflection.PropertyInfo TypeKey in T.GetProperties())
 							{
 								dynamic CurrentPropertiesList = TypeKey.GetValue(Properties);
-								dynamic CurrentDependenciesList = TypeKey.GetValue(Dependencies) as HashSet<string>;
+								HashSet<string> CurrentDependenciesList = TypeKey.GetValue(Dependencies) as HashSet<string>;
 
 								foreach (string DefaultPropertyKey in CurrentPropertiesList)
 								{
@@ -152,8 +160,10 @@ namespace hud_merger
 									{
 										if (Obj[Key].GetType().Name.Contains("List"))
 										{
-											// Prompt user to decide which option to use (or pick 0?)
-											System.Diagnostics.Debug.WriteLine($"Cannot decide between {String.Join(',', Obj[Key])}");
+											foreach (dynamic DuplicateKey in Obj[Key])
+											{
+												CurrentDependenciesList.Add(Obj[Key]);
+											}
 										}
 										else
 										{
@@ -170,9 +180,8 @@ namespace hud_merger
 			}
 
 			// Evaluate files requested for merge
-			for (int i = 0; i < Files.Count; i++)
+			foreach (string HUDFile in Files.ToArray())
 			{
-				string HUDFile = Files[i];
 				string SourceFileName = OriginFolderPath + "\\" + HUDFile;
 				if (File.Exists(SourceFileName))
 				{
@@ -236,7 +245,6 @@ namespace hud_merger
 								FontNames.Add(FontDefinition?[FontDefinitionNumber]?[FontDefinitionProperty]);
 							}
 						}
-
 					}
 				}
 			}
@@ -335,7 +343,19 @@ namespace hud_merger
 			Dictionary<string, dynamic> NewClientschemeContainer = new();
 			NewClientschemeContainer["Scheme"] = NewClientscheme;
 			Directory.CreateDirectory($"{this.FolderPath}\\resource");
-			File.WriteAllText($"{this.FolderPath}\\resource\\clientscheme_{OriginName}.res", VDF.Stringify(NewClientschemeContainer));
+
+			string ClientschemeDependenciesPath = $"{this.FolderPath}\\resource\\clientscheme_{OriginName}.res";
+
+			if (File.Exists(ClientschemeDependenciesPath))
+			{
+				Dictionary<string, dynamic> PreviouslyMergedClientscheme = VDF.Parse(File.ReadAllText(ClientschemeDependenciesPath));
+				Utilities.Merge(PreviouslyMergedClientscheme, NewClientschemeContainer);
+				File.WriteAllText(ClientschemeDependenciesPath, VDF.Stringify(PreviouslyMergedClientscheme));
+			}
+			else
+			{
+				File.WriteAllText(ClientschemeDependenciesPath, VDF.Stringify(NewClientschemeContainer));
+			}
 		}
 
 		/// <summary>
