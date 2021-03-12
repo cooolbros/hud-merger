@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hud_merger"
         mc:Ignorable="d"
-        Title="HUD Merger" Height="450" Width="800">
+        Title="HUD Merger"
+        Width="800"
+        Height="450"
+        Icon="favicon.ico">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -31,7 +34,7 @@
                 <MenuItem Command="Paste" />
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="About" />
+                <MenuItem Header="About" Click="MenuItem_About" />
             </MenuItem>
         </Menu>
         <!-- Origin HUD Status -->

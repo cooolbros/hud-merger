@@ -60,6 +60,13 @@ namespace hud_merger
 			Application.Current.Shutdown();
 		}
 
+		private void MenuItem_About(object sender, RoutedEventArgs e)
+		{
+			AboutWindow aboutWindow = new();
+			aboutWindow.Owner = this;
+			aboutWindow.Show();
+		}
+
 		private string FolderBrowserDialog()
 		{
 			using (System.Windows.Forms.FolderBrowserDialog fbd = new())
@@ -85,6 +92,7 @@ namespace hud_merger
 			{
 				MergeButtonTextBlock.Cursor = Cursors.Hand;
 				MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_Blue"];
+				this.MergeButtonEnabled = true;
 			}
 			else
 			{
@@ -253,7 +261,7 @@ namespace hud_merger
 				try
 				{
 					TargetHUD.Merge(OriginHUD, HUDPanels.Where((Panel) => Panel.Armed).ToArray());
-					System.Diagnostics.Debug.WriteLine("Done!");
+					System.Windows.MessageBox.Show("Done!");
 				}
 				catch (Exception Error)
 				{
