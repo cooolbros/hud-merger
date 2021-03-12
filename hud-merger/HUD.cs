@@ -204,10 +204,10 @@ namespace hud_merger
 			Dictionary<string, dynamic> OriginClientscheme = Utilities.LoadControls(OriginClientschemePath);
 
 			Dictionary<string, dynamic> NewClientscheme = new();
-			NewClientscheme.Add("Colors", new Dictionary<string, dynamic>());
-			NewClientscheme.Add("Borders", new Dictionary<string, dynamic>());
-			NewClientscheme.Add("Fonts", new Dictionary<string, dynamic>());
-			NewClientscheme.Add("CustomFontFiles", new Dictionary<string, dynamic>());
+			NewClientscheme["Colors"] = new Dictionary<string, dynamic>();
+			NewClientscheme["Borders"] = new Dictionary<string, dynamic>();
+			NewClientscheme["Fonts"] = new Dictionary<string, dynamic>();
+			NewClientscheme["CustomFontFiles"] = new Dictionary<string, dynamic>();
 
 			// Colours
 			foreach (string ColourProperty in Dependencies.Colours)
@@ -234,7 +234,7 @@ namespace hud_merger
 				if (OriginClientscheme?["Scheme"]?["Fonts"].ContainsKey(FontProperty))
 				{
 					dynamic FontDefinition = OriginClientscheme["Scheme"]["Fonts"][FontProperty];
-					NewClientscheme["Fonts"].Add(FontProperty, FontDefinition);
+					NewClientscheme["Fonts"][FontProperty] = FontDefinition;
 					foreach (dynamic FontDefinitionNumber in FontDefinition.Keys)
 					{
 						foreach (string FontDefinitionProperty in FontDefinition?[FontDefinitionNumber]?.Keys)

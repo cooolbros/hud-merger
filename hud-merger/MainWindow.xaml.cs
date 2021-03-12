@@ -83,10 +83,12 @@ namespace hud_merger
 		{
 			if (OriginHUD != null && TargetHUD != null)
 			{
+				MergeButtonTextBlock.Cursor = Cursors.Hand;
 				MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_Blue"];
 			}
 			else
 			{
+				MergeButtonTextBlock.Cursor = Cursors.Arrow;
 				MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_MergeButtonBackground"];
 			}
 		}
@@ -149,7 +151,7 @@ namespace hud_merger
 				PanelLabel.Content = Panel.Name;
 				PanelLabel.Style = (Style)Application.Current.Resources["PanelLabel"];
 				// The killfeed doesnt have a file, only check if a required file is specified
-				PanelLabel.Visibility = Panel.Main.FilePath != null ? (OriginHUD.TestPanel(Panel) ? Visibility.Visible : Visibility.Collapsed) : Visibility.Visible; ;
+				PanelLabel.Visibility = Panel.Main.FilePath != null ? (OriginHUD.TestPanel(Panel) ? Visibility.Visible : Visibility.Collapsed) : Visibility.Visible;
 				OriginFilesList.Children.Add(PanelLabel);
 
 				PanelLabel.MouseEnter += (object sender, MouseEventArgs e) =>
@@ -246,14 +248,17 @@ namespace hud_merger
 
 		private void MergeButton_Click(object sender, RoutedEventArgs e)
 		{
-			try
+			if (this.MergeButtonEnabled)
 			{
-				TargetHUD.Merge(OriginHUD, HUDPanels.Where((Panel) => Panel.Armed).ToArray());
-				System.Diagnostics.Debug.WriteLine("Done!");
-			}
-			catch (Exception Error)
-			{
-				System.Windows.MessageBox.Show(Error.ToString());
+				try
+				{
+					TargetHUD.Merge(OriginHUD, HUDPanels.Where((Panel) => Panel.Armed).ToArray());
+					System.Diagnostics.Debug.WriteLine("Done!");
+				}
+				catch (Exception Error)
+				{
+					System.Windows.MessageBox.Show(Error.ToString());
+				}
 			}
 		}
 	}
