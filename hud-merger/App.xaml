@@ -14,7 +14,7 @@
             <Setter Property="FontSize" Value="22" />
         </Style>
         <Style TargetType="Label" x:Key="StatusInfo">
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="15" />
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="FlowDirection" Value="RightToLeft" />
             <Setter Property="Margin" Value="0,0,0,5" />
