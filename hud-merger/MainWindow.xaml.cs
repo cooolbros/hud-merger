@@ -153,14 +153,23 @@ namespace hud_merger
 
 			OriginFilesList.Margin = new Thickness(3);
 
+			bool HUDIsValid = false;
+
 			foreach (HUDPanel Panel in HUDPanels)
 			{
 				Label PanelLabel = new();
 				PanelLabel.Content = Panel.Name;
 				PanelLabel.Style = (Style)Application.Current.Resources["PanelLabel"];
-				// The killfeed doesnt have a file, only check if a required file is specified
-				PanelLabel.Visibility = Panel.Main.FilePath != null ? (OriginHUD.TestPanel(Panel) ? Visibility.Visible : Visibility.Collapsed) : Visibility.Visible;
+
+				bool PanelExists = OriginHUD.TestPanel(Panel);
+
+				PanelLabel.Visibility = PanelExists ? Visibility.Visible : Visibility.Collapsed;
 				OriginFilesList.Children.Add(PanelLabel);
+
+				if (PanelExists)
+				{
+					HUDIsValid = true;
+				}
 
 				PanelLabel.MouseEnter += (object sender, MouseEventArgs e) =>
 				{
@@ -204,7 +213,24 @@ namespace hud_merger
 					}
 				};
 			}
-			ScrollablePanel.Content = OriginFilesList;
+
+			if (!HUDIsValid)
+			{
+				TextBlock ErrorLabel = new()
+				{
+					Text = $"Could not find any HUD elements, are you sure {OriginHUD.Name} is a HUD?",
+					FontSize = 16,
+					TextAlignment = TextAlignment.Center,
+					TextWrapping = TextWrapping.Wrap,
+					Margin = new Thickness(25)
+				};
+
+				ScrollablePanel.Content = ErrorLabel;
+			}
+			else
+			{
+				ScrollablePanel.Content = OriginFilesList;
+			}
 
 			OriginHUDFilesContainer.Children.Add(ScrollablePanel);
 

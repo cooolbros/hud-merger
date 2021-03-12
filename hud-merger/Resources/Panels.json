@@ -65,6 +65,7 @@
 	{
 		"Name": "Killfeed",
 		"Main": {
+			"FilePath": "scripts\\hudlayout.res",
 			"HUDLayout": [
 				"HudDeathNotice"
 			]

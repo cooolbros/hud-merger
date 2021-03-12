@@ -279,7 +279,7 @@ namespace hud_merger
 			Dictionary<string, dynamic> OriginHUDLayout = Utilities.LoadControls(OriginHUDLayoutPath);
 
 			string ThisHUDLayoutPath = $"{this.FolderPath}\\scripts\\hudlayout.res";
-			Dictionary<string, dynamic> NewHUDLayout = VDF.Parse(File.ReadAllText(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\hudlayout.res"));
+			Dictionary<string, dynamic> NewHUDLayout = VDF.Parse(File.ReadAllText(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\HUD\\scripts\\hudlayout.res"));
 
 			if (!NewHUDLayout.ContainsKey("Resource/HudLayout.res"))
 			{
@@ -327,7 +327,7 @@ namespace hud_merger
 			{
 				// If clientscheme doesn't exist it is crucial to have one with default tf properties
 				Directory.CreateDirectory($"{this.FolderPath}\\resource");
-				File.Copy("Resources\\clientscheme.res", $"{this.FolderPath}\\resource\\clientscheme.res");
+				File.Copy("Resources\\HUD\\resource\\clientscheme.res", $"{this.FolderPath}\\resource\\clientscheme.res");
 			}
 
 			if (WriteBaseStatement)
@@ -365,7 +365,7 @@ namespace hud_merger
 		{
 			string OriginHUDAnimationsManifestPath = OriginFolderPath + "\\scripts\\hudanimations_manifest.txt";
 
-			Dictionary<string, dynamic> Manifest = VDF.Parse(File.ReadAllText(File.Exists(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\hudanimations_manifest.txt"));
+			Dictionary<string, dynamic> Manifest = VDF.Parse(File.ReadAllText(File.Exists(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt"));
 			dynamic HUDAnimationsManifestList = Manifest["hudanimations_manifest"]["file"];
 
 			Dictionary<string, List<HUDAnimation>> NewHUDAnimations = new();
