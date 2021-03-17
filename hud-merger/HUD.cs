@@ -158,11 +158,11 @@ namespace hud_merger
 								{
 									if (Key == DefaultPropertyKey)
 									{
-										if (Obj[Key].GetType().Name.Contains("List"))
+										if (Obj[Key].GetType() == typeof(List<dynamic>))
 										{
 											foreach (dynamic DuplicateKey in Obj[Key])
 											{
-												CurrentDependenciesList.Add(Obj[Key]);
+												CurrentDependenciesList.Add(DuplicateKey);
 											}
 										}
 										else
@@ -366,7 +366,9 @@ namespace hud_merger
 
 			}
 
-			File.WriteAllText($"{this.FolderPath}\\scripts\\hudanimations_{HUDName}.txt", HUDAnimations.Stringify(NewHUDAnimations));
+			string HUDAnimationsPath = $"{this.FolderPath}\\scripts\\hudanimations_{HUDName}.txt";
+			Directory.CreateDirectory(Path.GetDirectoryName(HUDAnimationsPath));
+			File.WriteAllText(HUDAnimationsPath, HUDAnimations.Stringify(NewHUDAnimations));
 
 			// Include origin animations file (Fake stringify VDF because we want to put the new animations file at the start to overwrite default tf2 animations)
 			List<string> NewManifestLines = new()
