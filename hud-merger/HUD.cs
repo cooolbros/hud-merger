@@ -44,10 +44,10 @@ namespace hud_merger
 
 			(List<string> Files, List<string> HUDLayoutEntries, List<string> Events) = HUD.DestructurePanels(Panels);
 			ClientschemeDependencies Dependencies = this.GetDependencies(Origin.FolderPath, Files);
+			this.WriteHUDAnimations(Origin.FolderPath, Events, Origin.Name, Dependencies, Files);
 			Dictionary<string, dynamic> NewClientscheme = this.GetDependencyValues(Origin.FolderPath + "\\resource\\clientscheme.res", Dependencies, Files);
-			this.WriteClientscheme(Origin.Name, NewClientscheme);
 			this.WriteHUDLayout(Origin.FolderPath + "\\scripts\\hudlayout.res", HUDLayoutEntries);
-			this.WriteHUDAnimations(Origin.FolderPath, Events, Origin.Name);
+			this.WriteClientscheme(Origin.Name, NewClientscheme);
 			this.CopyHUDFiles(Origin.FolderPath, Files, Dependencies);
 			this.WriteInfoVDF();
 		}
@@ -304,6 +304,86 @@ namespace hud_merger
 		}
 
 		/// <summary>
+		/// Copies HUD Animations from origin HUD, adds clientscheme variables to provided Dependencies object
+		/// </summary>
+		private void WriteHUDAnimations(string OriginFolderPath, List<string> Events, string HUDName, ClientschemeDependencies Dependencies, List<string> Files)
+		{
+			string OriginHUDAnimationsManifestPath = OriginFolderPath + "\\scripts\\hudanimations_manifest.txt";
+
+			Dictionary<string, dynamic> Manifest = VDF.Parse(File.ReadAllText(File.Exists(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt"));
+			dynamic HUDAnimationsManifestList = Manifest["hudanimations_manifest"]["file"];
+
+			Dictionary<string, List<HUDAnimation>> NewHUDAnimations = new();
+
+			foreach (string FilePath in HUDAnimationsManifestList)
+			{
+				if (File.Exists(OriginFolderPath + "\\" + FilePath))
+				{
+					Dictionary<string, List<HUDAnimation>> AnimationsFile = HUDAnimations.Parse(File.ReadAllText(OriginFolderPath + "\\" + FilePath));
+
+					void AddEventDependencies(string Event, List<HUDAnimation> AnimationEvent)
+					{
+						NewHUDAnimations[Event] = AnimationEvent;
+
+						foreach (dynamic Statement in AnimationEvent)
+						{
+							Type T = Statement.GetType();
+
+							if (T == typeof(Animate))
+							{
+								if (Statement.Property.ToLower().Contains("color"))
+								{
+									// System.Diagnostics.Debug.WriteLine("adding " + Statement.Value);
+									Dependencies.Colours.Add(Statement.Value);
+								}
+							}
+
+							if (T == typeof(RunEvent) || T == typeof(StopEvent) || T == typeof(RunEventChild))
+							{
+								// If the event called has not been evaluated, evaluate in
+								// case there are more dependencies that need to be added
+								if (!NewHUDAnimations.ContainsKey(Statement.Event) && AnimationsFile.ContainsKey(Event))
+								{
+									AddEventDependencies(Statement.Event, AnimationsFile[Event]);
+								}
+							}
+
+							if (T == typeof(PlaySound))
+							{
+								Files.Add("sound\\" + Statement.Sound);
+							}
+						}
+					}
+
+					foreach (string Event in AnimationsFile.Keys)
+					{
+						if (Events.Contains(Event))
+						{
+							AddEventDependencies(Event, AnimationsFile[Event]);
+						}
+					}
+				}
+
+			}
+
+			File.WriteAllText($"{this.FolderPath}\\scripts\\hudanimations_{HUDName}.txt", HUDAnimations.Stringify(NewHUDAnimations));
+
+			// Include origin animations file (Fake stringify VDF because we want to put the new animations file at the start to overwrite default tf2 animations)
+			List<string> NewManifestLines = new()
+			{
+				$"hudanimations_manifest",
+				$"{{",
+				$"\t\"file\"\t\t\"scripts/hudanimations_{HUDName}.txt\""
+			};
+			foreach (string FilePath in HUDAnimationsManifestList)
+			{
+				NewManifestLines.Add($"\t\"file\"\t\t\"{FilePath}\"");
+			}
+			NewManifestLines.Add($"}}");
+			File.WriteAllLines($"{this.FolderPath}\\scripts\\hudanimations_manifest.txt", NewManifestLines);
+		}
+
+		/// <summary>
 		/// Applies NewClientscheme to this HUD using #base
 		/// </summary>
 		private void WriteClientscheme(string OriginName, Dictionary<string, dynamic> NewClientscheme)
@@ -356,51 +436,6 @@ namespace hud_merger
 			{
 				File.WriteAllText(ClientschemeDependenciesPath, VDF.Stringify(NewClientschemeContainer));
 			}
-		}
-
-		/// <summary>
-		/// Events
-		/// </summary>
-		private void WriteHUDAnimations(string OriginFolderPath, List<string> Events, string HUDName)
-		{
-			string OriginHUDAnimationsManifestPath = OriginFolderPath + "\\scripts\\hudanimations_manifest.txt";
-
-			Dictionary<string, dynamic> Manifest = VDF.Parse(File.ReadAllText(File.Exists(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt"));
-			dynamic HUDAnimationsManifestList = Manifest["hudanimations_manifest"]["file"];
-
-			Dictionary<string, List<HUDAnimation>> NewHUDAnimations = new();
-
-			foreach (string FilePath in HUDAnimationsManifestList)
-			{
-				if (File.Exists(OriginFolderPath + "\\" + FilePath))
-				{
-					Dictionary<string, List<HUDAnimation>> AnimationsFile = HUDAnimations.Parse(File.ReadAllText(OriginFolderPath + "\\" + FilePath));
-					foreach (string Event in AnimationsFile.Keys)
-					{
-						if (Events.Contains(Event))
-						{
-							NewHUDAnimations[Event] = AnimationsFile[Event];
-						}
-					}
-				}
-
-			}
-
-			File.WriteAllText($"{this.FolderPath}\\scripts\\hudanimations_{HUDName}.txt", HUDAnimations.Stringify(NewHUDAnimations));
-
-			// Include origin animations file (Fake stringify VDF because we want to put the new animations file at the start to overwrite default tf2 animations)
-			List<string> NewManifestLines = new()
-			{
-				$"hudanimations_manifest",
-				$"{{",
-				$"\t\"file\"\t\t\"scripts/hudanimations_{HUDName}.txt\""
-			};
-			foreach (string FilePath in HUDAnimationsManifestList)
-			{
-				NewManifestLines.Add($"\t\"file\"\t\t\"{FilePath}\"");
-			}
-			NewManifestLines.Add($"}}");
-			File.WriteAllLines($"{this.FolderPath}\\scripts\\hudanimations_manifest.txt", NewManifestLines);
 		}
 
 		/// <summary>

@@ -237,7 +237,7 @@ namespace hud_merger
 				}
 				else
 				{
-					throw new Exception($"Unexpected ${NextToken} at position {i}! Are you missing an opening brace?");
+					throw new Exception($"Unexpected {NextToken} at position {i}! Are you missing an opening brace?");
 				}
 				return Event;
 			}
