@@ -235,14 +235,38 @@ namespace hud_merger
 				{
 					dynamic FontDefinition = OriginClientscheme["Scheme"]["Fonts"][FontProperty];
 					NewClientscheme["Fonts"][FontProperty] = FontDefinition;
-					foreach (dynamic FontDefinitionNumber in FontDefinition.Keys)
+
+					// HUD using #base will have multiple font definition number items
+					if (FontDefinition.GetType() == typeof(List<object>))
 					{
-						foreach (string FontDefinitionProperty in FontDefinition?[FontDefinitionNumber]?.Keys)
+						foreach (Dictionary<string, dynamic> FontDefinitionInstance in FontDefinition)
 						{
-							// Some HUDs only have a name with an operating system tag like `name ... [$WINDOWS]`
-							if (FontDefinitionProperty.ToLower().Contains("name"))
+							foreach (KeyValuePair<string, dynamic> FontDefinitionKV in FontDefinitionInstance)
 							{
-								FontNames.Add(FontDefinition?[FontDefinitionNumber]?[FontDefinitionProperty]);
+								if (FontDefinitionKV.Value.GetType() == typeof(Dictionary<string, dynamic>))
+								{
+									foreach (KeyValuePair<string, dynamic> FontDefinitionProperty in FontDefinitionKV.Value)
+									{
+										if (FontDefinitionProperty.Key.ToLower().Contains("name"))
+										{
+											FontNames.Add(FontDefinitionProperty.Value);
+										}
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						foreach (string FontDefinitionNumber in FontDefinition.Keys)
+						{
+							foreach (string FontDefinitionProperty in FontDefinition?[FontDefinitionNumber]?.Keys)
+							{
+								// Some HUDs only have a name with an operating system tag like `name ... [$WINDOWS]`
+								if (FontDefinitionProperty.ToLower().Contains("name"))
+								{
+									FontNames.Add(FontDefinition?[FontDefinitionNumber]?[FontDefinitionProperty]);
+								}
 							}
 						}
 					}
