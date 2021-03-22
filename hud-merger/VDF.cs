@@ -27,7 +27,8 @@ namespace hud_merger
 					{
 						if (Str[j + 1] == '/')
 						{
-							while (Str[j] != '\n')
+							// prevent index out of bounds error if file doesn't end in a new line
+							while (j < Str.Length && Str[j] != '\n')
 							{
 								j++;
 							}

@@ -223,7 +223,7 @@ namespace hud_merger
 			{
 				if (OriginClientscheme?["Scheme"]?["Borders"].ContainsKey(BorderProperty))
 				{
-					NewClientscheme["Borders"].Add(BorderProperty, OriginClientscheme["Scheme"]["Borders"][BorderProperty]);
+					NewClientscheme["Borders"][BorderProperty] = OriginClientscheme["Scheme"]["Borders"][BorderProperty];
 				}
 			}
 
@@ -289,7 +289,15 @@ namespace hud_merger
 							NewClientscheme["CustomFontFiles"].Add(CustomFontFileNumber, OriginalCustomFontFiles?[CustomFontFileNumber]);
 
 							// Add .ttf file as well
-							Files.Add(OriginalCustomFontFiles?[CustomFontFileNumber]?["font"]);
+
+							// add properties that include 'font', for if HUD only has font%[$WIN32] and font%[$OSX] or like
+							foreach (KeyValuePair<string, dynamic> property in OriginalCustomFontFiles?[CustomFontFileNumber])
+							{
+								if (property.Key.ToLower().Contains("font"))
+								{
+									Files.Add(property.Value);
+								}
+							}
 						}
 					}
 				}
