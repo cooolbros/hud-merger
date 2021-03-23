@@ -46,7 +46,6 @@ namespace hud_merger
 		{
 			ClearState();
 			NewOriginHUD(sender, e);
-
 		}
 
 		private void MenuItem_LoadTargetHUD(object sender, RoutedEventArgs e)
@@ -114,7 +113,6 @@ namespace hud_merger
 			OriginHUDFilesContainer.ColumnDefinitions.Clear();
 			OriginHUDFilesContainer.RowDefinitions.Clear();
 
-
 			OriginHUDFilesContainer.ColumnDefinitions.Add(new ColumnDefinition());
 			RowDefinition TitleRowDefinition = new();
 			TitleRowDefinition.Height = GridLength.Auto;
@@ -130,20 +128,20 @@ namespace hud_merger
 			TextBox SearchBox = new();
 			SearchBox.Style = (Style)Application.Current.Resources["SearchBox"];
 			SearchBox.TextChanged += (object sender, TextChangedEventArgs e) =>
-			{
-				string SearchText = SearchBox.Text.ToLower();
-				foreach (Label PanelLabel in OriginFilesList.Children)
 				{
-					if (PanelLabel.Content.ToString().ToLower().Contains(SearchText))
+					string SearchText = SearchBox.Text.ToLower();
+					foreach (Label PanelLabel in OriginFilesList.Children)
 					{
-						PanelLabel.Visibility = Visibility.Visible;
+						if (PanelLabel.Content.ToString().ToLower().Contains(SearchText))
+						{
+							PanelLabel.Visibility = Visibility.Visible;
+						}
+						else
+						{
+							PanelLabel.Visibility = Visibility.Collapsed;
+						}
 					}
-					else
-					{
-						PanelLabel.Visibility = Visibility.Collapsed;
-					}
-				}
-			};
+				};
 
 			Grid.SetColumn(SearchBox, 1);
 			OriginHUDFilesContainer.Children.Add(SearchBox);

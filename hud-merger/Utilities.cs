@@ -10,9 +10,9 @@ namespace hud_merger
 		{
 			foreach (string i in Obj1.Keys)
 			{
-				if (Obj1[i].GetType().Name.Contains("Dictionary"))
+				if (Obj1[i].GetType() == typeof(Dictionary<string, dynamic>))
 				{
-					if (Obj2.ContainsKey(i) && Obj2[i].GetType().Name.Contains("Dictionary"))
+					if (Obj2.ContainsKey(i) && Obj2[i].GetType() == typeof(Dictionary<string, dynamic>))
 					{
 						Merge(Obj1[i], Obj2[i]);
 					}
@@ -47,7 +47,7 @@ namespace hud_merger
 				if (Obj.ContainsKey("#base"))
 				{
 					List<string> BaseFiles = new();
-					if (Obj["#base"].GetType().Name.Contains("List"))
+					if (Obj["#base"].GetType() == typeof(List<dynamic>))
 					{
 						// the VDF Parser gives us a List<dynamic> which becomes a List<object>
 						// at runtime for some reason, when you iterate it can evaluate each item

@@ -109,7 +109,7 @@ namespace hud_merger
 
 						if (Obj.TryGetValue(CurrentToken, out dynamic Value))
 						{
-							if (Obj[CurrentToken].GetType().Name.Contains("List"))
+							if (Obj[CurrentToken].GetType() == typeof(List<dynamic>))
 							{
 								// Object list exists
 								Obj[CurrentToken].Add(ParseObject());
@@ -143,7 +143,7 @@ namespace hud_merger
 						if (Obj.TryGetValue(CurrentToken, out dynamic Value))
 						{
 							// dynamic property exists
-							if (Obj[CurrentToken].GetType().Name.Contains("List"))
+							if (Obj[CurrentToken].GetType() == typeof(List<dynamic>))
 							{
 								// Array already exists
 								Obj[CurrentToken].Add(NextToken);
@@ -185,7 +185,7 @@ namespace hud_merger
 					// Item has multiple instances
 					foreach (dynamic Item in Obj[Key])
 					{
-						if (Item.GetType().Name.Contains("Dictionary"))
+						if (Item.GetType() == typeof(Dictionary<string, dynamic>))
 						{
 							string[] KeyTokens = Key.Split('%');
 							if (KeyTokens.Length > 1)

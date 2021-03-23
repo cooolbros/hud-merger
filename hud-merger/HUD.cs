@@ -109,7 +109,7 @@ namespace hud_merger
 				if (Obj.ContainsKey("#base"))
 				{
 					List<string> BaseFiles = new();
-					if (Obj["#base"].GetType().Name.Contains("List"))
+					if (Obj["#base"].GetType() == typeof(List<dynamic>))
 					{
 						// List<dynamic> is not assignable to list string, add individual strings
 						foreach (dynamic BaseFile in Obj["#base"])
@@ -141,7 +141,7 @@ namespace hud_merger
 				{
 					foreach (string Key in Obj.Keys)
 					{
-						if (Obj[Key].GetType().Name.Contains("Dictionary"))
+						if (Obj[Key].GetType() == typeof(Dictionary<string, dynamic>))
 						{
 							IterateDictionary(Obj[Key]);
 						}
@@ -282,7 +282,7 @@ namespace hud_merger
 					// CustomFontFiles 1 & 2 are just strings
 					// "1" "resource/tf.ttf"
 					// "2" "resource/tfd.ttf"
-					if (OriginalCustomFontFiles?[CustomFontFileNumber].GetType().Name.Contains("Dictionary"))
+					if (OriginalCustomFontFiles?[CustomFontFileNumber].GetType() == typeof(Dictionary<string, dynamic>))
 					{
 						if (FontName == OriginalCustomFontFiles?[CustomFontFileNumber]?["name"])
 						{
