@@ -108,6 +108,7 @@ namespace hud_merger
 			}
 			catch (Exception e)
 			{
+				File.WriteAllText("Errors\\VDF_Error.log", e.ToString());
 				MessageBox.Show($"Syntax error found in {FilePath}, unable to merge!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				throw;
 			}
