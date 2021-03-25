@@ -83,10 +83,11 @@ namespace hud_merger
 				//	return "EOF";
 				//}
 
+				// System.Diagnostics.Debug.WriteLine(CurrentToken);
 				return CurrentToken;
 			}
 
-			Dictionary<string, dynamic> ParseObject()
+			Dictionary<string, dynamic> ParseObject(bool IsObject = false)
 			{
 				Dictionary<string, dynamic> Obj = new();
 
@@ -100,32 +101,33 @@ namespace hud_merger
 						// Object with OS Tag
 						CurrentToken += $"{OSTagDelimeter}{Next()}";
 						Next(); // Skip over opening brace
-						Obj[CurrentToken] = ParseObject();
+						Obj[CurrentToken] = ParseObject(true);
 					}
 					else if (NextToken == "{")
 					{
 						// Object
 						Next(); // Skip over opening brace
 
-						if (Obj.TryGetValue(CurrentToken, out dynamic Value))
+						if (Obj.ContainsKey(CurrentToken))
 						{
 							if (Obj[CurrentToken].GetType() == typeof(List<dynamic>))
 							{
 								// Object list exists
-								Obj[CurrentToken].Add(ParseObject());
+								Obj[CurrentToken].Add(ParseObject(true));
 							}
 							else
 							{
 								// Object already exists
+								dynamic Value = Obj[CurrentToken];
 								Obj[CurrentToken] = new List<dynamic>();
 								Obj[CurrentToken].Add(Value);
-								Obj[CurrentToken].Add(ParseObject());
+								Obj[CurrentToken].Add(ParseObject(true));
 							}
 						}
 						else
 						{
 							// Object doesnt exist
-							Obj[CurrentToken] = ParseObject();
+							Obj[CurrentToken] = ParseObject(true);
 						}
 					}
 					else
@@ -140,17 +142,40 @@ namespace hud_merger
 							CurrentToken += $"{OSTagDelimeter}{Next()}";
 						}
 
-						if (Obj.TryGetValue(CurrentToken, out dynamic Value))
+						if (Obj.ContainsKey(CurrentToken))
 						{
 							// dynamic property exists
 							if (Obj[CurrentToken].GetType() == typeof(List<dynamic>))
 							{
 								// Array already exists
+
+								if (NextToken == "{" || NextToken == "}")
+								{
+									throw new Exception($"Cannot set value of {CurrentToken} to {NextToken}! Are you missing an opening brace?");
+								}
+
+								if (NextToken == "EOF")
+								{
+									throw new Exception($"Cannot set value of {CurrentToken} to EOF, expected value!");
+								}
+
 								Obj[CurrentToken].Add(NextToken);
 							}
 							else
 							{
 								// Primitive type already exists
+								dynamic Value = Obj[CurrentToken];
+
+								if (NextToken == "{" || NextToken == "}")
+								{
+									throw new Exception($"Cannot set value of {CurrentToken} to {NextToken}!Are you missing an opening brace ?");
+								}
+
+								if (NextToken == "EOF")
+								{
+									throw new Exception($"Cannot set value of ${CurrentToken} to EOF, expected value!");
+								}
+
 								Obj[CurrentToken] = new List<dynamic>();
 								Obj[CurrentToken].Add(Value);
 								Obj[CurrentToken].Add(NextToken);
@@ -159,12 +184,42 @@ namespace hud_merger
 						else
 						{
 							// Property doesn't exist
+							if (CurrentToken == "{" || CurrentToken == "}")
+							{
+								throw new Exception($"Cannot create property {CurrentToken}, Are you mising an opening brace?");
+							}
+							if (NextToken == "EOF")
+							{
+								throw new Exception($"Unexpected end of line, expected value for {CurrentToken}");
+							}
 							Obj[CurrentToken] = NextToken;
 						}
 					}
 
 					CurrentToken = Next();
 					NextToken = Next(true);
+
+					if (CurrentToken == "EOF")
+					{
+						if (IsObject)
+						{
+							// we are expecting a closing brace not EOF, error!
+							throw new Exception("Unexpected end of file! Are you missing a closing brace?");
+						}
+						else
+						{
+							// we are not inside an object, possibly parsing #base statements, EOF is fine
+							break;
+						}
+					}
+
+					if (!IsObject)
+					{
+						if (CurrentToken == "}")
+						{
+							throw new Exception("Unexpected '}'! Are you missing an opening brace?");
+						}
+					}
 				}
 
 				return Obj;

@@ -103,7 +103,7 @@ namespace hud_merger
 				{
 					System.Diagnostics.Debug.WriteLine("Could not find " + SourceFilePath);
 				}
-				Dictionary<string, dynamic> Obj = File.Exists(SourceFilePath) ? VDF.Parse(File.ReadAllText(SourceFilePath)) : new();
+				Dictionary<string, dynamic> Obj = File.Exists(SourceFilePath) ? Utilities.VDFTryParse(SourceFilePath) : new();
 
 				// #base
 				if (Obj.ContainsKey("#base"))
@@ -311,7 +311,7 @@ namespace hud_merger
 			Dictionary<string, dynamic> OriginHUDLayout = Utilities.LoadControls(OriginHUDLayoutPath);
 
 			string ThisHUDLayoutPath = $"{this.FolderPath}\\scripts\\hudlayout.res";
-			Dictionary<string, dynamic> NewHUDLayout = VDF.Parse(File.ReadAllText(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\HUD\\scripts\\hudlayout.res"));
+			Dictionary<string, dynamic> NewHUDLayout = Utilities.VDFTryParse(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\HUD\\scripts\\hudlayout.res");
 
 			if (!NewHUDLayout.ContainsKey("Resource/HudLayout.res"))
 			{
@@ -342,7 +342,7 @@ namespace hud_merger
 		{
 			string OriginHUDAnimationsManifestPath = OriginFolderPath + "\\scripts\\hudanimations_manifest.txt";
 
-			Dictionary<string, dynamic> Manifest = VDF.Parse(File.ReadAllText(File.Exists(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt"));
+			Dictionary<string, dynamic> Manifest = Utilities.VDFTryParse(File.Exists(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt");
 			dynamic HUDAnimationsManifestList = Manifest["hudanimations_manifest"]["file"];
 
 			Dictionary<string, List<HUDAnimation>> NewHUDAnimations = new();
@@ -462,7 +462,7 @@ namespace hud_merger
 
 			if (File.Exists(ClientschemeDependenciesPath))
 			{
-				Dictionary<string, dynamic> PreviouslyMergedClientscheme = VDF.Parse(File.ReadAllText(ClientschemeDependenciesPath));
+				Dictionary<string, dynamic> PreviouslyMergedClientscheme = Utilities.VDFTryParse(ClientschemeDependenciesPath);
 				Utilities.Merge(PreviouslyMergedClientscheme, NewClientschemeContainer);
 				File.WriteAllText(ClientschemeDependenciesPath, VDF.Stringify(PreviouslyMergedClientscheme));
 			}

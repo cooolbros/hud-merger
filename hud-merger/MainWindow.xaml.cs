@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -18,7 +17,7 @@ namespace hud_merger
 		private HUD OriginHUD;
 		private HUD TargetHUD;
 		private bool MergeButtonEnabled = false;
-		HUDPanel[] HUDPanels = JsonSerializer.Deserialize<List<HUDPanel>>(File.ReadAllText("Resources\\Panels.json")).ToArray();
+		HUDPanel[] HUDPanels = JsonSerializer.Deserialize<HUDPanel[]>(File.ReadAllText("Resources\\Panels.json"));
 		StackPanel OriginFilesList = new();
 		StackPanel TargetFilesList = new();
 
@@ -28,30 +27,40 @@ namespace hud_merger
 
 			MergeButtonTextBlock.MouseEnter += (object sender, MouseEventArgs e) =>
 			{
-				if (MergeButtonEnabled)
+				if (this.MergeButtonEnabled)
 				{
 					MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_BlueHover"];
 				}
 			};
 			MergeButtonTextBlock.MouseLeave += (object sender, MouseEventArgs e) =>
 			{
-				if (MergeButtonEnabled)
+				if (this.MergeButtonEnabled)
 				{
 					MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_Blue"];
 				}
 			};
+
+			// Updater
+			Updater.Update(Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up, Properties.Settings.Default.Extract_required_TF2_HUD_files_on_startup);
 		}
 
 		private void MenuItem_LoadOriginHUD(object sender, RoutedEventArgs e)
 		{
 			ClearState();
-			NewOriginHUD(sender, e);
+			NewOriginHUD_Click(sender, e);
 		}
 
 		private void MenuItem_LoadTargetHUD(object sender, RoutedEventArgs e)
 		{
 			TargetFilesList.Children.Clear();
-			NewTargetHUD(sender, e);
+			NewTargetHUD_Click(sender, e);
+		}
+
+		private void MenuItem_Settings(object sender, RoutedEventArgs e)
+		{
+			SettingsWindow settingsWindow = new();
+			settingsWindow.Owner = this;
+			settingsWindow.Show();
 		}
 
 		private void MenuItem_Quit(object sender, RoutedEventArgs e)
@@ -70,6 +79,8 @@ namespace hud_merger
 		{
 			using (System.Windows.Forms.FolderBrowserDialog fbd = new())
 			{
+				string CustomFolder = Properties.Settings.Default.Team_Fortress_Folder + "\\tf\\custom\\";
+				fbd.SelectedPath = CustomFolder;
 				fbd.ShowDialog();
 				return fbd.SelectedPath;
 			}
@@ -100,11 +111,19 @@ namespace hud_merger
 			}
 		}
 
-		private void NewOriginHUD(object sender, RoutedEventArgs e)
+		private void NewOriginHUD_Click(object sender, RoutedEventArgs e)
 		{
 			string Result = FolderBrowserDialog();
-			if (Result == "") return;
-			OriginHUD = new HUD(Result);
+			if (Result != "")
+			{
+				NewOriginHUD(Result);
+			}
+		}
+
+		private void NewOriginHUD(string FolderPath)
+		{
+
+			OriginHUD = new HUD(FolderPath);
 
 			OriginHUDStatusTitle.Content = OriginHUD.Name;
 			OriginHUDStatusInfo.Content = OriginHUD.FolderPath;
@@ -114,34 +133,40 @@ namespace hud_merger
 			OriginHUDFilesContainer.RowDefinitions.Clear();
 
 			OriginHUDFilesContainer.ColumnDefinitions.Add(new ColumnDefinition());
-			RowDefinition TitleRowDefinition = new();
-			TitleRowDefinition.Height = GridLength.Auto;
+			RowDefinition TitleRowDefinition = new()
+			{
+				Height = GridLength.Auto
+			};
 			OriginHUDFilesContainer.RowDefinitions.Add(TitleRowDefinition);
 			OriginHUDFilesContainer.RowDefinitions.Add(new RowDefinition());
 
-			Label TitleLabel = new();
-			TitleLabel.Content = "Available Files";
-			TitleLabel.FontSize = 18;
+			Label TitleLabel = new()
+			{
+				Content = "Available Files",
+				FontSize = 18
+			};
 			OriginHUDFilesContainer.Children.Add(TitleLabel);
 
 			// Search Box
-			TextBox SearchBox = new();
-			SearchBox.Style = (Style)Application.Current.Resources["SearchBox"];
+			TextBox SearchBox = new()
+			{
+				Style = (Style)Application.Current.Resources["SearchBox"]
+			};
 			SearchBox.TextChanged += (object sender, TextChangedEventArgs e) =>
+			{
+				string SearchText = SearchBox.Text.ToLower();
+				foreach (Label PanelLabel in OriginFilesList.Children)
 				{
-					string SearchText = SearchBox.Text.ToLower();
-					foreach (Label PanelLabel in OriginFilesList.Children)
+					if (PanelLabel.Content.ToString().ToLower().Contains(SearchText))
 					{
-						if (PanelLabel.Content.ToString().ToLower().Contains(SearchText))
-						{
-							PanelLabel.Visibility = Visibility.Visible;
-						}
-						else
-						{
-							PanelLabel.Visibility = Visibility.Collapsed;
-						}
+						PanelLabel.Visibility = Visibility.Visible;
 					}
-				};
+					else
+					{
+						PanelLabel.Visibility = Visibility.Collapsed;
+					}
+				}
+			};
 
 			Grid.SetColumn(SearchBox, 1);
 			OriginHUDFilesContainer.Children.Add(SearchBox);
@@ -155,19 +180,14 @@ namespace hud_merger
 
 			foreach (HUDPanel Panel in HUDPanels)
 			{
-				Label PanelLabel = new();
-				PanelLabel.Content = Panel.Name;
-				PanelLabel.Style = (Style)Application.Current.Resources["PanelLabel"];
-
 				bool PanelExists = OriginHUD.TestPanel(Panel);
 
-				PanelLabel.Visibility = PanelExists ? Visibility.Visible : Visibility.Collapsed;
-				OriginFilesList.Children.Add(PanelLabel);
-
-				if (PanelExists)
+				Label PanelLabel = new()
 				{
-					HUDIsValid = true;
-				}
+					Content = Panel.Name,
+					Style = (Style)Application.Current.Resources["PanelLabel"],
+					Visibility = PanelExists ? Visibility.Visible : Visibility.Collapsed,
+				};
 
 				PanelLabel.MouseEnter += (object sender, MouseEventArgs e) =>
 				{
@@ -176,6 +196,7 @@ namespace hud_merger
 						PanelLabel.Background = Brushes.LightGray;
 					}
 				};
+
 				PanelLabel.MouseLeave += (object sender, MouseEventArgs e) =>
 				{
 					if (!Panel.Armed)
@@ -183,6 +204,7 @@ namespace hud_merger
 						PanelLabel.Background = Brushes.White;
 					}
 				};
+
 				PanelLabel.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
 				{
 					if (!Panel.Armed)
@@ -210,6 +232,13 @@ namespace hud_merger
 						Panel.Armed = false;
 					}
 				};
+
+				OriginFilesList.Children.Add(PanelLabel);
+
+				if (PanelExists)
+				{
+					HUDIsValid = true;
+				}
 			}
 
 			if (!HUDIsValid)
@@ -235,11 +264,18 @@ namespace hud_merger
 			UpdateFooterState();
 		}
 
-		private void NewTargetHUD(object sender, RoutedEventArgs e)
+		private void NewTargetHUD_Click(object sender, RoutedEventArgs e)
 		{
 			string Result = FolderBrowserDialog();
-			if (Result == "") return;
-			TargetHUD = new HUD(Result);
+			if (Result != "")
+			{
+				NewTargetHUD(Result);
+			}
+		}
+
+		private void NewTargetHUD(string FolderPath)
+		{
+			TargetHUD = new HUD(FolderPath);
 
 			TargetHUDStatusTitle.Content = TargetHUD.Name;
 			TargetHUDStatusInfo.Content = TargetHUD.FolderPath;
@@ -248,14 +284,18 @@ namespace hud_merger
 			TargetHUDFilesContainer.ColumnDefinitions.Clear();
 			TargetHUDFilesContainer.RowDefinitions.Clear();
 
-			RowDefinition TitleRowDefinition = new();
-			TitleRowDefinition.Height = GridLength.Auto;
+			RowDefinition TitleRowDefinition = new()
+			{
+				Height = GridLength.Auto
+			};
 			TargetHUDFilesContainer.RowDefinitions.Add(TitleRowDefinition);
 			TargetHUDFilesContainer.RowDefinitions.Add(new RowDefinition());
 
-			Label TitleLabel = new();
-			TitleLabel.Content = "Files To Add";
-			TitleLabel.FontSize = 18;
+			Label TitleLabel = new()
+			{
+				Content = "Files To Add",
+				FontSize = 18
+			};
 			Grid.SetRow(TitleLabel, 0);
 			TargetHUDFilesContainer.Children.Add(TitleLabel);
 
@@ -264,12 +304,14 @@ namespace hud_merger
 
 			foreach (HUDPanel Panel in HUDPanels)
 			{
-				Panel.TargetListItem = new Label();
-				Panel.TargetListItem.Content = Panel.Name;
-				Panel.TargetListItem.Style = (Style)Application.Current.Resources["PanelLabel"];
-				Panel.TargetListItem.Foreground = Brushes.White;
-				Panel.TargetListItem.Background = (Brush)Application.Current.Resources["_Blue"];
-				Panel.TargetListItem.Visibility = Panel.Armed ? Visibility.Visible : Visibility.Collapsed;
+				Panel.TargetListItem = new Label()
+				{
+					Content = Panel.Name,
+					Style = (Style)Application.Current.Resources["PanelLabel"],
+					Foreground = Brushes.White,
+					Background = (Brush)Application.Current.Resources["_Blue"],
+					Visibility = Panel.Armed ? Visibility.Visible : Visibility.Collapsed
+				};
 				TargetFilesList.Children.Add(Panel.TargetListItem);
 			}
 			ScrollablePanel.Content = TargetFilesList;
@@ -285,11 +327,11 @@ namespace hud_merger
 				try
 				{
 					TargetHUD.Merge(OriginHUD, HUDPanels.Where((Panel) => Panel.Armed).ToArray());
-					System.Windows.MessageBox.Show("Done!");
+					MessageBox.Show("Done!");
 				}
 				catch (Exception Error)
 				{
-					System.Windows.MessageBox.Show(Error.ToString());
+					MessageBox.Show(Error.ToString(), "HUD Merger", MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 			}
 		}

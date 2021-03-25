@@ -26,6 +26,8 @@
                 <MenuItem Header="Load Origin HUD" Click="MenuItem_LoadOriginHUD" />
                 <MenuItem Header="Load Target HUD" Click="MenuItem_LoadTargetHUD" />
                 <Separator />
+                <MenuItem Header="Settings" Click="MenuItem_Settings" />
+                <Separator />
                 <MenuItem Header="Quit" Click="MenuItem_Quit" />
             </MenuItem>
             <MenuItem Header="_Edit">
@@ -53,7 +55,7 @@
         </Grid>
         <!-- Origin HUD Files -->
         <Grid Name="OriginHUDFilesContainer" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="10,5,5,5">
-            <Button Style="{StaticResource SelectHUDButton}" Click="NewOriginHUD">
+            <Button Style="{StaticResource SelectHUDButton}" Click="NewOriginHUD_Click">
                 <StackPanel>
                     <Label Content="+" Style="{StaticResource SelectHUDButtonPlus}" />
                     <Label Content="Open Folder" Style="{StaticResource SelectHUDOpenFolder}" />
@@ -62,7 +64,7 @@
         </Grid>
         <!-- Target HUD Files -->
         <Grid Name="TargetHUDFilesContainer" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="5,5,10,5">
-            <Button Style="{StaticResource SelectHUDButton}" Click="NewTargetHUD">
+            <Button Style="{StaticResource SelectHUDButton}" Click="NewTargetHUD_Click">
                 <StackPanel>
                     <Label Content="+" Style="{StaticResource SelectHUDButtonPlus}" />
                     <Label Content="Open Folder" Style="{StaticResource SelectHUDOpenFolder}" />

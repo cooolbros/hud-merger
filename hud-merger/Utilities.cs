@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 
 namespace hud_merger
 {
@@ -41,7 +42,7 @@ namespace hud_merger
 			void AddControls(string FilePath)
 			{
 				// Some HUDs deliberately #base nonexistant file paths for customisation
-				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? VDF.Parse(File.ReadAllText(FilePath)) : new();
+				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? VDFTryParse(File.ReadAllText(FilePath)) : new();
 
 				// #base
 				if (Obj.ContainsKey("#base"))
@@ -97,6 +98,19 @@ namespace hud_merger
 				return false;
 			}
 			return true;
+		}
+
+		public static Dictionary<string, dynamic> VDFTryParse(string FilePath)
+		{
+			try
+			{
+				return VDF.Parse(File.ReadAllText(FilePath));
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show($"Syntax error found in {FilePath}, unable to merge!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				throw;
+			}
 		}
 	}
 }
