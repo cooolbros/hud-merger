@@ -50,17 +50,30 @@ namespace hud_merger
 						MessageBox.Show("Could not find tf2_misc_dir.vpk");
 					}
 
+					List<string> Arguments = new()
+					{
+						"x",
+						$"\"{TF2MISC}\""
+					};
+
+					List<string> HUDFilePaths = new()
+					{
+						"resource/clientscheme.res",
+						"scripts/hudanimations_manifest.txt",
+						"scripts/hudlayout.res",
+					};
+
+					foreach (string FilePath in HUDFilePaths)
+					{
+						// Ensure vpk.exe is able to extract to folder
+						Directory.CreateDirectory(Path.GetDirectoryName($"Resources\\HUD\\{FilePath.Replace('/', '\\')}"));
+						Arguments.Add($"\"{FilePath}\"");
+					}
+
 					ProcessStartInfo info = new(VPK)
 					{
 						WorkingDirectory = Directory.GetCurrentDirectory() + "\\Resources\\HUD",
-						Arguments = string.Join(' ', new string[]
-						{
-							"x",
-							$"\"{TF2MISC}\"",
-							"\"resource/clientscheme.res\"",
-							"\"scripts/hudanimations_manifest.txt\"",
-							"\"scripts/hudlayout.res\""
-						})
+						Arguments = string.Join(' ', Arguments)
 					};
 
 					Process.Start(info);

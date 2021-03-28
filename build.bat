@@ -1,3 +1,6 @@
+RMDIR /s /q hud-merger\bin
+RMDIR /s /q hud-merger\obj
+
 @REM https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish
 @REM https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
 dotnet publish hud-merger -c Release

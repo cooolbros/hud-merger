@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace hud_merger
@@ -42,7 +43,7 @@ namespace hud_merger
 			// Add font files to file list
 			// Copy all files
 
-			(List<string> Files, List<string> HUDLayoutEntries, List<string> Events) = HUD.DestructurePanels(Panels);
+			(HashSet<string> Files, HashSet<string> HUDLayoutEntries, HashSet<string> Events) = HUD.DestructurePanels(Panels);
 			ClientschemeDependencies Dependencies = this.GetDependencies(Origin.FolderPath, Files);
 			this.WriteHUDAnimations(Origin.FolderPath, Events, Origin.Name, Dependencies, Files);
 			Dictionary<string, dynamic> NewClientscheme = this.GetDependencyValues(Origin.FolderPath + "\\resource\\clientscheme.res", Dependencies, Files);
@@ -55,11 +56,11 @@ namespace hud_merger
 		/// <summary>
 		/// Returns a list of Files and HUD Layout entries that should be used for the merge
 		/// </summary>
-		private static (List<string> Files, List<string> HUDLayoutEntries, List<string> Events) DestructurePanels(HUDPanel[] Panels)
+		private static (HashSet<string> Files, HashSet<string> HUDLayoutEntries, HashSet<string> Events) DestructurePanels(HUDPanel[] Panels)
 		{
-			List<string> Files = new();
-			List<string> HUDLayoutEntries = new();
-			List<string> Events = new();
+			HashSet<string> Files = new();
+			HashSet<string> HUDLayoutEntries = new();
+			HashSet<string> Events = new();
 			foreach (HUDPanel Panel in Panels)
 			{
 				Files.Add(Panel.Main.FilePath);
@@ -70,18 +71,32 @@ namespace hud_merger
 						HUDLayoutEntries.Add(HUDLayoutEntry);
 					}
 				}
-				if (Panel.Files != null)
-				{
-					foreach (HUDFile HUDFile in Panel.Files)
-					{
-						Files.Add(HUDFile.FilePath);
-					}
-				}
 				if (Panel.Main.Events != null)
 				{
 					foreach (string Event in Panel.Main.Events)
 					{
 						Events.Add(Event);
+					}
+				}
+				if (Panel.Files != null)
+				{
+					foreach (HUDFile HUDFile in Panel.Files)
+					{
+						Files.Add(HUDFile.FilePath);
+						if (HUDFile.HUDLayout != null)
+						{
+							foreach (string HUDLayoutEntry in HUDFile.HUDLayout)
+							{
+								HUDLayoutEntries.Add(HUDLayoutEntry);
+							}
+						}
+						if (HUDFile.Events != null)
+						{
+							foreach (string Event in HUDFile.Events)
+							{
+								Events.Add(Event);
+							}
+						}
 					}
 				}
 			}
@@ -91,7 +106,7 @@ namespace hud_merger
 		/// <summary>
 		/// Returns a set of all clientscheme dependencies used by provided HUD files
 		/// </summary>
-		private ClientschemeDependencies GetDependencies(string OriginFolderPath, List<string> Files)
+		private ClientschemeDependencies GetDependencies(string OriginFolderPath, HashSet<string> Files)
 		{
 			ClientschemeDependencies Properties = JsonSerializer.Deserialize<ClientschemeDependencies>(File.ReadAllText("Resources\\Clientscheme.json"));
 			ClientschemeDependencies Dependencies = new();
@@ -199,7 +214,7 @@ namespace hud_merger
 		/// <summary>
 		/// Returns the clientscheme values from a provided set of ClientschemeDependencies
 		/// </summary>
-		private Dictionary<string, dynamic> GetDependencyValues(string OriginClientschemePath, ClientschemeDependencies Dependencies, List<string> Files)
+		private Dictionary<string, dynamic> GetDependencyValues(string OriginClientschemePath, ClientschemeDependencies Dependencies, HashSet<string> Files)
 		{
 			Dictionary<string, dynamic> OriginClientscheme = Utilities.LoadControls(OriginClientschemePath);
 
@@ -306,7 +321,7 @@ namespace hud_merger
 			return NewClientscheme;
 		}
 
-		private void WriteHUDLayout(string OriginHUDLayoutPath, List<string> HUDLayoutEntries)
+		private void WriteHUDLayout(string OriginHUDLayoutPath, HashSet<string> HUDLayoutEntries)
 		{
 			Dictionary<string, dynamic> OriginHUDLayout = Utilities.LoadControls(OriginHUDLayoutPath);
 
@@ -338,7 +353,7 @@ namespace hud_merger
 		/// <summary>
 		/// Copies HUD Animations from origin HUD, adds clientscheme variables to provided Dependencies object
 		/// </summary>
-		private void WriteHUDAnimations(string OriginFolderPath, List<string> Events, string HUDName, ClientschemeDependencies Dependencies, List<string> Files)
+		private void WriteHUDAnimations(string OriginFolderPath, HashSet<string> Events, string HUDName, ClientschemeDependencies Dependencies, HashSet<string> Files)
 		{
 			string OriginHUDAnimationsManifestPath = OriginFolderPath + "\\scripts\\hudanimations_manifest.txt";
 
@@ -475,7 +490,7 @@ namespace hud_merger
 		/// <summary>
 		/// Copies list of HUD Files with no processing
 		/// </summary>
-		private void CopyHUDFiles(string OriginFolderPath, List<string> Files, ClientschemeDependencies Dependencies)
+		private void CopyHUDFiles(string OriginFolderPath, HashSet<string> Files, ClientschemeDependencies Dependencies)
 		{
 			foreach (string ImagePath in Dependencies.Images)
 			{
