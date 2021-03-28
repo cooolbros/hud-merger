@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace hud_merger
@@ -13,7 +15,7 @@ namespace hud_merger
 		{
 			BackgroundWorker backgroundWorker = new();
 
-			backgroundWorker.DoWork += async (object sender, DoWorkEventArgs e) =>
+			backgroundWorker.DoWork += (object sender, DoWorkEventArgs e) =>
 			{
 				if (Download)
 				{
@@ -23,13 +25,23 @@ namespace hud_merger
 						Properties.Resources.ClientschemeURL
 					} : new();
 
-					System.Net.Http.HttpClient client = new();
+					HttpClient client = new();
 
 					foreach (string URL in URLs)
 					{
 						Uri uri = new(URL);
 						string FilePath = string.Join('\\', uri.LocalPath.Split('/')[^2..]);
-						File.WriteAllText(FilePath, await client.GetStringAsync(URL));
+
+						client.GetAsync(URL).ContinueWith((Task<HttpResponseMessage> Response) =>
+						{
+							if (Response.IsCompletedSuccessfully && Response.Result.IsSuccessStatusCode)
+							{
+								Response.Result.Content.ReadAsStringAsync().ContinueWith((Task<string> Result) =>
+								{
+									File.WriteAllText(FilePath, Result.Result);
+								});
+							}
+						});
 					}
 
 					// File will update after restart
