@@ -42,7 +42,7 @@ namespace hud_merger
 			void AddControls(string FilePath)
 			{
 				// Some HUDs deliberately #base nonexistant file paths for customisation
-				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? VDFTryParse(File.ReadAllText(FilePath)) : new();
+				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? VDFTryParse(FilePath) : new();
 
 				// #base
 				if (Obj.ContainsKey("#base"))
@@ -104,11 +104,12 @@ namespace hud_merger
 		{
 			try
 			{
-				return VDF.Parse(File.ReadAllText(FilePath));
+				Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(FilePath));
+				return obj;
 			}
 			catch (Exception e)
 			{
-				File.WriteAllText("Errors\\VDF_Error.log", e.ToString());
+				// File.WriteAllText("Errors\\VDF_Error.log", e.ToString());
 				MessageBox.Show($"Syntax error found in {FilePath}, unable to merge!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				throw;
 			}

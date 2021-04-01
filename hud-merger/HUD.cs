@@ -422,12 +422,19 @@ namespace hud_merger
 			{
 				$"hudanimations_manifest",
 				$"{{",
-				$"\t\"file\"\t\t\"scripts/hudanimations_{HUDName}.txt\""
+
 			};
+
+			if (!HUDAnimationsManifestList.Contains($"scripts/hudanimations_{HUDName}.txt"))
+			{
+				NewManifestLines.Add($"\t\"file\"\t\t\"scripts/hudanimations_{HUDName}.txt\"");
+			}
+
 			foreach (string FilePath in HUDAnimationsManifestList)
 			{
 				NewManifestLines.Add($"\t\"file\"\t\t\"{FilePath}\"");
 			}
+
 			NewManifestLines.Add($"}}");
 			File.WriteAllLines($"{this.FolderPath}\\scripts\\hudanimations_manifest.txt", NewManifestLines);
 		}
@@ -440,7 +447,6 @@ namespace hud_merger
 			bool WriteBaseStatement = true;
 			if (Utilities.TestPath($"{this.FolderPath}\\resource\\clientscheme.res"))
 			{
-				// 'this' HUD already has a hudlayout
 				string[] Lines = File.ReadAllLines($"{this.FolderPath}\\resource\\clientscheme.res");
 				int i = 0;
 				while (WriteBaseStatement && i < Lines.Length)
