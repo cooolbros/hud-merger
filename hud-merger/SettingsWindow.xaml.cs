@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -62,20 +64,35 @@ namespace hud_merger
 
 
 			// Button to force update files now
+			WrapPanel UpdateContainer = new();
+
 			Button UpdateNow = new()
 			{
 				Content = "Update Files Now",
 				FontSize = 12,
 				Padding = new Thickness(5),
 				BorderThickness = new Thickness(0),
-				HorizontalAlignment = HorizontalAlignment.Left
+				Cursor = Cursors.Hand,
+				VerticalAlignment = VerticalAlignment.Center
 			};
+
+			Label UpdateStatus = new()
+			{
+				FontSize = 12,
+				VerticalAlignment = VerticalAlignment.Center
+			};
+
 			UpdateNow.Click += (object sender, RoutedEventArgs e) =>
 			{
 				Updater.Update(true, true);
+				((MainWindow)Application.Current.MainWindow).HUDPanels = JsonSerializer.Deserialize<HUDPanel[]>(File.ReadAllText("Resources\\Panels.json"));
+				UpdateStatus.Content = $"Last updated on {DateTime.Now}";
 			};
 
-			CheckBoxControlsContainer.Children.Add(UpdateNow);
+			UpdateContainer.Children.Add(UpdateNow);
+			UpdateContainer.Children.Add(UpdateStatus);
+
+			CheckBoxControlsContainer.Children.Add(UpdateContainer);
 
 			SettingsContainer.Children.Add(CheckBoxControlsContainer);
 			SettingsContainer.Children.Add(TextBoxControlsContainer);

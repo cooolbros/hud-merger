@@ -17,7 +17,7 @@ namespace hud_merger
 		private HUD OriginHUD;
 		private HUD TargetHUD;
 		private bool MergeButtonEnabled = false;
-		HUDPanel[] HUDPanels = JsonSerializer.Deserialize<HUDPanel[]>(File.ReadAllText("Resources\\Panels.json"));
+		public HUDPanel[] HUDPanels = JsonSerializer.Deserialize<HUDPanel[]>(File.ReadAllText("Resources\\Panels.json"));
 		StackPanel OriginFilesList = new();
 		StackPanel TargetFilesList = new();
 
@@ -41,7 +41,9 @@ namespace hud_merger
 			};
 
 			// Updater
-			Updater.Update(Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up, Properties.Settings.Default.Extract_required_TF2_HUD_files_on_startup);
+			bool Download = Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up;
+			bool Extract = Properties.Settings.Default.Extract_required_TF2_HUD_files_on_startup;
+			Updater.Update(Download, Extract);
 		}
 
 		private void MenuItem_LoadOriginHUD(object sender, RoutedEventArgs e)

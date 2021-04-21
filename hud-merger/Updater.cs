@@ -85,6 +85,7 @@ namespace hud_merger
 					ProcessStartInfo info = new(VPK)
 					{
 						WorkingDirectory = Directory.GetCurrentDirectory() + "\\Resources\\HUD",
+						WindowStyle = ProcessWindowStyle.Hidden,
 						Arguments = string.Join(' ', Arguments)
 					};
 

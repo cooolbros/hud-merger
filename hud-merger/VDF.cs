@@ -6,7 +6,9 @@ namespace hud_merger
 {
 	static class VDF
 	{
-		public static Dictionary<string, dynamic> Parse(string Str, string OSTagDelimeter = "%")
+		public static char OSTagDelimeter = '^';
+
+		public static Dictionary<string, dynamic> Parse(string Str)
 		{
 			int i = 0;
 			char[] WhiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
@@ -235,6 +237,8 @@ namespace hud_merger
 			string NewLine = "\r\n";
 			foreach (string Key in Obj.Keys)
 			{
+				string[] KeyTokens = Key.Split(VDF.OSTagDelimeter);
+
 				if (Obj[Key].GetType() == typeof(List<dynamic>))
 				{
 					// Item has multiple instances
@@ -242,11 +246,10 @@ namespace hud_merger
 					{
 						if (Item.GetType() == typeof(Dictionary<string, dynamic>))
 						{
-							string[] KeyTokens = Key.Split('%');
 							if (KeyTokens.Length > 1)
 							{
 								// OS Tag
-								Str += $"{new String(Tab, Tabs)}\"{Key}\" {KeyTokens[1]}{NewLine}";
+								Str += $"{new String(Tab, Tabs)}\"{KeyTokens[0]}\" {KeyTokens[1]}{NewLine}";
 							}
 							else
 							{
@@ -258,11 +261,10 @@ namespace hud_merger
 						}
 						else
 						{
-							string[] KeyTokens = Key.Split('%');
 							if (KeyTokens.Length > 1)
 							{
 								// OS Tag
-								Str += $"{new String(Tab, Tabs)}\"{Key}\"\t\"{Item}\" {KeyTokens[1]}{NewLine}";
+								Str += $"{new String(Tab, Tabs)}\"{KeyTokens[0]}\"\t\"{Item}\" {KeyTokens[1]}{NewLine}";
 							}
 							else
 							{
@@ -275,9 +277,8 @@ namespace hud_merger
 				else
 				{
 					// There is only one object object/value
-					if (Obj[Key] is IDictionary<string, dynamic>)
+					if (Obj[Key].GetType() == typeof(Dictionary<string, dynamic>))
 					{
-						string[] KeyTokens = Key.Split('%');
 						if (KeyTokens.Length > 1)
 						{
 							Str += $"{new String(Tab, Tabs)}\"{KeyTokens[0]}\" {KeyTokens[1]}{NewLine}";
@@ -295,7 +296,6 @@ namespace hud_merger
 					}
 					else
 					{
-						string[] KeyTokens = Key.Split('%');
 						if (KeyTokens.Length > 1)
 						{
 							// OS Tag
