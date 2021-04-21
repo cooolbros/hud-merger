@@ -84,7 +84,7 @@ namespace hud_merger
 				string CustomFolder = Properties.Settings.Default.Team_Fortress_Folder + "\\tf\\custom\\";
 				fbd.SelectedPath = CustomFolder;
 				fbd.ShowDialog();
-				return fbd.SelectedPath;
+				return fbd.SelectedPath != CustomFolder ? fbd.SelectedPath : "";
 			}
 		}
 
@@ -159,14 +159,8 @@ namespace hud_merger
 				string SearchText = SearchBox.Text.ToLower();
 				foreach (Label PanelLabel in OriginFilesList.Children)
 				{
-					if (PanelLabel.Content.ToString().ToLower().Contains(SearchText))
-					{
-						PanelLabel.Visibility = Visibility.Visible;
-					}
-					else
-					{
-						PanelLabel.Visibility = Visibility.Collapsed;
-					}
+					bool Contains = PanelLabel.Content.ToString().ToLower().Contains(SearchText);
+					PanelLabel.Visibility = Contains ? Visibility.Visible : Visibility.Collapsed;
 				}
 			};
 

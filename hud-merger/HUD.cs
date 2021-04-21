@@ -503,6 +503,16 @@ namespace hud_merger
 				string[] Folders = System.Text.RegularExpressions.Regex.Split(ImagePath, "[\\/]+");
 				Files.Add($"materials\\vgui\\{String.Join("\\", Folders)}.vmt");
 				Files.Add($"materials\\vgui\\{String.Join("\\", Folders)}.vtf");
+
+				try
+				{
+					Dictionary<string, dynamic> VMT = VDF.Parse(File.ReadAllText($"materials\\vgui\\{String.Join("\\", Folders)}.vmt"));
+					Files.Add("materials\\" + String.Join("\\", System.Text.RegularExpressions.Regex.Split(VMT["UnlitGeneric"]["$basetexture"], "[\\/]+")));
+				}
+				catch (Exception e)
+				{
+					System.Diagnostics.Debug.WriteLine(e.Message);
+				}
 			}
 
 			foreach (string AudioPath in Dependencies.Audio)
