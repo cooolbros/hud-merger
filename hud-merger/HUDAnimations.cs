@@ -388,9 +388,13 @@ namespace hud_merger
 					{
 						Str += $"Animate {FormatWhiteSpace(Execution.Element)} {FormatWhiteSpace(Execution.Property)} {FormatWhiteSpace(Execution.Value)} {GetInterpolator(Execution)} {Execution.Delay} {Execution.Duration}";
 					}
-					else if (T == typeof(RunEvent) || T == typeof(StopEvent))
+					else if (T == typeof(RunEvent))
 					{
 						Str += $"RunEvent {FormatWhiteSpace(Execution.Event)} {Execution.Delay}";
+					}
+					else if (T == typeof(StopEvent))
+					{
+						Str += $"StopEvent {FormatWhiteSpace(Execution.Event)} {Execution.Delay}";
 					}
 					else if (T == typeof(SetVisible))
 					{

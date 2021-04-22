@@ -268,7 +268,7 @@ namespace hud_merger
 							else
 							{
 								// No OS Tag
-								Str += $"{new String(Space, Tabs * 4)}{Key}{NewLine}";
+								Str += $"{new String(Space, Tabs * 4)}\"{Key}\"{NewLine}";
 							}
 							Str += $"{new String(Space, Tabs * 4)}{{{NewLine}";
 							Str += $"{VDF.Stringify(Item, Tabs + 1)}{new String(Space, Tabs * 4)}}}{NewLine}";

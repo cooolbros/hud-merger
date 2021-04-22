@@ -108,6 +108,35 @@
 		}
 	},
 	{
+		"Name": "Time Panel And Team Status",
+		"Main": {
+			"FilePath": "resource\\ui\\hudobjectivetimepanel.res"
+		},
+		"Files": [
+			{
+				"FilePath": "resource\\ui\\hudobjectivekothtimepanel.res",
+				"HUDLayout": [
+					"HudKothTimeStatus"
+				]
+			},
+			{
+				"FilePath": "resource\\ui\\hudmatchstatus.res",
+				"HUDLayout": [
+					"HudMatchStatus"
+				]
+			},
+			{
+				"FilePath": "resource\\ui\\hudroundcounter.res"
+			},
+			{
+				"FilePath": "resource\\ui\\hudmatchsummary.res",
+				"HUDLayout": [
+					"MatchSummary"
+				]
+			}
+		]
+	},
+	{
 		"Name": "UberCharge Label And Meter",
 		"Main": {
 			"FilePath": "resource\\ui\\hudmediccharge.res"
