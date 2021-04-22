@@ -1,6 +1,7 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace hud_merger
 {
@@ -98,7 +99,7 @@ namespace hud_merger
 
 				while (CurrentToken != "}" && NextToken != "EOF")
 				{
-					if (Next(true).StartsWith('['))
+					if (Regex.IsMatch(NextToken, "\\[!?\\$.*\\]"))
 					{
 						// Object with OS Tag
 						CurrentToken += $"{OSTagDelimeter}{Next()}";
@@ -139,7 +140,7 @@ namespace hud_merger
 						Next(); // Skip over value
 
 						// Check primitive os tag
-						if (Next(true).StartsWith('['))
+						if (Regex.IsMatch(Next(true), "\\[!?\\$.*\\]"))
 						{
 							CurrentToken += $"{OSTagDelimeter}{Next()}";
 						}
@@ -233,8 +234,21 @@ namespace hud_merger
 		public static string Stringify(Dictionary<string, dynamic> Obj, int Tabs = 0)
 		{
 			string Str = "";
-			char Tab = '\t';
+			char Space = ' ';
 			string NewLine = "\r\n";
+
+			int LongestKeyLength = 0;
+
+			foreach (string Key in Obj.Keys)
+			{
+				if (Obj[Key].GetType() != typeof(Dictionary<string, dynamic>))
+				{
+					LongestKeyLength = Math.Max(LongestKeyLength, Key.Split(VDF.OSTagDelimeter)[0].Length);
+				}
+			}
+
+			LongestKeyLength += 4;
+
 			foreach (string Key in Obj.Keys)
 			{
 				string[] KeyTokens = Key.Split(VDF.OSTagDelimeter);
@@ -249,27 +263,27 @@ namespace hud_merger
 							if (KeyTokens.Length > 1)
 							{
 								// OS Tag
-								Str += $"{new String(Tab, Tabs)}\"{KeyTokens[0]}\" {KeyTokens[1]}{NewLine}";
+								Str += $"{new String(Space, Tabs * 4)}\"{KeyTokens[0]}\" {KeyTokens[1]}{NewLine}";
 							}
 							else
 							{
 								// No OS Tag
-								Str += $"{new String(Tab, Tabs)}{Key}{NewLine}";
+								Str += $"{new String(Space, Tabs * 4)}{Key}{NewLine}";
 							}
-							Str += $"{new String(Tab, Tabs)}{{{NewLine}";
-							Str += $"{VDF.Stringify(Item, Tabs + 1)}{new String(Tab, Tabs)}}}{NewLine}";
+							Str += $"{new String(Space, Tabs * 4)}{{{NewLine}";
+							Str += $"{VDF.Stringify(Item, Tabs + 1)}{new String(Space, Tabs * 4)}}}{NewLine}";
 						}
 						else
 						{
 							if (KeyTokens.Length > 1)
 							{
 								// OS Tag
-								Str += $"{new String(Tab, Tabs)}\"{KeyTokens[0]}\"\t\"{Item}\" {KeyTokens[1]}{NewLine}";
+								Str += $"{new String(Space, Tabs * 4)}\"{KeyTokens[0]}\"{new String(Space, LongestKeyLength - KeyTokens[0].Length)}\"{Item}\" {KeyTokens[1]}{NewLine}";
 							}
 							else
 							{
 								// No OS Tag
-								Str += $"{new String(Tab, Tabs)}\"{Key}\"\t\"{Item}\"{NewLine}";
+								Str += $"{new String(Space, Tabs * 4)}\"{Key}\"{new String(Space, LongestKeyLength - Key.Length)}\"{Item}\"{NewLine}";
 							}
 						}
 					}
@@ -281,17 +295,16 @@ namespace hud_merger
 					{
 						if (KeyTokens.Length > 1)
 						{
-							Str += $"{new String(Tab, Tabs)}\"{KeyTokens[0]}\" {KeyTokens[1]}{NewLine}";
-							Str += $"{new String(Tab, Tabs)}{{{NewLine}";
-							Str += $"{VDF.Stringify(Obj[Key], Tabs + 1)}{new String(Tab, Tabs)}}}{NewLine}";
+							Str += $"{new String(Space, Tabs * 4)}\"{KeyTokens[0]}\" {KeyTokens[1]}{NewLine}";
+							Str += $"{new String(Space, Tabs * 4)}{{{NewLine}";
+							Str += $"{VDF.Stringify(Obj[Key], Tabs + 1)}{new String(Space, Tabs * 4)}}}{NewLine}";
 						}
 						else
 						{
 							// No OS Tag
-							Str += $"{new String(Tab, Tabs)}\"{Key}\"{NewLine}";
-							Str += $"{new String(Tab, Tabs)}{{{NewLine}";
-							Str += $"{VDF.Stringify(Obj[Key], Tabs + 1)}{new String(Tab, Tabs)}}}{NewLine}";
-
+							Str += $"{new String(Space, Tabs * 4)}\"{Key}\"{NewLine}";
+							Str += $"{new String(Space, Tabs * 4)}{{{NewLine}";
+							Str += $"{VDF.Stringify(Obj[Key], Tabs + 1)}{new String(Space, Tabs * 4)}}}{NewLine}";
 						}
 					}
 					else
@@ -299,19 +312,18 @@ namespace hud_merger
 						if (KeyTokens.Length > 1)
 						{
 							// OS Tag
-							Str += $"{new String(Tab, Tabs)}\"{KeyTokens[0]}\"\t\"{Obj[Key]}\" {KeyTokens[1]}{NewLine}";
+							Str += $"{new String(Space, Tabs * 4)}\"{KeyTokens[0]}\"{new String(Space, LongestKeyLength - KeyTokens[0].Length)}\"{Obj[Key]}\" {KeyTokens[1]}{NewLine}";
 						}
 						else
 						{
 							// No OS Tag
-							Str += $"{new String(Tab, Tabs)}\"{Key}\"\t\"{Obj[Key]}\"{NewLine}";
+							Str += $"{new String(Space, Tabs * 4)}\"{Key}\"{new String(Space, LongestKeyLength - Key.Length)}\"{Obj[Key]}\"{NewLine}";
 						}
 					}
 				}
-
 			}
+
 			return Str;
 		}
-
 	}
 }

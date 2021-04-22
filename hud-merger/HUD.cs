@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace hud_merger
 {
@@ -51,6 +52,22 @@ namespace hud_merger
 			this.WriteClientscheme(Origin.Name, NewClientscheme);
 			this.CopyHUDFiles(Origin.FolderPath, Files, Dependencies);
 			this.WriteInfoVDF();
+
+			string LogPath = this.FolderPath + "\\merge.log";
+
+			File.AppendAllLines(LogPath, new string[] { $"Merge at {DateTime.Now}", Origin.Name, Origin.FolderPath, });
+
+			File.AppendAllLines(LogPath, new string[] { "", "Panels:", "" });
+			File.AppendAllLines(LogPath, Panels.Select((i) => i.Name));
+
+			File.AppendAllLines(LogPath, new string[] { "", "Files:", "" });
+			File.AppendAllLines(LogPath, Files);
+
+			File.AppendAllLines(LogPath, new string[] { "", "HUD Layout Entries:", "" });
+			File.AppendAllLines(LogPath, HUDLayoutEntries);
+
+			File.AppendAllLines(LogPath, new string[] { "", "Events:", "" });
+			File.AppendAllLines(LogPath, Events);
 		}
 
 		/// <summary>
@@ -145,7 +162,7 @@ namespace hud_merger
 					Folders[Folders.Length - 1] = "";
 					foreach (string BaseFile in BaseFiles)
 					{
-						string BaseFilePath = String.Join('\\', System.Text.RegularExpressions.Regex.Split(BaseFile, "[\\/]+"));
+						string BaseFilePath = String.Join('\\', Regex.Split(BaseFile, "[\\/]+"));
 						Files.Add(String.Join('\\', Folders) + "\\" + BaseFilePath);
 						AddDependencies(String.Join('\\', Folders) + BaseFilePath);
 					}
@@ -323,22 +340,17 @@ namespace hud_merger
 
 		private void WriteHUDLayout(string OriginHUDLayoutPath, HashSet<string> HUDLayoutEntries)
 		{
-			Dictionary<string, dynamic> OriginHUDLayout = Utilities.LoadControls(OriginHUDLayoutPath);
+			Dictionary<string, dynamic> OriginHUDLayout = Utilities.LoadControls(OriginHUDLayoutPath)["Resource/HudLayout.res"];
 
 			string ThisHUDLayoutPath = $"{this.FolderPath}\\scripts\\hudlayout.res";
 			Dictionary<string, dynamic> NewHUDLayout = Utilities.VDFTryParse(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\HUD\\scripts\\hudlayout.res");
 
-			if (!NewHUDLayout.ContainsKey("Resource/HudLayout.res"))
-			{
-				NewHUDLayout["Resource/HudLayout.res"] = new Dictionary<string, dynamic>();
-			}
 
 			foreach (string HUDLayoutEntry in HUDLayoutEntries)
 			{
-				if (OriginHUDLayout?["Resource/HudLayout.res"].ContainsKey(HUDLayoutEntry))
+				if (OriginHUDLayout.ContainsKey(HUDLayoutEntry))
 				{
-					NewHUDLayout["Resource/HudLayout.res"][HUDLayoutEntry] = OriginHUDLayout["Resource/HudLayout.res"][HUDLayoutEntry];
-					// System.Diagnostics.Debug.WriteLine(VDF.Stringify(NewHUDLayout["Resource/HudLayout.res"][HUDLayoutEntry]));
+					NewHUDLayout["Resource/HudLayout.res"][HUDLayoutEntry] = OriginHUDLayout[HUDLayoutEntry];
 				}
 				else
 				{
@@ -422,7 +434,6 @@ namespace hud_merger
 			{
 				$"hudanimations_manifest",
 				$"{{",
-
 			};
 
 			if (!HUDAnimationsManifestList.Contains($"scripts/hudanimations_{HUDName}.txt"))
@@ -430,12 +441,18 @@ namespace hud_merger
 				NewManifestLines.Add($"\t\"file\"\t\t\"scripts/hudanimations_{HUDName}.txt\"");
 			}
 
-			foreach (string FilePath in HUDAnimationsManifestList)
+			string TargetHUDAnimationsManifestPath = $"{this.FolderPath}\\scripts\\hudanimations_manifest.txt";
+
+			Dictionary<string, dynamic> TargetManifest = Utilities.VDFTryParse(File.Exists(TargetHUDAnimationsManifestPath) ? TargetHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt");
+			dynamic TargetHUDAnimationsManifestList = TargetManifest["hudanimations_manifest"]["file"];
+
+			foreach (string FilePath in TargetHUDAnimationsManifestList)
 			{
 				NewManifestLines.Add($"\t\"file\"\t\t\"{FilePath}\"");
 			}
 
 			NewManifestLines.Add($"}}");
+
 			File.WriteAllLines($"{this.FolderPath}\\scripts\\hudanimations_manifest.txt", NewManifestLines);
 		}
 
@@ -500,14 +517,18 @@ namespace hud_merger
 		{
 			foreach (string ImagePath in Dependencies.Images)
 			{
-				string[] Folders = System.Text.RegularExpressions.Regex.Split(ImagePath, "[\\/]+");
+				string[] Folders = Regex.Split(ImagePath, "[\\/]+");
 				Files.Add($"materials\\vgui\\{String.Join("\\", Folders)}.vmt");
 				Files.Add($"materials\\vgui\\{String.Join("\\", Folders)}.vtf");
 
 				try
 				{
-					Dictionary<string, dynamic> VMT = VDF.Parse(File.ReadAllText($"materials\\vgui\\{String.Join("\\", Folders)}.vmt"));
-					Files.Add("materials\\" + String.Join("\\", System.Text.RegularExpressions.Regex.Split(VMT["UnlitGeneric"]["$basetexture"], "[\\/]+")));
+					string FilePath = $"{OriginFolderPath}\\materials\\vgui\\{String.Join("\\", Folders)}.vmt";
+					if (File.Exists(FilePath))
+					{
+						Dictionary<string, dynamic> VMT = Utilities.VDFTryParse(FilePath);
+						Files.Add("materials\\" + String.Join("\\", Regex.Split(VMT["UnlitGeneric"]["$basetexture"], "[\\/]+")));
+					}
 				}
 				catch (Exception e)
 				{
@@ -517,8 +538,8 @@ namespace hud_merger
 
 			foreach (string AudioPath in Dependencies.Audio)
 			{
-				string[] Folders = System.Text.RegularExpressions.Regex.Split(AudioPath, "[\\\\/]+");
-				Files.Add($"{OriginFolderPath}\\sound\\{String.Join("\\", Folders)}");
+				string[] Folders = Regex.Split(AudioPath, "[\\\\/]+");
+				Files.Add($"sound\\{String.Join("\\", Folders)}");
 			}
 
 			string[] FilesArray = Files.ToArray();
