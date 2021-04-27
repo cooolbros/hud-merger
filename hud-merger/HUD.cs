@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -181,7 +182,7 @@ namespace hud_merger
 						{
 							Type T = typeof(ClientschemeDependencies);
 
-							foreach (System.Reflection.PropertyInfo TypeKey in T.GetProperties())
+							foreach (PropertyInfo TypeKey in T.GetProperties())
 							{
 								dynamic CurrentPropertiesList = TypeKey.GetValue(Properties);
 								HashSet<string> CurrentDependenciesList = TypeKey.GetValue(Dependencies) as HashSet<string>;
@@ -340,11 +341,48 @@ namespace hud_merger
 
 		private void WriteHUDLayout(string OriginHUDLayoutPath, HashSet<string> HUDLayoutEntries)
 		{
-			Dictionary<string, dynamic> OriginHUDLayout = Utilities.LoadControls(OriginHUDLayoutPath)["Resource/HudLayout.res"];
+			Dictionary<string, dynamic> OriginHUDLayout = new();
+
+			void AddControls(string FilePath)
+			{
+				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? Utilities.VDFTryParse(FilePath) : new();
+
+				// #base
+				if (Obj.ContainsKey("#base"))
+				{
+					List<string> BaseFiles = new();
+					if (Obj["#base"].GetType() == typeof(List<dynamic>))
+					{
+						foreach (dynamic BaseFile in Obj["#base"])
+						{
+							BaseFiles.Add(BaseFile);
+						}
+					}
+					else
+					{
+						BaseFiles.Add(Obj["#base"]);
+					}
+
+					string[] Folders = FilePath.Split("\\");
+					// Remove File Name
+					Folders[Folders.Length - 1] = "";
+					foreach (string BaseFile in BaseFiles)
+					{
+						AddControls(String.Join('\\', Folders) + BaseFile);
+					}
+				}
+
+				// Merge
+				foreach (string Key in Obj["Resource/HudLayout.res"].Keys)
+				{
+					OriginHUDLayout[Key] = Obj["Resource/HudLayout.res"][Key];
+				}
+			}
+
+			AddControls(OriginHUDLayoutPath);
 
 			string ThisHUDLayoutPath = $"{this.FolderPath}\\scripts\\hudlayout.res";
 			Dictionary<string, dynamic> NewHUDLayout = Utilities.VDFTryParse(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\HUD\\scripts\\hudlayout.res");
-
 
 			foreach (string HUDLayoutEntry in HUDLayoutEntries)
 			{
@@ -354,7 +392,7 @@ namespace hud_merger
 				}
 				else
 				{
-					// System.Diagnostics.Debug.WriteLine($"{Origin.Name}'s hudlayout does not contain {HUDLayoutEntry}!");
+					// System.Diagnostics.Debug.WriteLine($"{OriginHUDLayoutPath}'s hudlayout does not contain {HUDLayoutEntry}!");
 				}
 			}
 

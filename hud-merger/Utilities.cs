@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace hud_merger
@@ -83,7 +84,7 @@ namespace hud_merger
 		public static bool TestPath(string FilePath)
 		{
 			string FolderPath = "";
-			string[] Folders = System.Text.RegularExpressions.Regex.Split(FilePath, "[\\/]+");
+			string[] Folders = Regex.Split(FilePath, "[\\/]+");
 			Folders[^1] = "";
 			for (int i = 0; i < Folders.Length - 1; i++)
 			{
