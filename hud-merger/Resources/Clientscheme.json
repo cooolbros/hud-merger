@@ -37,6 +37,7 @@
 		"teambg_3"
 	],
 	"Audio": [
+		"sound_armed",
 		"sound_depressed",
 		"sound_released"
 	]

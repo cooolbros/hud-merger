@@ -139,7 +139,10 @@
 	{
 		"Name": "UberCharge Label And Meter",
 		"Main": {
-			"FilePath": "resource\\ui\\hudmediccharge.res"
+			"FilePath": "resource\\ui\\hudmediccharge.res",
+			"HUDLayout": [
+				"HudMedicCharge"
+			]
 		}
 	}
 ]
