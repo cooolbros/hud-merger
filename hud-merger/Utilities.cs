@@ -101,11 +101,11 @@ namespace hud_merger
 			return true;
 		}
 
-		public static Dictionary<string, dynamic> VDFTryParse(string FilePath)
+		public static Dictionary<string, dynamic> VDFTryParse(string FilePath, bool OSTags = true)
 		{
 			try
 			{
-				Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(FilePath));
+				Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(FilePath), OSTags);
 				return obj;
 			}
 			catch (Exception e)

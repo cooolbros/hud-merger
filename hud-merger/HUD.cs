@@ -338,7 +338,10 @@ namespace hud_merger
 
 			void AddControls(string FilePath, bool Base)
 			{
-				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? Utilities.VDFTryParse(FilePath) : new();
+				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? Utilities.VDFTryParse(FilePath) : new()
+				{
+					["Resource/HudLayout.res"] = new Dictionary<string, dynamic>()
+				};
 
 				// #base
 				if (Obj.ContainsKey("#base"))
@@ -572,8 +575,22 @@ namespace hud_merger
 					string FilePath = $"{OriginFolderPath}\\materials\\vgui\\{String.Join("\\", Folders)}.vmt";
 					if (File.Exists(FilePath))
 					{
-						Dictionary<string, dynamic> VMT = Utilities.VDFTryParse(FilePath);
-						Files.Add("materials\\" + String.Join("\\", Regex.Split(VMT["UnlitGeneric"]["$basetexture"], "[\\/]+")));
+						Dictionary<string, dynamic> VMT = Utilities.VDFTryParse(FilePath, false);
+						Dictionary<string, dynamic> Generic = VMT.First().Value;
+
+						string VTFPath = "";
+						int i = 0;
+
+						while (VTFPath == "" && i < Generic.Keys.Count)
+						{
+							if (Generic.ElementAt(i).Key.ToLower().Contains("basetexture"))
+							{
+								VTFPath = Generic.ElementAt(i).Value;
+							}
+							i++;
+						}
+
+						Files.Add("materials\\" + String.Join("\\", Regex.Split(VTFPath, "[\\/]+")));
 					}
 				}
 				catch (Exception e)

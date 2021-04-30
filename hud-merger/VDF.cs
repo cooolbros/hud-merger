@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace hud_merger
 {
@@ -9,7 +8,7 @@ namespace hud_merger
 	{
 		public static char OSTagDelimeter = '^';
 
-		public static Dictionary<string, dynamic> Parse(string Str)
+		public static Dictionary<string, dynamic> Parse(string Str, bool OSTags = true)
 		{
 			int i = 0;
 			char[] WhiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
@@ -53,10 +52,12 @@ namespace hud_merger
 					j++;
 					while (Str[j] != '"' && j < Str.Length)
 					{
-						if (Str[j] == '\n')
-						{
-							throw new Exception($"Unexpected end of line at position {j}");
-						}
+						// Budhud's gamemenu.res has a multiline value, they are possible but usually syntax errors
+						// Assume syntax is correct
+						// if (Str[j] == '\n')
+						// {
+						// 	throw new Exception($"Unexpected end of line at position {j}");
+						// }
 						CurrentToken += Str[j];
 						j++;
 					}
@@ -99,7 +100,7 @@ namespace hud_merger
 
 				while (CurrentToken != "}" && NextToken != "EOF")
 				{
-					if (Regex.IsMatch(NextToken, "\\[!?\\$.*\\]"))
+					if (NextToken.StartsWith('[') && OSTags)
 					{
 						// Object with OS Tag
 						CurrentToken += $"{OSTagDelimeter}{Next()}";
@@ -140,7 +141,7 @@ namespace hud_merger
 						Next(); // Skip over value
 
 						// Check primitive os tag
-						if (Regex.IsMatch(Next(true), "\\[!?\\$.*\\]"))
+						if (Next(true).StartsWith('[') && OSTags)
 						{
 							CurrentToken += $"{OSTagDelimeter}{Next()}";
 						}
