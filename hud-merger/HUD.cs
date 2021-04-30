@@ -53,22 +53,6 @@ namespace hud_merger
 			this.WriteClientscheme(Origin.Name, NewClientscheme);
 			this.CopyHUDFiles(Origin.FolderPath, Files, Dependencies);
 			this.WriteInfoVDF();
-
-			string LogPath = this.FolderPath + "\\merge.log";
-
-			File.AppendAllLines(LogPath, new string[] { $"Merge at {DateTime.Now}", Origin.Name, Origin.FolderPath, });
-
-			File.AppendAllLines(LogPath, new string[] { "", "Panels:", "" });
-			File.AppendAllLines(LogPath, Panels.Select((i) => i.Name));
-
-			File.AppendAllLines(LogPath, new string[] { "", "Files:", "" });
-			File.AppendAllLines(LogPath, Files);
-
-			File.AppendAllLines(LogPath, new string[] { "", "HUD Layout Entries:", "" });
-			File.AppendAllLines(LogPath, HUDLayoutEntries);
-
-			File.AppendAllLines(LogPath, new string[] { "", "Events:", "" });
-			File.AppendAllLines(LogPath, Events);
 		}
 
 		/// <summary>
@@ -245,7 +229,7 @@ namespace hud_merger
 			// Colours
 			foreach (string ColourProperty in Dependencies.Colours)
 			{
-				if (OriginClientscheme?["Scheme"]?["Colors"].ContainsKey(ColourProperty))
+				if (OriginClientscheme["Scheme"]["Colors"].ContainsKey(ColourProperty))
 				{
 					NewClientscheme["Colors"].Add(ColourProperty, OriginClientscheme["Scheme"]["Colors"][ColourProperty]);
 				}
@@ -254,7 +238,7 @@ namespace hud_merger
 			// Borders
 			foreach (string BorderProperty in Dependencies.Borders)
 			{
-				if (OriginClientscheme?["Scheme"]?["Borders"].ContainsKey(BorderProperty))
+				if (OriginClientscheme["Scheme"]["Borders"].ContainsKey(BorderProperty))
 				{
 					NewClientscheme["Borders"][BorderProperty] = OriginClientscheme["Scheme"]["Borders"][BorderProperty];
 				}
@@ -264,7 +248,7 @@ namespace hud_merger
 			HashSet<string> FontNames = new();
 			foreach (string FontProperty in Dependencies.Fonts)
 			{
-				if (OriginClientscheme?["Scheme"]?["Fonts"].ContainsKey(FontProperty))
+				if (OriginClientscheme["Scheme"]["Fonts"].ContainsKey(FontProperty))
 				{
 					dynamic FontDefinition = OriginClientscheme["Scheme"]["Fonts"][FontProperty];
 					NewClientscheme["Fonts"][FontProperty] = FontDefinition;
@@ -293,12 +277,12 @@ namespace hud_merger
 					{
 						foreach (string FontDefinitionNumber in FontDefinition.Keys)
 						{
-							foreach (string FontDefinitionProperty in FontDefinition?[FontDefinitionNumber]?.Keys)
+							foreach (string FontDefinitionProperty in FontDefinition[FontDefinitionNumber]?.Keys)
 							{
 								// Some HUDs only have a name with an operating system tag like `name ... [$WINDOWS]`
 								if (FontDefinitionProperty.ToLower().Contains("name"))
 								{
-									FontNames.Add(FontDefinition?[FontDefinitionNumber]?[FontDefinitionProperty]);
+									FontNames.Add(FontDefinition[FontDefinitionNumber][FontDefinitionProperty]);
 								}
 							}
 						}
@@ -307,7 +291,10 @@ namespace hud_merger
 			}
 
 			// Add custom fonts
-			Dictionary<string, dynamic> OriginalCustomFontFiles = OriginClientscheme?["Scheme"]?["CustomFontFiles"];
+			Dictionary<string, dynamic> OriginalCustomFontFiles = OriginClientscheme["Scheme"]["CustomFontFiles"];
+
+			int CustomFontFilesIndex = Utilities.LoadControls($"{this.FolderPath}\\resource\\clientscheme.res")["Scheme"]["CustomFontFiles"].Keys.Count + 1;
+
 			foreach (string CustomFontFileNumber in OriginalCustomFontFiles.Keys)
 			{
 				foreach (string FontName in FontNames)
@@ -315,16 +302,18 @@ namespace hud_merger
 					// CustomFontFiles 1 & 2 are just strings
 					// "1" "resource/tf.ttf"
 					// "2" "resource/tfd.ttf"
-					if (OriginalCustomFontFiles?[CustomFontFileNumber].GetType() == typeof(Dictionary<string, dynamic>))
+					if (OriginalCustomFontFiles[CustomFontFileNumber].GetType() == typeof(Dictionary<string, dynamic>))
 					{
-						if (FontName == OriginalCustomFontFiles?[CustomFontFileNumber]?["name"])
+						if (FontName == OriginalCustomFontFiles[CustomFontFileNumber]["name"])
 						{
-							NewClientscheme["CustomFontFiles"].Add(CustomFontFileNumber, OriginalCustomFontFiles?[CustomFontFileNumber]);
+							NewClientscheme["CustomFontFiles"][CustomFontFilesIndex.ToString()] = OriginalCustomFontFiles[CustomFontFileNumber];
+
+							CustomFontFilesIndex++;
 
 							// Add .ttf file as well
 
 							// add properties that include 'font', for if HUD only has font%[$WIN32] and font%[$OSX] or like
-							foreach (KeyValuePair<string, dynamic> property in OriginalCustomFontFiles?[CustomFontFileNumber])
+							foreach (KeyValuePair<string, dynamic> property in OriginalCustomFontFiles[CustomFontFileNumber])
 							{
 								if (property.Key.ToLower().Contains("font"))
 								{
@@ -332,6 +321,10 @@ namespace hud_merger
 								}
 							}
 						}
+					}
+					else
+					{
+						Files.Add(OriginalCustomFontFiles[CustomFontFileNumber]);
 					}
 				}
 			}
@@ -343,7 +336,7 @@ namespace hud_merger
 		{
 			Dictionary<string, dynamic> OriginHUDLayout = new();
 
-			void AddControls(string FilePath)
+			void AddControls(string FilePath, bool Base)
 			{
 				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? Utilities.VDFTryParse(FilePath) : new();
 
@@ -368,18 +361,28 @@ namespace hud_merger
 					Folders[Folders.Length - 1] = "";
 					foreach (string BaseFile in BaseFiles)
 					{
-						AddControls(String.Join('\\', Folders) + BaseFile);
+						AddControls(String.Join('\\', Folders) + BaseFile, true);
 					}
 				}
 
 				// Merge
 				foreach (string Key in Obj["Resource/HudLayout.res"].Keys)
 				{
-					OriginHUDLayout[Key] = Obj["Resource/HudLayout.res"][Key];
+					if (OriginHUDLayout.ContainsKey(Key))
+					{
+						if (!Base)
+						{
+							OriginHUDLayout[Key] = Obj["Resource/HudLayout.res"][Key];
+						}
+					}
+					else
+					{
+						OriginHUDLayout[Key] = Obj["Resource/HudLayout.res"][Key];
+					}
 				}
 			}
 
-			AddControls(OriginHUDLayoutPath);
+			AddControls(OriginHUDLayoutPath, false);
 
 			string ThisHUDLayoutPath = $"{this.FolderPath}\\scripts\\hudlayout.res";
 			Dictionary<string, dynamic> NewHUDLayout = Utilities.VDFTryParse(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\HUD\\scripts\\hudlayout.res");
@@ -389,10 +392,6 @@ namespace hud_merger
 				if (OriginHUDLayout.ContainsKey(HUDLayoutEntry))
 				{
 					NewHUDLayout["Resource/HudLayout.res"][HUDLayoutEntry] = OriginHUDLayout[HUDLayoutEntry];
-				}
-				else
-				{
-					// System.Diagnostics.Debug.WriteLine($"{OriginHUDLayoutPath}'s hudlayout does not contain {HUDLayoutEntry}!");
 				}
 			}
 
@@ -530,6 +529,15 @@ namespace hud_merger
 			}
 
 			// ALWAYS create new clientscheme.res
+
+			// Remove empty clientscheme sections
+			foreach (string Key in NewClientscheme.Keys)
+			{
+				if (NewClientscheme[Key].Keys.Count == 0)
+				{
+					NewClientscheme.Remove(Key);
+				}
+			}
 			Dictionary<string, dynamic> NewClientschemeContainer = new();
 			NewClientschemeContainer["Scheme"] = NewClientscheme;
 			Directory.CreateDirectory($"{this.FolderPath}\\resource");

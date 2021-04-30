@@ -18,7 +18,7 @@
             </StackPanel.Resources>
             <Image Source="favicon.ico" Width="64" Height="64" Margin="0,0,0,10" />
             <Label FontSize="28">HUD Merger</Label>
-            <Label FontSize="14">Version 1.0</Label>
+            <Label FontSize="14">Version 1.2.1</Label>
             <Label FontSize="14">Revan</Label>
             <Label Foreground="#0000FF" Cursor="Hand" MouseLeftButtonUp="Open_Source">
 				<TextBlock TextDecorations="Underline">https://github.com/cooolbros/hud-merger</TextBlock>

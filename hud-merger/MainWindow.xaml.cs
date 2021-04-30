@@ -91,7 +91,10 @@ namespace hud_merger
 		private void ClearState()
 		{
 			OriginFilesList.Children.Clear();
-			TargetFilesList.Children.Clear();
+			foreach (UIElement Child in TargetFilesList.Children)
+			{
+				Child.Visibility = Visibility.Collapsed;
+			}
 			foreach (HUDPanel Panel in this.HUDPanels)
 			{
 				Panel.Armed = false;
