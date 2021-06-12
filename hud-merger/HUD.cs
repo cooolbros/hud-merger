@@ -369,18 +369,55 @@ namespace hud_merger
 				}
 
 				// Merge
-				foreach (string Key in Obj["Resource/HudLayout.res"].Keys)
+				foreach (string ContainerKey in Obj.Keys)
 				{
-					if (OriginHUDLayout.ContainsKey(Key))
+					if (Obj[ContainerKey].GetType() == typeof(List<dynamic>))
 					{
-						if (!Base)
+						foreach (dynamic Item in Obj[ContainerKey])
 						{
-							OriginHUDLayout[Key] = Obj["Resource/HudLayout.res"][Key];
+							if (Item.GetType() == typeof(Dictionary<string, dynamic>))
+							{
+								foreach (string HUDLayoutEntryKey in Item.Keys)
+								{
+									if (OriginHUDLayout.ContainsKey(HUDLayoutEntryKey))
+									{
+										if (!Base)
+										{
+											OriginHUDLayout[HUDLayoutEntryKey] = Item[HUDLayoutEntryKey];
+										}
+									}
+									else
+									{
+										OriginHUDLayout[HUDLayoutEntryKey] = Item[HUDLayoutEntryKey];
+									}
+								}
+							}
+							else
+							{
+								// There shouldn't be a top layer string hudlayout.res
+							}
+						}
+					}
+					else if (Obj[ContainerKey].GetType() == typeof(Dictionary<string, dynamic>))
+					{
+						foreach (string HUDLayoutEntryKey in Obj[ContainerKey].Keys)
+						{
+							if (OriginHUDLayout.ContainsKey(HUDLayoutEntryKey))
+							{
+								if (!Base)
+								{
+									OriginHUDLayout[HUDLayoutEntryKey] = Obj[ContainerKey][HUDLayoutEntryKey];
+								}
+							}
+							else
+							{
+								OriginHUDLayout[HUDLayoutEntryKey] = Obj[ContainerKey][HUDLayoutEntryKey];
+							}
 						}
 					}
 					else
 					{
-						OriginHUDLayout[Key] = Obj["Resource/HudLayout.res"][Key];
+						// There shouldn't be a top layer string hudlayout.res
 					}
 				}
 			}
@@ -389,6 +426,11 @@ namespace hud_merger
 
 			string ThisHUDLayoutPath = $"{this.FolderPath}\\scripts\\hudlayout.res";
 			Dictionary<string, dynamic> NewHUDLayout = Utilities.VDFTryParse(File.Exists(ThisHUDLayoutPath) ? ThisHUDLayoutPath : "Resources\\HUD\\scripts\\hudlayout.res");
+
+			if (!NewHUDLayout.ContainsKey("Resource/HudLayout.res"))
+			{
+				NewHUDLayout["Resource/HudLayout.res"] = new Dictionary<string, dynamic>();
+			}
 
 			foreach (string HUDLayoutEntry in HUDLayoutEntries)
 			{

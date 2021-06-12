@@ -110,7 +110,7 @@ namespace hud_merger
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show($"Syntax error found in {FilePath}, unable to merge!" + e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				MessageBox.Show($"Syntax error found in {FilePath}, unable to merge!\r\n" + e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				throw;
 			}
 		}

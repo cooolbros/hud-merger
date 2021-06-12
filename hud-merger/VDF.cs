@@ -82,12 +82,6 @@ namespace hud_merger
 					i = j;
 				}
 
-				//if (j > Str.Length)
-				//{
-				//	return "EOF";
-				//}
-
-				// System.Diagnostics.Debug.WriteLine(CurrentToken);
 				return CurrentToken;
 			}
 
