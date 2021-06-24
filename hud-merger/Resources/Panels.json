@@ -86,6 +86,12 @@
 		]
 	},
 	{
+		"Name": "Scoreboard",
+		"Main": {
+			"FilePath": "resource\\ui\\scoreboard.res"
+		}
+	},
+	{
 		"Name": "Target ID",
 		"Main": {
 			"FilePath": "resource\\ui\\targetid.res",
