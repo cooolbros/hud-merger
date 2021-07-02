@@ -3,35 +3,36 @@
 		"armedbgcolor_override",
 		"armedfgcolor_override",
 		"bgcolor_override",
-		"drawcolor",
-		"drawcolor_override",
 		"defaultbgcolor_override",
 		"defaultfgcolor_override",
 		"depressedbgcolor_override",
 		"depressedfgcolor_override",
-		"fgcolor",
+		"drawcolor_override",
+		"drawcolor",
 		"fgcolor_override",
+		"fgcolor",
 		"image_armedcolor",
 		"image_drawcolor",
-		"PositiveColor",
-		"NegativeColor"
+		"NegativeColor",
+		"PositiveColor"
 	],
 	"Borders": [
-		"border",
 		"border_armed",
-		"border_default"
+		"border_default",
+		"border"
 	],
 	"Fonts": [
-		"delta_item_font",
 		"delta_item_font_big",
+		"delta_item_font",
 		"font"
 	],
 	"Images": [
 		"activeimage",
-		"image",
 		"image_armed",
 		"image_default",
+		"image",
 		"inactiveimage",
+		"subimage",
 		"teambg_1",
 		"teambg_2",
 		"teambg_3"
