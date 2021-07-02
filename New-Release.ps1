@@ -33,25 +33,7 @@ $id = $repository_information[2]
 
 $authorization = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$($author):$($personal_access_token)"))
 
-# Restore
-Write-Host "Restoring $id"
-Remove-Item -Recurse "$id/bin" -ErrorAction "SilentlyContinue"
-Remove-Item -Recurse "$id/obj" -ErrorAction "SilentlyContinue"
-Remove-Item "$id.zip" -ErrorAction "SilentlyContinue"
-
-# Build
-Write-Host "Building $id"
-# https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish
-# https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-dotnet publish hud-merger -c Release
-# -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true --runtime win-x64
-
-# Package
-Write-Host "Packaging $id"
-$output = "$id\bin\Release\net5.0-windows\"
-Rename-Item "$output\publish" "$id"
-Compress-Archive -Path "$output\hud-merger" -Destination "./$id.zip" -CompressionLevel "Optimal"
-
+# Get latest release
 Write-Host "Getting release info for $id"
 $latestRelease = (ConvertFrom-Json (Invoke-WebRequest "https://api.github.com/repos/$($author)/$($id)/releases/latest"))
 Write-Host $latestRelease
@@ -76,6 +58,38 @@ else {
 	}
 	$newVersion = "$($tags[0]).$($tags[1]).$($tags[2])"
 }
+
+# Update version in project
+
+$csprojPath = (Get-ChildItem -Recurse *.csproj).FullName
+$csproj = [xml](Get-Content $csprojPath)
+$csproj.Project.PropertyGroup.Version = $newVersion
+$csproj.Save($csprojPath)
+
+$aboutWindowPath = $id + "\\AboutWindow.xaml"
+$aboutWindow = [xml](Get-Content $aboutWindowPath)
+$aboutWindow.Window.Grid.StackPanel.Label[1] = "Version " + $newVersion
+$aboutWindow.Save($aboutWindowPath)
+
+# Restore
+Write-Host "Restoring $id"
+Remove-Item -Recurse "$id/bin" -ErrorAction "SilentlyContinue"
+Remove-Item -Recurse "$id/obj" -ErrorAction "SilentlyContinue"
+Remove-Item "$id.zip" -ErrorAction "SilentlyContinue"
+
+# Build
+Write-Host "Building $id"
+# https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish
+# https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+dotnet publish hud-merger -c Release
+# -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true --runtime win-x64
+
+# Package
+Write-Host "Packaging $id"
+$output = "$id\bin\Release\net5.0-windows\"
+Rename-Item "$output\publish" "$id"
+Compress-Archive -Path "$output\hud-merger" -Destination "./$id.zip" -CompressionLevel "Optimal"
+
 
 # Create Changelog
 Write-Host "Writing changelog $($latestRelease.published_at)"
