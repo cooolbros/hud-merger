@@ -52,12 +52,10 @@ namespace hud_merger
 					j++;
 					while (Str[j] != '"' && j < Str.Length)
 					{
-						// Budhud's gamemenu.res has a multiline value, they are possible but usually syntax errors
-						// Assume syntax is correct
-						// if (Str[j] == '\n')
-						// {
-						// 	throw new Exception($"Unexpected end of line at position {j}");
-						// }
+						if (Str[j] == '\n')
+						{
+							throw new Exception($"Unexpected end of line at position {j}");
+						}
 						CurrentToken += Str[j];
 						j++;
 					}
