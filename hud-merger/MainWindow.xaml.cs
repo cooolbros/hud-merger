@@ -330,9 +330,7 @@ namespace hud_merger
 				}
 				catch (Exception Error)
 				{
-					File.WriteAllText($"Errors\\Error.log", Error.ToString());
-					// Errors thrown by the VDF.Parse() method are already alerted to the user, don't alert twice, just halt merge execution
-					// MessageBox.Show(Error.ToString(), "HUD Merger", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show(Error.Message, "HUD Merger", MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 			}
 		}

@@ -169,12 +169,16 @@ namespace hud_merger
 							foreach (PropertyInfo TypeKey in T.GetProperties())
 							{
 								dynamic CurrentPropertiesList = TypeKey.GetValue(Properties);
-								HashSet<string> CurrentDependenciesList = TypeKey.GetValue(Dependencies) as HashSet<string>;
+								HashSet<string> CurrentDependenciesList = (HashSet<string>)TypeKey.GetValue(Dependencies);
 
 								foreach (string DefaultPropertyKey in CurrentPropertiesList)
 								{
 									if (Key == DefaultPropertyKey)
 									{
+										// The 'subimage' property when used in resource/gamemenu.res specifies
+										// an image path, other instances of the key name usually specify
+										// an image element. Ignore Dictionary<string, dynamic>
+
 										if (Obj[Key].GetType() == typeof(List<dynamic>))
 										{
 											foreach (dynamic DuplicateKey in Obj[Key])
@@ -182,7 +186,7 @@ namespace hud_merger
 												CurrentDependenciesList.Add(DuplicateKey);
 											}
 										}
-										else
+										else if (Obj[Key].GetType() == typeof(string))
 										{
 											CurrentDependenciesList.Add(Obj[Key]);
 										}
@@ -299,21 +303,20 @@ namespace hud_merger
 			{
 				foreach (string FontName in FontNames)
 				{
-					// CustomFontFiles 1 & 2 are just strings
-					// "1" "resource/tf.ttf"
-					// "2" "resource/tfd.ttf"
-					if (OriginalCustomFontFiles[CustomFontFileNumber].GetType() == typeof(Dictionary<string, dynamic>))
+					dynamic CustomFontFileDefinition = OriginalCustomFontFiles[CustomFontFileNumber];
+
+					if (CustomFontFileDefinition.GetType() == typeof(Dictionary<string, dynamic>))
 					{
-						if (FontName == OriginalCustomFontFiles[CustomFontFileNumber]["name"])
+						if (FontName == CustomFontFileDefinition["name"])
 						{
-							NewClientscheme["CustomFontFiles"][CustomFontFilesIndex.ToString()] = OriginalCustomFontFiles[CustomFontFileNumber];
+							NewClientscheme["CustomFontFiles"][CustomFontFilesIndex.ToString()] = CustomFontFileDefinition;
 
 							CustomFontFilesIndex++;
 
 							// Add .ttf file as well
 
 							// add properties that include 'font', for if HUD only has font%[$WIN32] and font%[$OSX] or like
-							foreach (KeyValuePair<string, dynamic> property in OriginalCustomFontFiles[CustomFontFileNumber])
+							foreach (KeyValuePair<string, dynamic> property in CustomFontFileDefinition)
 							{
 								if (property.Key.ToLower().Contains("font"))
 								{
@@ -322,9 +325,26 @@ namespace hud_merger
 							}
 						}
 					}
-					else
+					else if (CustomFontFileDefinition.GetType() == typeof(string))
 					{
-						Files.Add(OriginalCustomFontFiles[CustomFontFileNumber]);
+						if (CustomFontFileDefinition.Contains(FontName))
+						{
+							// Find a number that is probably not already in use
+							int NewKeyName = OriginalCustomFontFiles.Keys.Count + NewClientscheme["CustomFontFiles"].Keys.Count;
+
+							string ToString(dynamic x)
+							{
+								return x.ToString();
+							}
+
+							List<string> Values = (((Dictionary<string, dynamic>)NewClientscheme["CustomFontFiles"]).Values).ToArray().Select(ToString).ToList();
+
+							if (!Values.Contains(CustomFontFileDefinition))
+							{
+								NewClientscheme["CustomFontFiles"][$"{NewKeyName}"] = CustomFontFileDefinition;
+								Files.Add(CustomFontFileDefinition);
+							}
+						}
 					}
 				}
 			}
@@ -417,7 +437,7 @@ namespace hud_merger
 					}
 					else
 					{
-						// There shouldn't be a top layer string hudlayout.res
+						// There shouldn't be a top layer string that is not #base in hudlayout.res
 					}
 				}
 			}
@@ -609,35 +629,29 @@ namespace hud_merger
 			foreach (string ImagePath in Dependencies.Images)
 			{
 				string[] Folders = Regex.Split(ImagePath, "[\\/]+");
+
 				Files.Add($"materials\\vgui\\{String.Join("\\", Folders)}.vmt");
 				Files.Add($"materials\\vgui\\{String.Join("\\", Folders)}.vtf");
 
-				try
+				string FilePath = $"{OriginFolderPath}\\materials\\vgui\\{String.Join("\\", Folders)}.vmt";
+				if (File.Exists(FilePath))
 				{
-					string FilePath = $"{OriginFolderPath}\\materials\\vgui\\{String.Join("\\", Folders)}.vmt";
-					if (File.Exists(FilePath))
+					Dictionary<string, dynamic> VMT = Utilities.VDFTryParse(FilePath, false);
+					Dictionary<string, dynamic> Generic = VMT.First().Value;
+
+					string VTFPath = "";
+					int i = 0;
+
+					while (VTFPath == "" && i < Generic.Keys.Count)
 					{
-						Dictionary<string, dynamic> VMT = Utilities.VDFTryParse(FilePath, false);
-						Dictionary<string, dynamic> Generic = VMT.First().Value;
-
-						string VTFPath = "";
-						int i = 0;
-
-						while (VTFPath == "" && i < Generic.Keys.Count)
+						if (Generic.ElementAt(i).Key.ToLower().Contains("basetexture"))
 						{
-							if (Generic.ElementAt(i).Key.ToLower().Contains("basetexture"))
-							{
-								VTFPath = Generic.ElementAt(i).Value;
-							}
-							i++;
+							VTFPath = Generic.ElementAt(i).Value;
 						}
-
-						Files.Add("materials\\" + String.Join("\\", Regex.Split(VTFPath, "[\\/]+")));
+						i++;
 					}
-				}
-				catch (Exception e)
-				{
-					System.Diagnostics.Debug.WriteLine(e.Message);
+
+					Files.Add("materials\\" + String.Join("\\", Regex.Split(VTFPath, "[\\/]+")));
 				}
 			}
 
@@ -656,6 +670,10 @@ namespace hud_merger
 					string DestFileName = $"{this.FolderPath}\\{FilePath}";
 					Directory.CreateDirectory(Path.GetDirectoryName(DestFileName));
 					File.Copy(SourceFileName, DestFileName, true);
+				}
+				else
+				{
+					System.Diagnostics.Debug.WriteLine($"Could not find {SourceFileName}");
 				}
 			}
 		}
