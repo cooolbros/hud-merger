@@ -2,6 +2,8 @@
 	"Colours": [
 		"armedbgcolor_override",
 		"armedfgcolor_override",
+		"BackgroundOverrideColor",
+		"BaseBackgroundColor",
 		"bgcolor_override",
 		"defaultbgcolor_override",
 		"defaultfgcolor_override",
@@ -11,10 +13,18 @@
 		"drawcolor",
 		"fgcolor_override",
 		"fgcolor",
+		"IconColor",
 		"image_armedcolor",
 		"image_drawcolor",
+		"LocalBackgroundColor",
+		"LocalPlayerColor",
+		"MeterBG",
+		"MeterFG",
 		"NegativeColor",
-		"PositiveColor"
+		"PositiveColor",
+		"TeamBlue",
+		"TeamRed",
+		"TextColor"
 	],
 	"Borders": [
 		"border_armed",
@@ -24,7 +34,11 @@
 	"Fonts": [
 		"delta_item_font_big",
 		"delta_item_font",
-		"font"
+		"font",
+		"ItemFont",
+		"ItemFontPulsing",
+		"NumberFont",
+		"TextFont"
 	],
 	"Images": [
 		"activeimage",
