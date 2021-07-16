@@ -6,44 +6,22 @@
         xmlns:local="clr-namespace:hud_merger"
         mc:Ignorable="d"
         Title="Settings"
-        SizeToContent="WidthAndHeight"
+        Width="700"
+        SizeToContent="Height"
         Icon="favicon.ico"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label FontSize="22" Grid.Row="0" Margin="10,10,10,5">Settings</Label>
-        <StackPanel Name="SettingsContainer" VerticalAlignment="Center" Grid.Row="1" Margin="10">
-            <StackPanel.Resources>
-                <Style TargetType="CheckBox">
-                    <Setter Property="FontSize" Value="16" />
-                    <Setter Property="BorderThickness" Value="1" />
-                    <Setter Property="BorderBrush" Value="#D7D7D7" />
-                    <Setter Property="Margin" Value="0,0,0,10" />
-                    <Setter Property="VerticalContentAlignment" Value="Center" />
-                </Style>
-                <Style TargetType="Label">
-                    <Setter Property="FontSize" Value="16" />
-                    <!-- <Setter Property="BorderThickness" Value="0,1,0,0" />
-                    <Setter Property="BorderBrush" Value="#D7D7D7" /> -->
-                </Style>
-                <Style TargetType="TextBox">
-                    <Setter Property="FontSize" Value="16" />
-                    <Setter Property="Padding" Value="3" />
-                    <Setter Property="BorderThickness" Value="0,0,0,1" />
-                    <Setter Property="BorderBrush" Value="#D7D7D7" />
-                    <Setter Property="Margin" Value="0,0,100,10" />
-                </Style>
-            </StackPanel.Resources>
+        <Label FontSize="22" Grid.Row="0" Margin="10,0,0,10">Settings</Label>
+        <StackPanel Name="SettingsContainer" VerticalAlignment="Center" Grid.Row="1" Margin="10,0,10,0">
         </StackPanel>
-        <WrapPanel HorizontalAlignment="Right" Grid.Row="2" Margin="10,5,10,10">
-            <Button FontSize="14" Padding="20,5" Margin="0,0,10,0" BorderThickness="0" Cursor="Hand" Click="CancelButton_Click">Cancel</Button>
-            <Button Name="ApplyButton" Style="{StaticResource MergeButton}" Cursor="Hand" Click="ApplyButton_Click">
-                <TextBlock Name="ApplyButtonTextBlock" Style="{StaticResource MergeButtonTextBlock}" FontSize="14" Padding="30,10" Background="{StaticResource _Blue}">Apply</TextBlock>
-            </Button>
+        <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="2" Margin="10,5,10,10">
+            <Button Style="{DynamicResource EnabledButton}" Padding="20,5" Margin="0,0,10,0" Click="CancelButton_Click">Cancel</Button>
+            <Button Style="{DynamicResource AccentButton}" Padding="30,10" Click="ApplyButton_Click">Apply</Button>
         </WrapPanel>
     </Grid>
 </Window>

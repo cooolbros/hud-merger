@@ -20,25 +20,14 @@ namespace hud_merger
 		public HUDPanel[] HUDPanels = JsonSerializer.Deserialize<HUDPanel[]>(File.ReadAllText("Resources\\Panels.json"));
 		StackPanel OriginFilesList = new();
 		StackPanel TargetFilesList = new();
+		System.Windows.Forms.FolderBrowserDialog FolderBrowserDialog = new()
+		{
+			SelectedPath = $"{Properties.Settings.Default.Team_Fortress_Folder}\\tf\\custom\\"
+		};
 
 		public MainWindow()
 		{
 			InitializeComponent();
-
-			MergeButtonTextBlock.MouseEnter += (object sender, MouseEventArgs e) =>
-			{
-				if (this.MergeButtonEnabled)
-				{
-					MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_BlueHover"];
-				}
-			};
-			MergeButtonTextBlock.MouseLeave += (object sender, MouseEventArgs e) =>
-			{
-				if (this.MergeButtonEnabled)
-				{
-					MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_Blue"];
-				}
-			};
 
 			// Updater
 			bool Download = Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up;
@@ -48,13 +37,11 @@ namespace hud_merger
 
 		private void MenuItem_LoadOriginHUD(object sender, RoutedEventArgs e)
 		{
-			ClearState();
 			NewOriginHUD_Click(sender, e);
 		}
 
 		private void MenuItem_LoadTargetHUD(object sender, RoutedEventArgs e)
 		{
-			TargetFilesList.Children.Clear();
 			NewTargetHUD_Click(sender, e);
 		}
 
@@ -77,18 +64,7 @@ namespace hud_merger
 			aboutWindow.Show();
 		}
 
-		private string FolderBrowserDialog()
-		{
-			using (System.Windows.Forms.FolderBrowserDialog fbd = new())
-			{
-				string CustomFolder = Properties.Settings.Default.Team_Fortress_Folder + "\\tf\\custom\\";
-				fbd.SelectedPath = CustomFolder;
-				fbd.ShowDialog();
-				return fbd.SelectedPath != CustomFolder ? fbd.SelectedPath : "";
-			}
-		}
-
-		private void ClearState()
+		private void ClearSelected()
 		{
 			OriginFilesList.Children.Clear();
 			foreach (UIElement Child in TargetFilesList.Children)
@@ -105,29 +81,30 @@ namespace hud_merger
 		{
 			if (OriginHUD != null && TargetHUD != null)
 			{
-				MergeButtonTextBlock.Cursor = Cursors.Hand;
-				MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_Blue"];
+				MergeButton.IsEnabled = true;
 				this.MergeButtonEnabled = true;
 			}
 			else
 			{
-				MergeButtonTextBlock.Cursor = Cursors.Arrow;
-				MergeButtonTextBlock.Background = (Brush)Application.Current.Resources["_MergeButtonBackground"];
+				MergeButton.IsEnabled = false;
+				this.MergeButtonEnabled = false;
 			}
 		}
 
 		private void NewOriginHUD_Click(object sender, RoutedEventArgs e)
 		{
-			string Result = FolderBrowserDialog();
-			if (Result != "")
+			System.Windows.Forms.DialogResult Result = this.FolderBrowserDialog.ShowDialog();
+			if (Result == System.Windows.Forms.DialogResult.OK)
 			{
-				NewOriginHUD(Result);
+				ClearSelected();
+				NewOriginHUD(this.FolderBrowserDialog.SelectedPath);
 			}
+			// Remember Folder
+			this.FolderBrowserDialog.SelectedPath += "\\";
 		}
 
 		private void NewOriginHUD(string FolderPath)
 		{
-
 			OriginHUD = new HUD(FolderPath);
 
 			OriginHUDStatusTitle.Content = OriginHUD.Name;
@@ -252,6 +229,8 @@ namespace hud_merger
 				};
 
 				ScrollablePanel.Content = ErrorLabel;
+
+				OriginHUD = null;
 			}
 			else
 			{
@@ -265,11 +244,14 @@ namespace hud_merger
 
 		private void NewTargetHUD_Click(object sender, RoutedEventArgs e)
 		{
-			string Result = FolderBrowserDialog();
-			if (Result != "")
+			System.Windows.Forms.DialogResult Result = this.FolderBrowserDialog.ShowDialog();
+			if (Result == System.Windows.Forms.DialogResult.OK)
 			{
-				NewTargetHUD(Result);
+				TargetFilesList.Children.Clear();
+				NewTargetHUD(this.FolderBrowserDialog.SelectedPath);
 			}
+			// Remember Folder
+			this.FolderBrowserDialog.SelectedPath += "\\";
 		}
 
 		private void NewTargetHUD(string FolderPath)
@@ -330,9 +312,14 @@ namespace hud_merger
 				}
 				catch (Exception Error)
 				{
-					MessageBox.Show(Error.Message, "HUD Merger", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show(Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 			}
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }

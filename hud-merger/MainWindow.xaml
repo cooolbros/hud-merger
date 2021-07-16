@@ -8,7 +8,8 @@
         Title="HUD Merger"
         Width="800"
         Height="450"
-        Icon="favicon.ico">
+        Icon="favicon.ico"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -55,7 +56,7 @@
         </Grid>
         <!-- Origin HUD Files -->
         <Grid Name="OriginHUDFilesContainer" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="10,5,5,5">
-            <Button Style="{StaticResource SelectHUDButton}" Click="NewOriginHUD_Click">
+            <Button Template="{StaticResource SelectHUDButtonTemplate}" Click="NewOriginHUD_Click">
                 <StackPanel>
                     <Label Content="+" Style="{StaticResource SelectHUDButtonPlus}" />
                     <Label Content="Open Folder" Style="{StaticResource SelectHUDOpenFolder}" />
@@ -64,7 +65,7 @@
         </Grid>
         <!-- Target HUD Files -->
         <Grid Name="TargetHUDFilesContainer" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="5,5,10,5">
-            <Button Style="{StaticResource SelectHUDButton}" Click="NewTargetHUD_Click">
+            <Button Template="{StaticResource SelectHUDButtonTemplate}" Click="NewTargetHUD_Click">
                 <StackPanel>
                     <Label Content="+" Style="{StaticResource SelectHUDButtonPlus}" />
                     <Label Content="Open Folder" Style="{StaticResource SelectHUDOpenFolder}" />
@@ -73,9 +74,7 @@
         </Grid>
         <!-- Footer -->
         <Grid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="1" Margin="10,5,10,10">
-            <Button Name="MergeButton" Style="{StaticResource MergeButton}" HorizontalAlignment="Right" Click="MergeButton_Click">
-                <TextBlock Name="MergeButtonTextBlock" Style="{StaticResource MergeButtonTextBlock}">Merge</TextBlock>
-            </Button>
+            <Button Name="MergeButton" Style="{StaticResource AccentButton}" IsEnabled="False" Click="MergeButton_Click">Merge</Button>
         </Grid>
     </Grid>
 </Window>

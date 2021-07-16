@@ -35,20 +35,32 @@ namespace hud_merger
 				switch (Setting.PropertyType.Name)
 				{
 					case "Boolean":
-						SettingControl = new CheckBox();
-						SettingControl.Content = Setting.Name.Replace('_', ' ');
-						SettingControl.IsChecked = Value;
+						SettingControl = new CheckBox()
+						{
+							Content = Setting.Name.Replace('_', ' '),
+							Style = (Style)Application.Current.Resources["CheckBoxStyle1"],
+							IsChecked = Value
+						};
+
 						CheckBoxControlsContainer.Children.Add(SettingControl);
 						break;
 					case "String":
-						StackPanel SettingContainer = new();
-						Label SettingLabel = new()
+						StackPanel SettingContainer = new()
 						{
-							Content = Setting.Name.Replace('_', ' ')
+							Margin = new Thickness(0, 0, 0, 10)
 						};
 
-						SettingControl = new TextBox();
-						SettingControl.Text = Value;
+						Label SettingLabel = new()
+						{
+							Content = Setting.Name.Replace('_', ' '),
+							FontSize = 15
+						};
+
+						SettingControl = new TextBox()
+						{
+							Text = Value,
+							Style = (Style)Application.Current.Resources["TextBoxStyle1"]
+						};
 
 						SettingContainer.Children.Add(SettingLabel);
 						SettingContainer.Children.Add(SettingControl);
@@ -65,20 +77,19 @@ namespace hud_merger
 
 			// Button to force update files now
 			WrapPanel UpdateContainer = new();
+			UpdateContainer.Margin = new Thickness(0, 5, 0, 5);
 
 			Button UpdateNow = new()
 			{
 				Content = "Update Files Now",
-				FontSize = 12,
-				Padding = new Thickness(5),
-				BorderThickness = new Thickness(0),
-				Cursor = Cursors.Hand,
-				VerticalAlignment = VerticalAlignment.Center
+				Style = (Style)Application.Current.Resources["EnabledButton"],
+				FontSize = 15,
+				Padding = new Thickness(20, 5, 20, 5),
 			};
 
 			Label UpdateStatus = new()
 			{
-				FontSize = 12,
+				FontSize = 15,
 				VerticalAlignment = VerticalAlignment.Center
 			};
 
@@ -96,15 +107,6 @@ namespace hud_merger
 
 			SettingsContainer.Children.Add(CheckBoxControlsContainer);
 			SettingsContainer.Children.Add(TextBoxControlsContainer);
-
-			ApplyButtonTextBlock.MouseEnter += (object sender, MouseEventArgs e) =>
-			{
-				ApplyButtonTextBlock.Background = (Brush)Application.Current.Resources["_BlueHover"];
-			};
-			ApplyButtonTextBlock.MouseLeave += (object sender, MouseEventArgs e) =>
-			{
-				ApplyButtonTextBlock.Background = (Brush)Application.Current.Resources["_Blue"];
-			};
 		}
 
 		private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -121,6 +123,11 @@ namespace hud_merger
 
 			Properties.Settings.Default.Save();
 			Close();
+		}
+
+		private void CheckBox_Checked(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }
