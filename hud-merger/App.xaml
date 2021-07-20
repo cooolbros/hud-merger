@@ -59,11 +59,14 @@
             <Setter Property="Width" Value="200" />
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
+        <Style TargetType="Border" x:Key="PanelBorder">
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Margin" Value="0,0,0,3" />
+        </Style>
         <Style TargetType="Label" x:Key="PanelLabel">
             <Setter Property="FontSize" Value="15" />
             <Setter Property="Foreground" Value="#000000" />
             <Setter Property="Padding" Value="6" />
-            <Setter Property="Margin" Value="0,0,0,3" />
         </Style>
         <Style x:Key="EnabledButton" TargetType="{x:Type ButtonBase}">
             <Setter Property="FontSize" Value="15" />

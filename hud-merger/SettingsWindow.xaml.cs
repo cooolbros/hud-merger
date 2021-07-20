@@ -59,7 +59,8 @@ namespace hud_merger
 						SettingControl = new TextBox()
 						{
 							Text = Value,
-							Style = (Style)Application.Current.Resources["TextBoxStyle1"]
+							Style = (Style)Application.Current.Resources["TextBoxStyle1"],
+							HorizontalAlignment = HorizontalAlignment.Left
 						};
 
 						SettingContainer.Children.Add(SettingLabel);

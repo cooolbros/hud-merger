@@ -26,8 +26,8 @@ namespace hud_merger
 		public bool Armed = false;
 
 		// These are GUI related and should be removed/replaced if GUI changes
-		public Label OriginListItem;
-		public Label TargetListItem;
+		public Border OriginListItem;
+		public Border TargetListItem;
 	}
 
 	/// <summary>
