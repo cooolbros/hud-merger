@@ -66,89 +66,89 @@ namespace hud_merger
 		public HashSet<string> Images { get; set; } = new();
 		public HashSet<string> Audio { get; set; } = new();
 
-		public void Add(string HUDFile, HashSet<string> Files)
+		public void Add(string hudFile, HashSet<string> files)
 		{
-			string SourceFilePath = $"{this.HUDPath}\\{HUDFile}";
-			if (!File.Exists(SourceFilePath))
+			string sourceFilePath = $"{this.HUDPath}\\{hudFile}";
+			if (!File.Exists(sourceFilePath))
 			{
-				System.Diagnostics.Debug.WriteLine("Could not find " + SourceFilePath);
+				System.Diagnostics.Debug.WriteLine("Could not find " + sourceFilePath);
 			}
 
-			string[] Folders = HUDFile.Split('\\');
-			Folders[^1] = "";
-			string FolderPath = String.Join('\\', Folders);
+			string[] folders = hudFile.Split('\\');
+			folders[^1] = "";
+			string folderPath = String.Join('\\', folders);
 
-			Dictionary<string, dynamic> Obj = File.Exists(SourceFilePath) ? Utilities.VDFTryParse(SourceFilePath) : new();
-			this.Add(FolderPath, Obj, Files);
+			Dictionary<string, dynamic> obj = File.Exists(sourceFilePath) ? Utilities.VDFTryParse(sourceFilePath) : new();
+			this.Add(folderPath, obj, files);
 		}
 
-		public void Add(string RelativeFolderPath, Dictionary<string, dynamic> Obj, HashSet<string> Files)
+		public void Add(string relativeFolderPath, Dictionary<string, dynamic> obj, HashSet<string> files)
 		{
 			// #base
-			if (Obj.ContainsKey("#base"))
+			if (obj.ContainsKey("#base"))
 			{
-				List<string> BaseFiles = new();
-				if (Obj["#base"].GetType() == typeof(List<dynamic>))
+				List<string> baseFiles = new();
+				if (obj["#base"].GetType() == typeof(List<dynamic>))
 				{
 					// List<dynamic> is not assignable to list string, add individual strings
-					foreach (dynamic BaseFile in Obj["#base"])
+					foreach (dynamic baseFile in obj["#base"])
 					{
-						BaseFiles.Add(BaseFile);
+						baseFiles.Add(baseFile);
 						// Files.Add(BaseFile)
 					}
 				}
 				else
 				{
 					// Assume #base is a string
-					BaseFiles.Add(Obj["#base"]);
+					baseFiles.Add(obj["#base"]);
 				}
 
-				foreach (string BaseFile in BaseFiles)
+				foreach (string baseFile in baseFiles)
 				{
-					string BaseFileRelativePath = $"{RelativeFolderPath}\\{String.Join('\\', Regex.Split(BaseFile, "[\\/]+"))}";
-					Files.Add(BaseFileRelativePath);
-					this.Add(BaseFileRelativePath, Files);
+					string baseFileRelativePath = $"{relativeFolderPath}\\{String.Join('\\', Regex.Split(baseFile, "[\\/]+"))}";
+					files.Add(baseFileRelativePath);
+					this.Add(baseFileRelativePath, files);
 				}
 			}
 
 			// Look at primitive properties and add matches to Dependencies Dictionary
-			void IterateDictionary(Dictionary<string, dynamic> Obj)
+			void IterateDictionary(Dictionary<string, dynamic> obj)
 			{
-				foreach (string Key in Obj.Keys)
+				foreach (string key in obj.Keys)
 				{
-					if (Obj[Key].GetType() == typeof(Dictionary<string, dynamic>))
+					if (obj[key].GetType() == typeof(Dictionary<string, dynamic>))
 					{
-						IterateDictionary(Obj[Key]);
+						IterateDictionary(obj[key]);
 					}
 					else
 					{
 						Type T = typeof(ClientschemeDependencies);
-						foreach (PropertyInfo TypeKey in T.GetProperties())
+						foreach (PropertyInfo typeKey in T.GetProperties())
 						{
-							dynamic CurrentPropertiesList = TypeKey.GetValue(Properties);
-							HashSet<string> CurrentDependenciesList = (HashSet<string>)TypeKey.GetValue(this);
+							dynamic currentPropertiesList = typeKey.GetValue(Properties);
+							HashSet<string> currentDependenciesList = (HashSet<string>)typeKey.GetValue(this);
 
-							foreach (string DefaultPropertyKey in CurrentPropertiesList)
+							foreach (string defaultPropertyKey in currentPropertiesList)
 							{
-								if (Key.ToLower().Contains(DefaultPropertyKey.ToLower()))
+								if (key.ToLower().Contains(defaultPropertyKey.ToLower()))
 								{
 									// The 'subimage' property when used in resource/gamemenu.res specifies
 									// an image path, other instances of the key name usually specify
 									// an image element. Ignore Dictionary<string, dynamic>
 
-									if (Obj[Key].GetType() == typeof(List<dynamic>))
+									if (obj[key].GetType() == typeof(List<dynamic>))
 									{
-										foreach (dynamic DuplicateKey in Obj[Key])
+										foreach (dynamic duplicateKey in obj[key])
 										{
-											if (DuplicateKey.GetType() == typeof(string))
+											if (duplicateKey.GetType() == typeof(string))
 											{
-												CurrentDependenciesList.Add(DuplicateKey);
+												currentDependenciesList.Add(duplicateKey);
 											}
 										}
 									}
-									else if (Obj[Key].GetType() == typeof(string))
+									else if (obj[key].GetType() == typeof(string))
 									{
-										CurrentDependenciesList.Add(Obj[Key]);
+										currentDependenciesList.Add(obj[key]);
 									}
 								}
 							}
@@ -157,7 +157,7 @@ namespace hud_merger
 				}
 			}
 
-			IterateDictionary(Obj);
+			IterateDictionary(obj);
 		}
 	}
 }

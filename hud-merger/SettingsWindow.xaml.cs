@@ -21,28 +21,28 @@ namespace hud_merger
 		{
 			InitializeComponent();
 
-			StackPanel CheckBoxControlsContainer = new();
-			StackPanel TextBoxControlsContainer = new()
+			StackPanel checkBoxControlsContainer = new();
+			StackPanel textBoxControlsContainer = new()
 			{
 				Margin = new Thickness(0, 5, 0, 0)
 			};
 
-			foreach (SettingsProperty Setting in Properties.Settings.Default.Properties)
+			foreach (SettingsProperty setting in Properties.Settings.Default.Properties)
 			{
-				dynamic SettingControl;
-				dynamic Value = Properties.Settings.Default[Setting.Name];
+				dynamic settingControl;
+				dynamic value = Properties.Settings.Default[setting.Name];
 
-				switch (Setting.PropertyType.Name)
+				switch (setting.PropertyType.Name)
 				{
 					case "Boolean":
-						SettingControl = new CheckBox()
+						settingControl = new CheckBox()
 						{
-							Content = Setting.Name.Replace('_', ' '),
+							Content = setting.Name.Replace('_', ' '),
 							Style = (Style)Application.Current.Resources["CheckBoxStyle1"],
-							IsChecked = Value
+							IsChecked = value
 						};
 
-						CheckBoxControlsContainer.Children.Add(SettingControl);
+						checkBoxControlsContainer.Children.Add(settingControl);
 						break;
 					case "String":
 						StackPanel SettingContainer = new()
@@ -52,35 +52,35 @@ namespace hud_merger
 
 						Label SettingLabel = new()
 						{
-							Content = Setting.Name.Replace('_', ' '),
+							Content = setting.Name.Replace('_', ' '),
 							FontSize = 15
 						};
 
-						SettingControl = new TextBox()
+						settingControl = new TextBox()
 						{
-							Text = Value,
+							Text = value,
 							Style = (Style)Application.Current.Resources["TextBoxStyle1"],
 							HorizontalAlignment = HorizontalAlignment.Left
 						};
 
 						SettingContainer.Children.Add(SettingLabel);
-						SettingContainer.Children.Add(SettingControl);
-						TextBoxControlsContainer.Children.Add(SettingContainer);
+						SettingContainer.Children.Add(settingControl);
+						textBoxControlsContainer.Children.Add(SettingContainer);
 						break;
 					default:
-						throw new Exception($"Unrecognised type {Setting.PropertyType.Name}!");
+						throw new Exception($"Unrecognised type {setting.PropertyType.Name}!");
 				}
 
-				SettingControl.Name = Setting.Name;
-				this.Controls.Add(SettingControl);
+				settingControl.Name = setting.Name;
+				this.Controls.Add(settingControl);
 			}
 
 
 			// Button to force update files now
-			WrapPanel UpdateContainer = new();
-			UpdateContainer.Margin = new Thickness(0, 5, 0, 5);
+			WrapPanel updateContainer = new();
+			updateContainer.Margin = new Thickness(0, 5, 0, 5);
 
-			Button UpdateNow = new()
+			Button updateNow = new()
 			{
 				Content = "Update Files Now",
 				Style = (Style)Application.Current.Resources["EnabledButton"],
@@ -88,26 +88,26 @@ namespace hud_merger
 				Padding = new Thickness(20, 5, 20, 5),
 			};
 
-			Label UpdateStatus = new()
+			Label updateStatus = new()
 			{
 				FontSize = 15,
 				VerticalAlignment = VerticalAlignment.Center
 			};
 
-			UpdateNow.Click += (object sender, RoutedEventArgs e) =>
+			updateNow.Click += (object sender, RoutedEventArgs e) =>
 			{
 				Updater.Update(true, true);
 				((MainWindow)Application.Current.MainWindow).HUDPanels = JsonSerializer.Deserialize<HUDPanel[]>(File.ReadAllText("Resources\\Panels.json"));
-				UpdateStatus.Content = $"Last updated on {DateTime.Now}";
+				updateStatus.Content = $"Last updated on {DateTime.Now}";
 			};
 
-			UpdateContainer.Children.Add(UpdateNow);
-			UpdateContainer.Children.Add(UpdateStatus);
+			updateContainer.Children.Add(updateNow);
+			updateContainer.Children.Add(updateStatus);
 
-			CheckBoxControlsContainer.Children.Add(UpdateContainer);
+			checkBoxControlsContainer.Children.Add(updateContainer);
 
-			SettingsContainer.Children.Add(CheckBoxControlsContainer);
-			SettingsContainer.Children.Add(TextBoxControlsContainer);
+			SettingsContainer.Children.Add(checkBoxControlsContainer);
+			SettingsContainer.Children.Add(textBoxControlsContainer);
 		}
 
 		private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -117,9 +117,9 @@ namespace hud_merger
 
 		private void ApplyButton_Click(object sender, RoutedEventArgs e)
 		{
-			foreach (dynamic SettingsControl in this.Controls)
+			foreach (dynamic settingsControl in this.Controls)
 			{
-				Properties.Settings.Default[SettingsControl.Name] = SettingsControl.GetType() == typeof(CheckBox) ? SettingsControl.IsChecked : SettingsControl.Text;
+				Properties.Settings.Default[settingsControl.Name] = settingsControl.GetType() == typeof(CheckBox) ? settingsControl.IsChecked : settingsControl.Text;
 			}
 
 			Properties.Settings.Default.Save();

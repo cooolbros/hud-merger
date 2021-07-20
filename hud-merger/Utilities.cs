@@ -7,30 +7,30 @@ namespace hud_merger
 {
 	public static class Utilities
 	{
-		public static void Merge(Dictionary<string, dynamic> Obj1, Dictionary<string, dynamic> Obj2)
+		public static void Merge(Dictionary<string, dynamic> obj1, Dictionary<string, dynamic> obj2)
 		{
-			foreach (string i in Obj1.Keys)
+			foreach (string i in obj1.Keys)
 			{
-				if (Obj1[i].GetType() == typeof(Dictionary<string, dynamic>))
+				if (obj1[i].GetType() == typeof(Dictionary<string, dynamic>))
 				{
-					if (Obj2.ContainsKey(i) && Obj2[i].GetType() == typeof(Dictionary<string, dynamic>))
+					if (obj2.ContainsKey(i) && obj2[i].GetType() == typeof(Dictionary<string, dynamic>))
 					{
-						Merge(Obj1[i], Obj2[i]);
+						Merge(obj1[i], obj2[i]);
 					}
 				}
 				else
 				{
-					if (Obj2.ContainsKey(i))
+					if (obj2.ContainsKey(i))
 					{
-						Obj1[i] = Obj2[i];
+						obj1[i] = obj2[i];
 					}
 				}
 			}
-			foreach (string j in Obj2.Keys)
+			foreach (string j in obj2.Keys)
 			{
-				if (!Obj1.ContainsKey(j))
+				if (!obj1.ContainsKey(j))
 				{
-					Obj1[j] = Obj2[j];
+					obj1[j] = obj2[j];
 				}
 			}
 		}
@@ -38,84 +38,84 @@ namespace hud_merger
 		/// <summary>
 		/// Returns a Dictionary of all key/values in a file, including #base files
 		/// </summary>
-		public static Dictionary<string, dynamic> LoadAllControls(string FilePath)
+		public static Dictionary<string, dynamic> LoadAllControls(string filePath)
 		{
-			Dictionary<string, dynamic> Origin = new();
+			Dictionary<string, dynamic> origin = new();
 
-			void AddControls(string FilePath)
+			void AddControls(string filePath)
 			{
 				// Some HUDs deliberately #base nonexistant file paths for customisation
-				Dictionary<string, dynamic> Obj = File.Exists(FilePath) ? VDFTryParse(FilePath) : new();
+				Dictionary<string, dynamic> obj = File.Exists(filePath) ? VDFTryParse(filePath) : new();
 
 				// #base
-				if (Obj.ContainsKey("#base"))
+				if (obj.ContainsKey("#base"))
 				{
-					List<string> BaseFiles = new();
-					if (Obj["#base"].GetType() == typeof(List<dynamic>))
+					List<string> baseFiles = new();
+					if (obj["#base"].GetType() == typeof(List<dynamic>))
 					{
 						// the VDF Parser gives us a List<dynamic> which becomes a List<object>
 						// at runtime for some reason, when you iterate it can evaluate each item
 						// and correctly and is able to assign string to string.
-						foreach (dynamic BaseFile in Obj["#base"])
+						foreach (dynamic baseFile in obj["#base"])
 						{
-							BaseFiles.Add(BaseFile);
+							baseFiles.Add(baseFile);
 						}
 					}
 					else
 					{
 						// Assume #base is a string
-						BaseFiles.Add(Obj["#base"]);
+						baseFiles.Add(obj["#base"]);
 					}
 
-					string[] Folders = FilePath.Split("\\");
+					string[] folders = filePath.Split("\\");
 					// Remove File Name
-					Folders[^1] = "";
-					foreach (string BaseFile in BaseFiles)
+					folders[^1] = "";
+					foreach (string baseFile in baseFiles)
 					{
-						AddControls(String.Join('\\', Folders) + BaseFile);
+						AddControls(String.Join('\\', folders) + baseFile);
 					}
 				}
 
-				Utilities.Merge(Origin, Obj);
+				Utilities.Merge(origin, obj);
 			}
 
-			AddControls(FilePath);
-			return Origin;
+			AddControls(filePath);
+			return origin;
 		}
 
 		/// <summary>
 		/// Determines whether the specified file exists. Does not throw an error if any folder in the path doesn't exist.
 		/// </summary>
-		public static bool TestPath(string FilePath)
+		public static bool TestPath(string filePath)
 		{
-			string FolderPath = "";
-			string[] Folders = Regex.Split(FilePath, "[\\/]+");
-			Folders[^1] = "";
-			for (int i = 0; i < Folders.Length - 1; i++)
+			string folderPath = "";
+			string[] folders = Regex.Split(filePath, "[\\/]+");
+			folders[^1] = "";
+			for (int i = 0; i < folders.Length - 1; i++)
 			{
-				FolderPath += Folders[i] + "\\";
-				if (!Directory.Exists(FolderPath))
+				folderPath += folders[i] + "\\";
+				if (!Directory.Exists(folderPath))
 				{
 					return false;
 				}
 			}
-			if (!File.Exists(FilePath))
+			if (!File.Exists(filePath))
 			{
 				return false;
 			}
 			return true;
 		}
 
-		public static Dictionary<string, dynamic> VDFTryParse(string FilePath, bool OSTags = true)
+		public static Dictionary<string, dynamic> VDFTryParse(string filePath, bool osTags = true)
 		{
 			try
 			{
-				Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(FilePath), OSTags);
+				Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(filePath), osTags);
 				return obj;
 			}
 			catch (Exception e)
 			{
-				throw new Exception($"Syntax error found in {FilePath}, unable to merge!\r\n" + e.Message);
+				throw new Exception($"Syntax error found in {filePath}, unable to merge!\r\n" + e.Message);
 			}
 		}
 	}

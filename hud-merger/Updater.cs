@@ -11,15 +11,15 @@ namespace hud_merger
 {
 	static class Updater
 	{
-		public static void Update(bool Download, bool Extract)
+		public static void Update(bool download, bool extract)
 		{
 			BackgroundWorker backgroundWorker = new();
 
 			backgroundWorker.DoWork += (object sender, DoWorkEventArgs e) =>
 			{
-				if (Download)
+				if (download)
 				{
-					List<string> URLs = Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up ? new()
+					List<string> urls = Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up ? new()
 					{
 						Properties.Resources.PanelsURL,
 						Properties.Resources.ClientschemeURL
@@ -27,12 +27,12 @@ namespace hud_merger
 
 					HttpClient client = new();
 
-					foreach (string URL in URLs)
+					foreach (string url in urls)
 					{
-						Uri uri = new(URL);
+						Uri uri = new(url);
 						string FilePath = string.Join('\\', uri.LocalPath.Split('/')[^2..]);
 
-						client.GetAsync(URL).ContinueWith((Task<HttpResponseMessage> Response) =>
+						client.GetAsync(url).ContinueWith((Task<HttpResponseMessage> Response) =>
 						{
 							if (Response.IsCompletedSuccessfully && Response.Result.IsSuccessStatusCode)
 							{
@@ -47,54 +47,54 @@ namespace hud_merger
 					// File will update after restart
 				}
 
-				if (Extract)
+				if (extract)
 				{
-					string VPK = Properties.Settings.Default.Team_Fortress_Folder + "\\bin\\vpk.exe";
-					string TF2MISC = Properties.Settings.Default.Team_Fortress_Folder + "\\tf\\tf2_misc_dir.vpk";
+					string vpk = Properties.Settings.Default.Team_Fortress_Folder + "\\bin\\vpk.exe";
+					string tf2Misc = Properties.Settings.Default.Team_Fortress_Folder + "\\tf\\tf2_misc_dir.vpk";
 
-					bool VPKExists = File.Exists(VPK);
-					bool TF2MISCExists = File.Exists(TF2MISC);
+					bool vpkExists = File.Exists(vpk);
+					bool tf2MiscExists = File.Exists(tf2Misc);
 
-					if (VPKExists && TF2MISCExists)
+					if (vpkExists && tf2MiscExists)
 					{
-						List<string> Arguments = new()
+						List<string> arguments = new()
 						{
 							"x",
-							$"\"{TF2MISC}\""
+							$"\"{tf2Misc}\""
 						};
 
-						List<string> HUDFilePaths = new()
+						List<string> hudFilePaths = new()
 						{
 							"resource/clientscheme.res",
 							"scripts/hudanimations_manifest.txt",
 							"scripts/hudlayout.res",
 						};
 
-						foreach (string FilePath in HUDFilePaths)
+						foreach (string filePath in hudFilePaths)
 						{
 							// Ensure vpk.exe is able to extract to folder
-							Directory.CreateDirectory(Path.GetDirectoryName($"Resources\\HUD\\{FilePath.Replace('/', '\\')}"));
-							Arguments.Add($"\"{FilePath}\"");
+							Directory.CreateDirectory(Path.GetDirectoryName($"Resources\\HUD\\{filePath.Replace('/', '\\')}"));
+							arguments.Add($"\"{filePath}\"");
 						}
 
-						ProcessStartInfo info = new(VPK)
+						ProcessStartInfo info = new(vpk)
 						{
 							WorkingDirectory = Directory.GetCurrentDirectory() + "\\Resources\\HUD",
 							WindowStyle = ProcessWindowStyle.Hidden,
-							Arguments = string.Join(' ', Arguments)
+							Arguments = string.Join(' ', arguments)
 						};
 
 						Process.Start(info);
 					}
 					else
 					{
-						string[] Paragraphs = new string[]
+						string[] paragraphs = new string[]
 						{
-							$"Could not find {(!VPKExists ? "vpk.exe" : "")}{(!VPKExists && !TF2MISCExists ? " and " : "")}{(!TF2MISCExists ? "tf2_misc_dir.vpk" : "")}!",
+							$"Could not find {(!vpkExists ? "vpk.exe" : "")}{(!vpkExists && !tf2MiscExists ? " and " : "")}{(!tf2MiscExists ? "tf2_misc_dir.vpk" : "")}!",
 							"HUD Merger may not create HUDs correctly if TF2 has been updated",
 							"This message can be supressed by disabling \"Extract required TF2 HUD files on startup\" in Files > Settings"
 						};
-						MessageBox.Show(string.Join("\r\n\r\n", Paragraphs), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+						MessageBox.Show(string.Join("\r\n\r\n", paragraphs), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 					}
 				}
 			};

@@ -30,9 +30,9 @@ namespace hud_merger
 			InitializeComponent();
 
 			// Updater
-			bool Download = Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up;
-			bool Extract = Properties.Settings.Default.Extract_required_TF2_HUD_files_on_startup;
-			Updater.Update(Download, Extract);
+			bool download = Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up;
+			bool extract = Properties.Settings.Default.Extract_required_TF2_HUD_files_on_startup;
+			Updater.Update(download, extract);
 		}
 
 		private void MenuItem_LoadOriginHUD(object sender, RoutedEventArgs e)
@@ -67,13 +67,13 @@ namespace hud_merger
 		private void ClearSelected()
 		{
 			OriginFilesList.Children.Clear();
-			foreach (UIElement Child in TargetFilesList.Children)
+			foreach (UIElement child in TargetFilesList.Children)
 			{
-				Child.Visibility = Visibility.Collapsed;
+				child.Visibility = Visibility.Collapsed;
 			}
-			foreach (HUDPanel Panel in this.HUDPanels)
+			foreach (HUDPanel panel in this.HUDPanels)
 			{
-				Panel.Armed = false;
+				panel.Armed = false;
 			}
 		}
 
@@ -93,8 +93,8 @@ namespace hud_merger
 
 		private void NewOriginHUD_Click(object sender, RoutedEventArgs e)
 		{
-			System.Windows.Forms.DialogResult Result = this.FolderBrowserDialog.ShowDialog();
-			if (Result == System.Windows.Forms.DialogResult.OK)
+			System.Windows.Forms.DialogResult result = this.FolderBrowserDialog.ShowDialog();
+			if (result == System.Windows.Forms.DialogResult.OK)
 			{
 				ClearSelected();
 				NewOriginHUD(this.FolderBrowserDialog.SelectedPath);
@@ -103,9 +103,9 @@ namespace hud_merger
 			this.FolderBrowserDialog.SelectedPath += "\\";
 		}
 
-		private void NewOriginHUD(string FolderPath)
+		private void NewOriginHUD(string folderPath)
 		{
-			OriginHUD = new HUD(FolderPath);
+			OriginHUD = new HUD(folderPath);
 
 			OriginHUDStatusTitle.Content = OriginHUD.Name;
 			OriginHUDStatusInfo.Content = OriginHUD.FolderPath;
@@ -115,115 +115,115 @@ namespace hud_merger
 			OriginHUDFilesContainer.RowDefinitions.Clear();
 
 			OriginHUDFilesContainer.ColumnDefinitions.Add(new ColumnDefinition());
-			RowDefinition TitleRowDefinition = new()
+			RowDefinition titleRowDefinition = new()
 			{
 				Height = GridLength.Auto
 			};
-			OriginHUDFilesContainer.RowDefinitions.Add(TitleRowDefinition);
+			OriginHUDFilesContainer.RowDefinitions.Add(titleRowDefinition);
 			OriginHUDFilesContainer.RowDefinitions.Add(new RowDefinition());
 
-			Label TitleLabel = new()
+			Label titleLabel = new()
 			{
 				Content = "Available Files",
 				FontSize = 18
 			};
-			OriginHUDFilesContainer.Children.Add(TitleLabel);
+			OriginHUDFilesContainer.Children.Add(titleLabel);
 
 			// Search Box
-			TextBox SearchBox = new()
+			TextBox searchBox = new()
 			{
 				Style = (Style)Application.Current.Resources["SearchBox"]
 			};
-			SearchBox.TextChanged += (object sender, TextChangedEventArgs e) =>
+			searchBox.TextChanged += (object sender, TextChangedEventArgs e) =>
 			{
-				string SearchText = SearchBox.Text.ToLower();
+				string searchText = searchBox.Text.ToLower();
 				foreach (Border PanelBorder in OriginFilesList.Children)
 				{
-					bool Contains = ((Label)PanelBorder.Child).Content.ToString().ToLower().Contains(SearchText);
-					PanelBorder.Visibility = Contains ? Visibility.Visible : Visibility.Collapsed;
+					bool contains = ((Label)PanelBorder.Child).Content.ToString().ToLower().Contains(searchText);
+					PanelBorder.Visibility = contains ? Visibility.Visible : Visibility.Collapsed;
 				}
 			};
 
-			Grid.SetColumn(SearchBox, 1);
-			OriginHUDFilesContainer.Children.Add(SearchBox);
+			Grid.SetColumn(searchBox, 1);
+			OriginHUDFilesContainer.Children.Add(searchBox);
 
-			ScrollViewer ScrollablePanel = new();
-			Grid.SetRow(ScrollablePanel, 1);
+			ScrollViewer scrollablePanel = new();
+			Grid.SetRow(scrollablePanel, 1);
 
 			OriginFilesList.Margin = new Thickness(3);
 
-			bool HUDIsValid = false;
+			bool hudIsValid = false;
 
-			foreach (HUDPanel Panel in HUDPanels)
+			foreach (HUDPanel panel in HUDPanels)
 			{
-				bool PanelExists = OriginHUD.TestPanel(Panel);
+				bool panelExists = OriginHUD.TestPanel(panel);
 
-				Panel.OriginListItem = new Border()
+				panel.OriginListItem = new Border()
 				{
 					Style = (Style)Application.Current.Resources["PanelBorder"],
 					Child = new Label()
 					{
-						Content = Panel.Name,
+						Content = panel.Name,
 						Style = (Style)Application.Current.Resources["PanelLabel"],
-						Visibility = PanelExists ? Visibility.Visible : Visibility.Collapsed,
+						Visibility = panelExists ? Visibility.Visible : Visibility.Collapsed,
 					}
 				};
 
-				Panel.OriginListItem.MouseEnter += (object sender, MouseEventArgs e) =>
+				panel.OriginListItem.MouseEnter += (object sender, MouseEventArgs e) =>
 				{
-					if (!Panel.Armed)
+					if (!panel.Armed)
 					{
-						Panel.OriginListItem.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#E6E6E6");
+						panel.OriginListItem.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#E6E6E6");
 					}
 				};
 
-				Panel.OriginListItem.MouseLeave += (object sender, MouseEventArgs e) =>
+				panel.OriginListItem.MouseLeave += (object sender, MouseEventArgs e) =>
 				{
-					if (!Panel.Armed)
+					if (!panel.Armed)
 					{
-						Panel.OriginListItem.Background = Brushes.Transparent;
+						panel.OriginListItem.Background = Brushes.Transparent;
 					}
 				};
 
-				Panel.OriginListItem.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
+				panel.OriginListItem.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
 				{
-					if (!Panel.Armed)
+					if (!panel.Armed)
 					{
-						((Label)Panel.OriginListItem.Child).Foreground = Brushes.White;
-						Panel.OriginListItem.Background = (Brush)Application.Current.Resources["_Blue"];
+						((Label)panel.OriginListItem.Child).Foreground = Brushes.White;
+						panel.OriginListItem.Background = (Brush)Application.Current.Resources["_Blue"];
 
 						if (TargetHUD != null)
 						{
-							Panel.TargetListItem.Visibility = Visibility.Visible;
+							panel.TargetListItem.Visibility = Visibility.Visible;
 						}
 
-						Panel.Armed = true;
+						panel.Armed = true;
 					}
 					else
 					{
-						((Label)Panel.OriginListItem.Child).Foreground = Brushes.Black;
-						Panel.OriginListItem.Background = Brushes.Transparent;
+						((Label)panel.OriginListItem.Child).Foreground = Brushes.Black;
+						panel.OriginListItem.Background = Brushes.Transparent;
 
 						if (TargetHUD != null)
 						{
-							Panel.TargetListItem.Visibility = Visibility.Collapsed;
+							panel.TargetListItem.Visibility = Visibility.Collapsed;
 						}
 
-						Panel.Armed = false;
+						panel.Armed = false;
 					}
 				};
 
-				OriginFilesList.Children.Add(Panel.OriginListItem);
+				OriginFilesList.Children.Add(panel.OriginListItem);
 
-				if (PanelExists)
+				if (panelExists)
 				{
-					HUDIsValid = true;
+					hudIsValid = true;
 				}
 			}
 
-			if (!HUDIsValid)
+			if (!hudIsValid)
 			{
-				TextBlock ErrorLabel = new()
+				TextBlock errorLabel = new()
 				{
 					Text = $"Could not find any HUD elements, are you sure {OriginHUD.Name} is a HUD?",
 					FontSize = 16,
@@ -232,24 +232,24 @@ namespace hud_merger
 					Margin = new Thickness(25)
 				};
 
-				ScrollablePanel.Content = ErrorLabel;
+				scrollablePanel.Content = errorLabel;
 
 				OriginHUD = null;
 			}
 			else
 			{
-				ScrollablePanel.Content = OriginFilesList;
+				scrollablePanel.Content = OriginFilesList;
 			}
 
-			OriginHUDFilesContainer.Children.Add(ScrollablePanel);
+			OriginHUDFilesContainer.Children.Add(scrollablePanel);
 
 			UpdateFooterState();
 		}
 
 		private void NewTargetHUD_Click(object sender, RoutedEventArgs e)
 		{
-			System.Windows.Forms.DialogResult Result = this.FolderBrowserDialog.ShowDialog();
-			if (Result == System.Windows.Forms.DialogResult.OK)
+			System.Windows.Forms.DialogResult result = this.FolderBrowserDialog.ShowDialog();
+			if (result == System.Windows.Forms.DialogResult.OK)
 			{
 				TargetFilesList.Children.Clear();
 				NewTargetHUD(this.FolderBrowserDialog.SelectedPath);
@@ -258,9 +258,9 @@ namespace hud_merger
 			this.FolderBrowserDialog.SelectedPath += "\\";
 		}
 
-		private void NewTargetHUD(string FolderPath)
+		private void NewTargetHUD(string folderPath)
 		{
-			TargetHUD = new HUD(FolderPath);
+			TargetHUD = new HUD(folderPath);
 
 			TargetHUDStatusTitle.Content = TargetHUD.Name;
 			TargetHUDStatusInfo.Content = TargetHUD.FolderPath;
@@ -269,53 +269,53 @@ namespace hud_merger
 			TargetHUDFilesContainer.ColumnDefinitions.Clear();
 			TargetHUDFilesContainer.RowDefinitions.Clear();
 
-			RowDefinition TitleRowDefinition = new()
+			RowDefinition titleRowDefinition = new()
 			{
 				Height = GridLength.Auto
 			};
-			TargetHUDFilesContainer.RowDefinitions.Add(TitleRowDefinition);
+			TargetHUDFilesContainer.RowDefinitions.Add(titleRowDefinition);
 			TargetHUDFilesContainer.RowDefinitions.Add(new RowDefinition());
 
-			Label TitleLabel = new()
+			Label titleLabel = new()
 			{
 				Content = "Files To Add",
 				FontSize = 18
 			};
-			Grid.SetRow(TitleLabel, 0);
-			TargetHUDFilesContainer.Children.Add(TitleLabel);
+			Grid.SetRow(titleLabel, 0);
+			TargetHUDFilesContainer.Children.Add(titleLabel);
 
-			ScrollViewer ScrollablePanel = new();
-			Grid.SetRow(ScrollablePanel, 1);
+			ScrollViewer scrollablePanel = new();
+			Grid.SetRow(scrollablePanel, 1);
 
 			TargetFilesList.Margin = new Thickness(3);
 
-			foreach (HUDPanel Panel in HUDPanels)
+			foreach (HUDPanel panel in HUDPanels)
 			{
-				Panel.TargetListItem = new Border()
+				panel.TargetListItem = new Border()
 				{
 					Style = (Style)Application.Current.Resources["PanelBorder"],
 					Background = (Brush)Application.Current.Resources["_Blue"],
-					Visibility = Panel.Armed ? Visibility.Visible : Visibility.Collapsed,
+					Visibility = panel.Armed ? Visibility.Visible : Visibility.Collapsed,
 					Child = new Label()
 					{
-						Content = Panel.Name,
+						Content = panel.Name,
 						Style = (Style)Application.Current.Resources["PanelLabel"],
 						Foreground = Brushes.White,
 					}
 				};
 
-				Panel.TargetListItem.MouseLeftButtonDown += (object sender, MouseButtonEventArgs e) =>
+				panel.TargetListItem.MouseLeftButtonDown += (object sender, MouseButtonEventArgs e) =>
 				{
-					((Label)Panel.OriginListItem.Child).Foreground = Brushes.Black;
-					Panel.OriginListItem.Background = Brushes.Transparent;
-					Panel.TargetListItem.Visibility = Visibility.Collapsed;
-					Panel.Armed = false;
+					((Label)panel.OriginListItem.Child).Foreground = Brushes.Black;
+					panel.OriginListItem.Background = Brushes.Transparent;
+					panel.TargetListItem.Visibility = Visibility.Collapsed;
+					panel.Armed = false;
 				};
 
-				TargetFilesList.Children.Add(Panel.TargetListItem);
+				TargetFilesList.Children.Add(panel.TargetListItem);
 			}
-			ScrollablePanel.Content = TargetFilesList;
-			TargetHUDFilesContainer.Children.Add(ScrollablePanel);
+			scrollablePanel.Content = TargetFilesList;
+			TargetHUDFilesContainer.Children.Add(scrollablePanel);
 
 			UpdateFooterState();
 		}

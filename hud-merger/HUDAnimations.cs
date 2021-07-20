@@ -120,28 +120,28 @@ namespace hud_merger
 
 	static class HUDAnimations
 	{
-		public static Dictionary<string, List<HUDAnimation>> Parse(string Str)
+		public static Dictionary<string, List<HUDAnimation>> Parse(string str)
 		{
 			int i = 0;
-			char[] WhiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
+			char[] whiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
 
-			string Next(bool LookAhead = false)
+			string Next(bool lookAhead = false)
 			{
-				string CurrentToken = "";
+				string currentToken = "";
 				int j = i;
 
-				if (j >= Str.Length - 1)
+				if (j >= str.Length - 1)
 				{
 					return "EOF";
 				}
 
-				while ((WhiteSpaceIgnore.Contains(Str[j]) || Str[j] == '/') && j < Str.Length - 1)
+				while ((whiteSpaceIgnore.Contains(str[j]) || str[j] == '/') && j < str.Length - 1)
 				{
-					if (Str[j] == '/')
+					if (str[j] == '/')
 					{
-						if (Str[j + 1] == '/')
+						if (str[j + 1] == '/')
 						{
-							while (Str[j] != '\n' && j < Str.Length - 1)
+							while (str[j] != '\n' && j < str.Length - 1)
 							{
 								j++;
 							}
@@ -151,23 +151,23 @@ namespace hud_merger
 					{
 						j++;
 					}
-					if (j >= Str.Length)
+					if (j >= str.Length)
 					{
 						return "EOF";
 					}
 				}
 
-				if (Str[j] == '"')
+				if (str[j] == '"')
 				{
 					// Read until next quote (ignore opening quote)
 					j++;
-					while (Str[j] != '"' && j < Str.Length - 1)
+					while (str[j] != '"' && j < str.Length - 1)
 					{
-						if (Str[j] == '\n')
+						if (str[j] == '\n')
 						{
 							throw new Exception($"Unexpected end of line at position {j}");
 						}
-						CurrentToken += Str[j];
+						currentToken += str[j];
 						j++;
 					}
 					j++; // Skip over closing quote
@@ -175,18 +175,18 @@ namespace hud_merger
 				else
 				{
 					// Read until whitespace (or end of file)
-					while (j < Str.Length && !WhiteSpaceIgnore.Contains(Str[j]))
+					while (j < str.Length && !whiteSpaceIgnore.Contains(str[j]))
 					{
-						if (Str[j] == '"')
+						if (str[j] == '"')
 						{
 							throw new Exception($"Unexpected double quote at position {j}");
 						}
-						CurrentToken += Str[j];
+						currentToken += str[j];
 						j++;
 					}
 				}
 
-				if (!LookAhead)
+				if (!lookAhead)
 				{
 					i = j;
 				}
@@ -196,238 +196,238 @@ namespace hud_merger
 				//	return "EOF";
 				//}
 
-				return CurrentToken;
+				return currentToken;
 			}
 
 			Dictionary<string, List<HUDAnimation>> ParseFile()
 			{
-				Dictionary<string, List<HUDAnimation>> Animations = new();
+				Dictionary<string, List<HUDAnimation>> animations = new();
 
-				string CurrentToken = Next();
+				string currentToken = Next();
 
 				// System.Diagnostics.Debugger.Break();
 
-				while (CurrentToken == "event")
+				while (currentToken == "event")
 				{
-					string EventName = Next();
-					Animations[EventName] = ParseEvent();
-					CurrentToken = Next();
+					string eventName = Next();
+					animations[eventName] = ParseEvent();
+					currentToken = Next();
 				}
 
-				return Animations;
+				return animations;
 			}
 
 			List<HUDAnimation> ParseEvent()
 			{
-				List<HUDAnimation> Event = new();
-				string NextToken = Next();
-				if (NextToken == "{")
+				List<HUDAnimation> @event = new();
+				string nextToken = Next();
+				if (nextToken == "{")
 				{
 					// string NextToken = Next();
-					while (NextToken != "}" && NextToken != "EOF")
+					while (nextToken != "}" && nextToken != "EOF")
 					{
 						// NextToken is not a closing brace therefore it is the animation type
 						// Pass the animation type to the animation
-						NextToken = Next();
-						if (NextToken != "}")
+						nextToken = Next();
+						if (nextToken != "}")
 						{
-							Event.Add(ParseAnimation(NextToken));
+							@event.Add(ParseAnimation(nextToken));
 						}
 					}
 				}
 				else
 				{
-					throw new Exception($"Unexpected {NextToken} at position {i}! Are you missing an opening brace?");
+					throw new Exception($"Unexpected {nextToken} at position {i}! Are you missing an opening brace?");
 				}
-				return Event;
+				return @event;
 			}
 
-			void SetInterpolator(Animate Animation)
+			void SetInterpolator(Animate animation)
 			{
-				string Interpolator = Next().ToLower();
-				if (Interpolator == "pulse")
+				string interpolator = Next().ToLower();
+				if (interpolator == "pulse")
 				{
-					Animation.Interpolator = Interpolator;
-					Animation.Frequency = Next();
+					animation.Interpolator = interpolator;
+					animation.Frequency = Next();
 				}
-				else if (new string[] { "gain", "bias" }.Contains(Interpolator))
+				else if (new string[] { "gain", "bias" }.Contains(interpolator))
 				{
-					Animation.Interpolator = Interpolator[0].ToString().ToUpper() + Interpolator.Substring(1, Interpolator.Length - 1);
-					Animation.Bias = Next();
+					animation.Interpolator = interpolator[0].ToString().ToUpper() + interpolator.Substring(1, interpolator.Length - 1);
+					animation.Bias = Next();
 				}
 				else
 				{
-					Animation.Interpolator = Interpolator;
+					animation.Interpolator = interpolator;
 				}
 			}
 
 
-			HUDAnimation ParseAnimation(string AnimationType)
+			HUDAnimation ParseAnimation(string animationType)
 			{
-				dynamic Animation;
-				AnimationType = AnimationType.ToLower();
+				dynamic animation;
+				animationType = animationType.ToLower();
 
-				if (AnimationType == "animate")
+				if (animationType == "animate")
 				{
-					Animation = new Animate();
-					Animation.Type = AnimationType;
-					Animation.Element = Next();
-					Animation.Property = Next();
-					Animation.Value = Next();
-					SetInterpolator(Animation);
-					Animation.Delay = Next();
-					Animation.Duration = Next();
+					animation = new Animate();
+					animation.Type = animationType;
+					animation.Element = Next();
+					animation.Property = Next();
+					animation.Value = Next();
+					SetInterpolator(animation);
+					animation.Delay = Next();
+					animation.Duration = Next();
 				}
-				else if (AnimationType == "runevent")
+				else if (animationType == "runevent")
 				{
-					Animation = new RunEvent();
-					Animation.Type = AnimationType;
-					Animation.Event = Next();
-					Animation.Delay = Next();
+					animation = new RunEvent();
+					animation.Type = animationType;
+					animation.Event = Next();
+					animation.Delay = Next();
 				}
-				else if (AnimationType == "stopevent")
+				else if (animationType == "stopevent")
 				{
-					Animation = new StopEvent();
-					Animation.Type = AnimationType;
-					Animation.Event = Next();
-					Animation.Delay = Next();
+					animation = new StopEvent();
+					animation.Type = animationType;
+					animation.Event = Next();
+					animation.Delay = Next();
 				}
-				else if (AnimationType == "setvisible")
+				else if (animationType == "setvisible")
 				{
-					Animation = new SetVisible();
-					Animation.Type = AnimationType;
-					Animation.Element = Next();
-					Animation.Delay = Next();
-					Animation.Duration = Next();
+					animation = new SetVisible();
+					animation.Type = animationType;
+					animation.Element = Next();
+					animation.Delay = Next();
+					animation.Duration = Next();
 				}
-				else if (AnimationType == "firecommand")
+				else if (animationType == "firecommand")
 				{
-					Animation = new FireCommand();
-					Animation.Type = AnimationType;
-					Animation.Delay = Next();
-					Animation.Command = Next();
+					animation = new FireCommand();
+					animation.Type = animationType;
+					animation.Delay = Next();
+					animation.Command = Next();
 				}
-				else if (AnimationType == "runeventchild")
+				else if (animationType == "runeventchild")
 				{
-					Animation = new RunEventChild();
-					Animation.Type = AnimationType;
-					Animation.Element = Next();
-					Animation.Event = Next();
-					Animation.Delay = Next();
+					animation = new RunEventChild();
+					animation.Type = animationType;
+					animation.Element = Next();
+					animation.Event = Next();
+					animation.Delay = Next();
 				}
-				else if (AnimationType == "setinputenabled")
+				else if (animationType == "setinputenabled")
 				{
-					Animation = new SetInputEnabled();
-					Animation.Element = Next();
-					Animation.Visible = int.Parse(Next());
-					Animation.Delay = Next();
+					animation = new SetInputEnabled();
+					animation.Element = Next();
+					animation.Visible = int.Parse(Next());
+					animation.Delay = Next();
 				}
-				else if (AnimationType == "playsound")
+				else if (animationType == "playsound")
 				{
-					Animation = new PlaySound();
-					Animation.Delay = Next();
-					Animation.Sound = Next();
+					animation = new PlaySound();
+					animation.Delay = Next();
+					animation.Sound = Next();
 				}
-				else if (AnimationType == "stoppanelanimations")
+				else if (animationType == "stoppanelanimations")
 				{
-					Animation = new StopPanelAnimations();
-					Animation.Element = Next();
-					Animation.Delay = Next();
+					animation = new StopPanelAnimations();
+					animation.Element = Next();
+					animation.Delay = Next();
 				}
 				else
 				{
-					System.Diagnostics.Debug.WriteLine(Str.Substring(i - 25, 25));
-					throw new Exception($"Unexpected {AnimationType} at position {i}");
+					System.Diagnostics.Debug.WriteLine(str.Substring(i - 25, 25));
+					throw new Exception($"Unexpected {animationType} at position {i}");
 				}
 
 				if (Next(true).StartsWith('['))
 				{
-					Animation.OSTag = Next();
+					animation.OSTag = Next();
 				}
 
-				return Animation;
+				return animation;
 			}
 
 			return ParseFile();
 		}
 
-		public static string Stringify(Dictionary<string, List<HUDAnimation>> Animations)
+		public static string Stringify(Dictionary<string, List<HUDAnimation>> animations)
 		{
-			string Str = "";
-			char Tab = '\t';
-			string NewLine = "\r\n";
+			string str = "";
+			char tab = '\t';
+			string newLine = "\r\n";
 
-			string FormatWhiteSpace(string Str)
+			string FormatWhiteSpace(string str)
 			{
-				return System.Text.RegularExpressions.Regex.IsMatch(Str, "\\s") ? $"\"{Str}\"" : Str;
+				return System.Text.RegularExpressions.Regex.IsMatch(str, "\\s") ? $"\"{str}\"" : str;
 			}
 
-			string GetInterpolator(Animate Animation)
+			string GetInterpolator(Animate animation)
 			{
-				string Interpolator = Animation.Interpolator.ToLower();
-				switch (Interpolator)
+				string interpolator = animation.Interpolator.ToLower();
+				switch (interpolator)
 				{
 					case "Pulse":
-						return $"Pulse {Animation.Frequency}";
+						return $"Pulse {animation.Frequency}";
 					case "Gain":
 					case "Bias":
-						return $"Gain {Animation.Bias}";
+						return $"Gain {animation.Bias}";
 					default:
-						return $"{Animation.Interpolator}";
+						return $"{animation.Interpolator}";
 				}
 			}
 
-			foreach (string Event in Animations.Keys)
+			foreach (string @event in animations.Keys)
 			{
-				Str += $"event {Event}{NewLine}{{{NewLine}";
-				foreach (dynamic Execution in Animations[Event])
+				str += $"event {@event}{newLine}{{{newLine}";
+				foreach (dynamic execution in animations[@event])
 				{
-					Str += Tab;
-					Type T = Execution.GetType();
+					str += tab;
+					Type T = execution.GetType();
 					if (T == typeof(Animate))
 					{
-						Str += $"Animate {FormatWhiteSpace(Execution.Element)} {FormatWhiteSpace(Execution.Property)} {FormatWhiteSpace(Execution.Value)} {GetInterpolator(Execution)} {Execution.Delay} {Execution.Duration}";
+						str += $"Animate {FormatWhiteSpace(execution.Element)} {FormatWhiteSpace(execution.Property)} {FormatWhiteSpace(execution.Value)} {GetInterpolator(execution)} {execution.Delay} {execution.Duration}";
 					}
 					else if (T == typeof(RunEvent))
 					{
-						Str += $"RunEvent {FormatWhiteSpace(Execution.Event)} {Execution.Delay}";
+						str += $"RunEvent {FormatWhiteSpace(execution.Event)} {execution.Delay}";
 					}
 					else if (T == typeof(StopEvent))
 					{
-						Str += $"StopEvent {FormatWhiteSpace(Execution.Event)} {Execution.Delay}";
+						str += $"StopEvent {FormatWhiteSpace(execution.Event)} {execution.Delay}";
 					}
 					else if (T == typeof(SetVisible))
 					{
-						Str += $"SetVisible {FormatWhiteSpace(Execution.Element)} {Execution.Delay} {Execution.Duration}";
+						str += $"SetVisible {FormatWhiteSpace(execution.Element)} {execution.Delay} {execution.Duration}";
 					}
 					else if (T == typeof(FireCommand))
 					{
-						Str += $"FireCommand {Execution.Delay} {FormatWhiteSpace(Execution.Command)}";
+						str += $"FireCommand {execution.Delay} {FormatWhiteSpace(execution.Command)}";
 					}
 					else if (T == typeof(RunEventChild))
 					{
-						Str += $"RunEventChild {FormatWhiteSpace(Execution.Element)} {FormatWhiteSpace(Execution.Event)} {Execution.Delay}";
+						str += $"RunEventChild {FormatWhiteSpace(execution.Element)} {FormatWhiteSpace(execution.Event)} {execution.Delay}";
 					}
 					else if (T == typeof(SetVisible))
 					{
-						Str += $"SetVisible {FormatWhiteSpace(Execution.Element)} {Execution.Visible} {Execution.Delay}";
+						str += $"SetVisible {FormatWhiteSpace(execution.Element)} {execution.Visible} {execution.Delay}";
 					}
 					else if (T == typeof(PlaySound))
 					{
-						Str += $"PlaySound {Execution.Delay} {FormatWhiteSpace(Execution.Sound)}";
+						str += $"PlaySound {execution.Delay} {FormatWhiteSpace(execution.Sound)}";
 					}
 
-					if (Execution.OSTag != null)
+					if (execution.OSTag != null)
 					{
-						Str += " " + Execution.OSTag;
+						str += " " + execution.OSTag;
 					}
 
-					Str += NewLine;
+					str += newLine;
 				}
-				Str += $"}}{NewLine}";
+				str += $"}}{newLine}";
 			}
 
-			return Str;
+			return str;
 		}
 	}
 }

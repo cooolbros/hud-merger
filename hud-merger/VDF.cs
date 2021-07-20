@@ -8,29 +8,29 @@ namespace hud_merger
 	{
 		public static char OSTagDelimeter = '^';
 
-		public static Dictionary<string, dynamic> Parse(string Str, bool OSTags = true)
+		public static Dictionary<string, dynamic> Parse(string str, bool osTags = true)
 		{
 			int i = 0;
-			char[] WhiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
+			char[] whiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
 
-			string Next(bool LookAhead = false)
+			string Next(bool lookAhead = false)
 			{
-				string CurrentToken = "";
+				string currentToken = "";
 				int j = i;
 
-				if (j >= Str.Length - 1)
+				if (j >= str.Length - 1)
 				{
 					return "EOF";
 				}
 
-				while ((WhiteSpaceIgnore.Contains(Str[j]) || Str[j] == '/') && j <= Str.Length - 1)
+				while ((whiteSpaceIgnore.Contains(str[j]) || str[j] == '/') && j <= str.Length - 1)
 				{
-					if (Str[j] == '/')
+					if (str[j] == '/')
 					{
-						if (Str[j + 1] == '/')
+						if (str[j + 1] == '/')
 						{
 							// prevent index out of bounds error if file doesn't end in a new line
-							while (j < Str.Length && Str[j] != '\n')
+							while (j < str.Length && str[j] != '\n')
 							{
 								j++;
 							}
@@ -40,23 +40,23 @@ namespace hud_merger
 					{
 						j++;
 					}
-					if (j >= Str.Length)
+					if (j >= str.Length)
 					{
 						return "EOF";
 					}
 				}
 
-				if (Str[j] == '"')
+				if (str[j] == '"')
 				{
 					// Read until next quote (ignore opening quote)
 					j++;
-					while (Str[j] != '"' && j < Str.Length)
+					while (str[j] != '"' && j < str.Length)
 					{
-						if (Str[j] == '\n')
+						if (str[j] == '\n')
 						{
 							throw new Exception($"Unexpected end of line at position {j}");
 						}
-						CurrentToken += Str[j];
+						currentToken += str[j];
 						j++;
 					}
 					j++; // Skip over closing quote
@@ -64,66 +64,66 @@ namespace hud_merger
 				else
 				{
 					// Read until whitespace (or end of file)
-					while (!WhiteSpaceIgnore.Contains(Str[j]) && j < Str.Length - 1)
+					while (!whiteSpaceIgnore.Contains(str[j]) && j < str.Length - 1)
 					{
-						if (Str[j] == '"')
+						if (str[j] == '"')
 						{
 							throw new Exception($"Unexpected double quote at position {j}");
 						}
-						CurrentToken += Str[j];
+						currentToken += str[j];
 						j++;
 					}
 				}
 
-				if (!LookAhead)
+				if (!lookAhead)
 				{
 					i = j;
 				}
 
-				return CurrentToken;
+				return currentToken;
 			}
 
-			Dictionary<string, dynamic> ParseObject(bool IsObject = false)
+			Dictionary<string, dynamic> ParseObject(bool isobject = false)
 			{
-				Dictionary<string, dynamic> Obj = new();
+				Dictionary<string, dynamic> obj = new();
 
-				string CurrentToken = Next();
-				string NextToken = Next(true);
+				string currentToken = Next();
+				string nextToken = Next(true);
 
-				while (CurrentToken != "}" && NextToken != "EOF")
+				while (currentToken != "}" && nextToken != "EOF")
 				{
-					if (NextToken.StartsWith('[') && OSTags)
+					if (nextToken.StartsWith('[') && osTags)
 					{
 						// Object with OS Tag
-						CurrentToken += $"{OSTagDelimeter}{Next()}";
+						currentToken += $"{OSTagDelimeter}{Next()}";
 						Next(); // Skip over opening brace
-						Obj[CurrentToken] = ParseObject(true);
+						obj[currentToken] = ParseObject(true);
 					}
-					else if (NextToken == "{")
+					else if (nextToken == "{")
 					{
 						// Object
 						Next(); // Skip over opening brace
 
-						if (Obj.ContainsKey(CurrentToken))
+						if (obj.ContainsKey(currentToken))
 						{
-							if (Obj[CurrentToken].GetType() == typeof(List<dynamic>))
+							if (obj[currentToken].GetType() == typeof(List<dynamic>))
 							{
 								// Object list exists
-								Obj[CurrentToken].Add(ParseObject(true));
+								obj[currentToken].Add(ParseObject(true));
 							}
 							else
 							{
 								// Object already exists
-								dynamic Value = Obj[CurrentToken];
-								Obj[CurrentToken] = new List<dynamic>();
-								Obj[CurrentToken].Add(Value);
-								Obj[CurrentToken].Add(ParseObject(true));
+								dynamic value = obj[currentToken];
+								obj[currentToken] = new List<dynamic>();
+								obj[currentToken].Add(value);
+								obj[currentToken].Add(ParseObject(true));
 							}
 						}
 						else
 						{
 							// Object doesnt exist
-							Obj[CurrentToken] = ParseObject(true);
+							obj[currentToken] = ParseObject(true);
 						}
 					}
 					else
@@ -133,71 +133,71 @@ namespace hud_merger
 						Next(); // Skip over value
 
 						// Check primitive os tag
-						if (Next(true).StartsWith('[') && OSTags)
+						if (Next(true).StartsWith('[') && osTags)
 						{
-							CurrentToken += $"{OSTagDelimeter}{Next()}";
+							currentToken += $"{OSTagDelimeter}{Next()}";
 						}
 
-						if (Obj.ContainsKey(CurrentToken))
+						if (obj.ContainsKey(currentToken))
 						{
 							// dynamic property exists
-							if (Obj[CurrentToken].GetType() == typeof(List<dynamic>))
+							if (obj[currentToken].GetType() == typeof(List<dynamic>))
 							{
 								// Array already exists
 
-								if (NextToken == "{" || NextToken == "}")
+								if (nextToken == "{" || nextToken == "}")
 								{
-									throw new Exception($"Cannot set value of {CurrentToken} to {NextToken}! Are you missing an opening brace?");
+									throw new Exception($"Cannot set value of {currentToken} to {nextToken}! Are you missing an opening brace?");
 								}
 
-								if (NextToken == "EOF")
+								if (nextToken == "EOF")
 								{
-									throw new Exception($"Cannot set value of {CurrentToken} to EOF, expected value!");
+									throw new Exception($"Cannot set value of {currentToken} to EOF, expected value!");
 								}
 
-								Obj[CurrentToken].Add(NextToken);
+								obj[currentToken].Add(nextToken);
 							}
 							else
 							{
 								// Primitive type already exists
-								dynamic Value = Obj[CurrentToken];
+								dynamic value = obj[currentToken];
 
-								if (NextToken == "{" || NextToken == "}")
+								if (nextToken == "{" || nextToken == "}")
 								{
-									throw new Exception($"Cannot set value of {CurrentToken} to {NextToken}!Are you missing an opening brace ?");
+									throw new Exception($"Cannot set value of {currentToken} to {nextToken}!Are you missing an opening brace ?");
 								}
 
-								if (NextToken == "EOF")
+								if (nextToken == "EOF")
 								{
-									throw new Exception($"Cannot set value of ${CurrentToken} to EOF, expected value!");
+									throw new Exception($"Cannot set value of ${currentToken} to EOF, expected value!");
 								}
 
-								Obj[CurrentToken] = new List<dynamic>();
-								Obj[CurrentToken].Add(Value);
-								Obj[CurrentToken].Add(NextToken);
+								obj[currentToken] = new List<dynamic>();
+								obj[currentToken].Add(value);
+								obj[currentToken].Add(nextToken);
 							}
 						}
 						else
 						{
 							// Property doesn't exist
-							if (CurrentToken == "{" || CurrentToken == "}")
+							if (currentToken == "{" || currentToken == "}")
 							{
-								throw new Exception($"Cannot create property {CurrentToken}, Are you mising an opening brace?");
+								throw new Exception($"Cannot create property {currentToken}, Are you mising an opening brace?");
 							}
-							if (NextToken == "EOF")
+							if (nextToken == "EOF")
 							{
-								throw new Exception($"Unexpected end of line, expected value for {CurrentToken}");
+								throw new Exception($"Unexpected end of line, expected value for {currentToken}");
 							}
-							Obj[CurrentToken] = NextToken;
+							obj[currentToken] = nextToken;
 						}
 					}
 
-					CurrentToken = Next();
-					NextToken = Next(true);
+					currentToken = Next();
+					nextToken = Next(true);
 
-					if (CurrentToken == "EOF")
+					if (currentToken == "EOF")
 					{
-						if (IsObject)
+						if (isobject)
 						{
 							// we are expecting a closing brace not EOF, error!
 							throw new Exception("Unexpected end of file! Are you missing a closing brace?");
@@ -209,74 +209,74 @@ namespace hud_merger
 						}
 					}
 
-					if (!IsObject)
+					if (!isobject)
 					{
-						if (CurrentToken == "}")
+						if (currentToken == "}")
 						{
 							throw new Exception("Unexpected '}'! Are you missing an opening brace?");
 						}
 					}
 				}
 
-				return Obj;
+				return obj;
 			}
 
 			return ParseObject();
 		}
 
-		public static string Stringify(Dictionary<string, dynamic> Obj, int Tabs = 0)
+		public static string Stringify(Dictionary<string, dynamic> obj, int tabs = 0)
 		{
-			string Str = "";
-			char Space = ' ';
-			string NewLine = "\r\n";
+			string str = "";
+			char space = ' ';
+			string newLine = "\r\n";
 
-			int LongestKeyLength = 0;
+			int longestKeyLength = 0;
 
-			foreach (string Key in Obj.Keys)
+			foreach (string key in obj.Keys)
 			{
-				if (Obj[Key].GetType() != typeof(Dictionary<string, dynamic>))
+				if (obj[key].GetType() != typeof(Dictionary<string, dynamic>))
 				{
-					LongestKeyLength = Math.Max(LongestKeyLength, Key.Split(VDF.OSTagDelimeter)[0].Length);
+					longestKeyLength = Math.Max(longestKeyLength, key.Split(VDF.OSTagDelimeter)[0].Length);
 				}
 			}
 
-			LongestKeyLength += 4;
+			longestKeyLength += 4;
 
-			foreach (string Key in Obj.Keys)
+			foreach (string key in obj.Keys)
 			{
-				string[] KeyTokens = Key.Split(VDF.OSTagDelimeter);
+				string[] keyTokens = key.Split(VDF.OSTagDelimeter);
 
-				if (Obj[Key].GetType() == typeof(List<dynamic>))
+				if (obj[key].GetType() == typeof(List<dynamic>))
 				{
 					// Item has multiple instances
-					foreach (dynamic Item in Obj[Key])
+					foreach (dynamic item in obj[key])
 					{
-						if (Item.GetType() == typeof(Dictionary<string, dynamic>))
+						if (item.GetType() == typeof(Dictionary<string, dynamic>))
 						{
-							if (KeyTokens.Length > 1)
+							if (keyTokens.Length > 1)
 							{
 								// OS Tag
-								Str += $"{new String(Space, Tabs * 4)}\"{KeyTokens[0]}\" {KeyTokens[1]}{NewLine}";
+								str += $"{new String(space, tabs * 4)}\"{keyTokens[0]}\" {keyTokens[1]}{newLine}";
 							}
 							else
 							{
 								// No OS Tag
-								Str += $"{new String(Space, Tabs * 4)}\"{Key}\"{NewLine}";
+								str += $"{new String(space, tabs * 4)}\"{key}\"{newLine}";
 							}
-							Str += $"{new String(Space, Tabs * 4)}{{{NewLine}";
-							Str += $"{VDF.Stringify(Item, Tabs + 1)}{new String(Space, Tabs * 4)}}}{NewLine}";
+							str += $"{new String(space, tabs * 4)}{{{newLine}";
+							str += $"{VDF.Stringify(item, tabs + 1)}{new String(space, tabs * 4)}}}{newLine}";
 						}
 						else
 						{
-							if (KeyTokens.Length > 1)
+							if (keyTokens.Length > 1)
 							{
 								// OS Tag
-								Str += $"{new String(Space, Tabs * 4)}\"{KeyTokens[0]}\"{new String(Space, LongestKeyLength - KeyTokens[0].Length)}\"{Item}\" {KeyTokens[1]}{NewLine}";
+								str += $"{new String(space, tabs * 4)}\"{keyTokens[0]}\"{new String(space, longestKeyLength - keyTokens[0].Length)}\"{item}\" {keyTokens[1]}{newLine}";
 							}
 							else
 							{
 								// No OS Tag
-								Str += $"{new String(Space, Tabs * 4)}\"{Key}\"{new String(Space, LongestKeyLength - Key.Length)}\"{Item}\"{NewLine}";
+								str += $"{new String(space, tabs * 4)}\"{key}\"{new String(space, longestKeyLength - key.Length)}\"{item}\"{newLine}";
 							}
 						}
 					}
@@ -284,39 +284,39 @@ namespace hud_merger
 				else
 				{
 					// There is only one object object/value
-					if (Obj[Key].GetType() == typeof(Dictionary<string, dynamic>))
+					if (obj[key].GetType() == typeof(Dictionary<string, dynamic>))
 					{
-						if (KeyTokens.Length > 1)
+						if (keyTokens.Length > 1)
 						{
-							Str += $"{new String(Space, Tabs * 4)}\"{KeyTokens[0]}\" {KeyTokens[1]}{NewLine}";
-							Str += $"{new String(Space, Tabs * 4)}{{{NewLine}";
-							Str += $"{VDF.Stringify(Obj[Key], Tabs + 1)}{new String(Space, Tabs * 4)}}}{NewLine}";
+							str += $"{new String(space, tabs * 4)}\"{keyTokens[0]}\" {keyTokens[1]}{newLine}";
+							str += $"{new String(space, tabs * 4)}{{{newLine}";
+							str += $"{VDF.Stringify(obj[key], tabs + 1)}{new String(space, tabs * 4)}}}{newLine}";
 						}
 						else
 						{
 							// No OS Tag
-							Str += $"{new String(Space, Tabs * 4)}\"{Key}\"{NewLine}";
-							Str += $"{new String(Space, Tabs * 4)}{{{NewLine}";
-							Str += $"{VDF.Stringify(Obj[Key], Tabs + 1)}{new String(Space, Tabs * 4)}}}{NewLine}";
+							str += $"{new String(space, tabs * 4)}\"{key}\"{newLine}";
+							str += $"{new String(space, tabs * 4)}{{{newLine}";
+							str += $"{VDF.Stringify(obj[key], tabs + 1)}{new String(space, tabs * 4)}}}{newLine}";
 						}
 					}
 					else
 					{
-						if (KeyTokens.Length > 1)
+						if (keyTokens.Length > 1)
 						{
 							// OS Tag
-							Str += $"{new String(Space, Tabs * 4)}\"{KeyTokens[0]}\"{new String(Space, LongestKeyLength - KeyTokens[0].Length)}\"{Obj[Key]}\" {KeyTokens[1]}{NewLine}";
+							str += $"{new String(space, tabs * 4)}\"{keyTokens[0]}\"{new String(space, longestKeyLength - keyTokens[0].Length)}\"{obj[key]}\" {keyTokens[1]}{newLine}";
 						}
 						else
 						{
 							// No OS Tag
-							Str += $"{new String(Space, Tabs * 4)}\"{Key}\"{new String(Space, LongestKeyLength - Key.Length)}\"{Obj[Key]}\"{NewLine}";
+							str += $"{new String(space, tabs * 4)}\"{key}\"{new String(space, longestKeyLength - key.Length)}\"{obj[key]}\"{newLine}";
 						}
 					}
 				}
 			}
 
-			return Str;
+			return str;
 		}
 	}
 }
