@@ -19,14 +19,14 @@ namespace hud_merger
 
 		public HUD(string folderPath)
 		{
-			this.Name = FolderPath.Split('\\')[^1];
+			this.Name = folderPath.Split('\\')[^1];
 			this.FolderPath = folderPath;
 		}
 
 		/// <summary>Returns whether the provided HUDPanel is 'in' this HUD</summary>
-		public bool TestPanel(HUDPanel Panel)
+		public bool TestPanel(HUDPanel panel)
 		{
-			return File.Exists($"{this.FolderPath}\\{Panel.Main.FilePath}");
+			return File.Exists($"{this.FolderPath}\\{panel.Main.FilePath}");
 		}
 
 		/// <summary>Merges an array of HUDPanels from another HUD into this HUD</summary>

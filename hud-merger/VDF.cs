@@ -92,7 +92,7 @@ namespace hud_merger
 
 				while (currentToken != "}" && nextToken != "EOF")
 				{
-					if (nextToken.StartsWith('[') && osTags)
+					if (nextToken.StartsWith('[') && nextToken.EndsWith(']') && osTags)
 					{
 						// Object with OS Tag
 						currentToken += $"{OSTagDelimeter}{Next()}";
@@ -133,7 +133,8 @@ namespace hud_merger
 						Next(); // Skip over value
 
 						// Check primitive os tag
-						if (Next(true).StartsWith('[') && osTags)
+						string tokenLookAhead = Next(true);
+						if (tokenLookAhead.StartsWith('[') && tokenLookAhead.EndsWith(']') && osTags)
 						{
 							currentToken += $"{OSTagDelimeter}{Next()}";
 						}
@@ -164,7 +165,7 @@ namespace hud_merger
 
 								if (nextToken == "{" || nextToken == "}")
 								{
-									throw new Exception($"Cannot set value of {currentToken} to {nextToken}!Are you missing an opening brace ?");
+									throw new Exception($"Cannot set value of {currentToken} to {nextToken}! Are you missing an opening brace?");
 								}
 
 								if (nextToken == "EOF")
