@@ -137,10 +137,10 @@ namespace hud_merger
 			SearchBox.TextChanged += (object sender, TextChangedEventArgs e) =>
 			{
 				string SearchText = SearchBox.Text.ToLower();
-				foreach (Label PanelLabel in OriginFilesList.Children)
+				foreach (Border PanelBorder in OriginFilesList.Children)
 				{
-					bool Contains = PanelLabel.Content.ToString().ToLower().Contains(SearchText);
-					PanelLabel.Visibility = Contains ? Visibility.Visible : Visibility.Collapsed;
+					bool Contains = ((Label)PanelBorder.Child).Content.ToString().ToLower().Contains(SearchText);
+					PanelBorder.Visibility = Contains ? Visibility.Visible : Visibility.Collapsed;
 				}
 			};
 
@@ -158,35 +158,39 @@ namespace hud_merger
 			{
 				bool PanelExists = OriginHUD.TestPanel(Panel);
 
-				Label PanelLabel = new()
+				Panel.OriginListItem = new Border()
 				{
-					Content = Panel.Name,
-					Style = (Style)Application.Current.Resources["PanelLabel"],
-					Visibility = PanelExists ? Visibility.Visible : Visibility.Collapsed,
-				};
-
-				PanelLabel.MouseEnter += (object sender, MouseEventArgs e) =>
-				{
-					if (!Panel.Armed)
+					Style = (Style)Application.Current.Resources["PanelBorder"],
+					Child = new Label()
 					{
-						PanelLabel.Background = Brushes.LightGray;
+						Content = Panel.Name,
+						Style = (Style)Application.Current.Resources["PanelLabel"],
+						Visibility = PanelExists ? Visibility.Visible : Visibility.Collapsed,
 					}
 				};
 
-				PanelLabel.MouseLeave += (object sender, MouseEventArgs e) =>
+				Panel.OriginListItem.MouseEnter += (object sender, MouseEventArgs e) =>
 				{
 					if (!Panel.Armed)
 					{
-						PanelLabel.Background = Brushes.White;
+						Panel.OriginListItem.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#E6E6E6");
 					}
 				};
 
-				PanelLabel.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
+				Panel.OriginListItem.MouseLeave += (object sender, MouseEventArgs e) =>
 				{
 					if (!Panel.Armed)
 					{
-						PanelLabel.Foreground = Brushes.White;
-						PanelLabel.Background = (Brush)Application.Current.Resources["_Blue"];
+						Panel.OriginListItem.Background = Brushes.Transparent;
+					}
+				};
+
+				Panel.OriginListItem.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
+				{
+					if (!Panel.Armed)
+					{
+						((Label)Panel.OriginListItem.Child).Foreground = Brushes.White;
+						Panel.OriginListItem.Background = (Brush)Application.Current.Resources["_Blue"];
 
 						if (TargetHUD != null)
 						{
@@ -197,8 +201,8 @@ namespace hud_merger
 					}
 					else
 					{
-						PanelLabel.Foreground = Brushes.Black;
-						PanelLabel.Background = Brushes.White;
+						((Label)Panel.OriginListItem.Child).Foreground = Brushes.Black;
+						Panel.OriginListItem.Background = Brushes.Transparent;
 
 						if (TargetHUD != null)
 						{
@@ -209,7 +213,7 @@ namespace hud_merger
 					}
 				};
 
-				OriginFilesList.Children.Add(PanelLabel);
+				OriginFilesList.Children.Add(Panel.OriginListItem);
 
 				if (PanelExists)
 				{
@@ -283,16 +287,31 @@ namespace hud_merger
 			ScrollViewer ScrollablePanel = new();
 			Grid.SetRow(ScrollablePanel, 1);
 
+			TargetFilesList.Margin = new Thickness(3);
+
 			foreach (HUDPanel Panel in HUDPanels)
 			{
-				Panel.TargetListItem = new Label()
+				Panel.TargetListItem = new Border()
 				{
-					Content = Panel.Name,
-					Style = (Style)Application.Current.Resources["PanelLabel"],
-					Foreground = Brushes.White,
+					Style = (Style)Application.Current.Resources["PanelBorder"],
 					Background = (Brush)Application.Current.Resources["_Blue"],
-					Visibility = Panel.Armed ? Visibility.Visible : Visibility.Collapsed
+					Visibility = Panel.Armed ? Visibility.Visible : Visibility.Collapsed,
+					Child = new Label()
+					{
+						Content = Panel.Name,
+						Style = (Style)Application.Current.Resources["PanelLabel"],
+						Foreground = Brushes.White,
+					}
 				};
+
+				Panel.TargetListItem.MouseLeftButtonDown += (object sender, MouseButtonEventArgs e) =>
+				{
+					((Label)Panel.OriginListItem.Child).Foreground = Brushes.Black;
+					Panel.OriginListItem.Background = Brushes.Transparent;
+					Panel.TargetListItem.Visibility = Visibility.Collapsed;
+					Panel.Armed = false;
+				};
+
 				TargetFilesList.Children.Add(Panel.TargetListItem);
 			}
 			ScrollablePanel.Content = TargetFilesList;
