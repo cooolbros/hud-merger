@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Windows;
 
 namespace hud_merger
 {
@@ -36,7 +35,10 @@ namespace hud_merger
 			}
 		}
 
-		public static Dictionary<string, dynamic> LoadControls(string FilePath)
+		/// <summary>
+		/// Returns a Dictionary of all key/values in a file, including #base files
+		/// </summary>
+		public static Dictionary<string, dynamic> LoadAllControls(string FilePath)
 		{
 			Dictionary<string, dynamic> Origin = new();
 
@@ -67,7 +69,7 @@ namespace hud_merger
 
 					string[] Folders = FilePath.Split("\\");
 					// Remove File Name
-					Folders[Folders.Length - 1] = "";
+					Folders[^1] = "";
 					foreach (string BaseFile in BaseFiles)
 					{
 						AddControls(String.Join('\\', Folders) + BaseFile);
@@ -81,6 +83,9 @@ namespace hud_merger
 			return Origin;
 		}
 
+		/// <summary>
+		/// Determines whether the specified file exists. Does not throw an error if any folder in the path doesn't exist.
+		/// </summary>
 		public static bool TestPath(string FilePath)
 		{
 			string FolderPath = "";
