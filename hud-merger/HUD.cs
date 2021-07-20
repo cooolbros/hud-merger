@@ -19,8 +19,7 @@ namespace hud_merger
 
 		public HUD(string FolderPath)
 		{
-			string[] Folders = FolderPath.Split("\\");
-			this.Name = Folders[Folders.Length - 1];
+			this.Name = FolderPath.Split('\\')[^1];
 			this.FolderPath = FolderPath;
 		}
 
@@ -128,7 +127,7 @@ namespace hud_merger
 		/// </summary>
 		private Dictionary<string, dynamic> GetDependencyValues(string OriginClientschemePath, ClientschemeDependencies Dependencies, HashSet<string> Files)
 		{
-			Dictionary<string, dynamic> OriginClientscheme = Utilities.LoadControls(OriginClientschemePath);
+			Dictionary<string, dynamic> OriginClientscheme = Utilities.LoadAllControls(OriginClientschemePath);
 
 			Dictionary<string, dynamic> NewClientscheme = new();
 			NewClientscheme["Colors"] = new Dictionary<string, dynamic>();
@@ -136,120 +135,151 @@ namespace hud_merger
 			NewClientscheme["Fonts"] = new Dictionary<string, dynamic>();
 			NewClientscheme["CustomFontFiles"] = new Dictionary<string, dynamic>();
 
-			// Colours
-			foreach (string ColourProperty in Dependencies.Colours)
+			// Borders
+			Dictionary<string, dynamic> Borders = OriginClientscheme["Scheme"]["Borders"];
+			foreach (string BorderProperty in Dependencies.Borders)
 			{
-				if (OriginClientscheme["Scheme"]["Colors"].ContainsKey(ColourProperty))
+				if (Borders.ContainsKey(BorderProperty))
 				{
-					NewClientscheme["Colors"].Add(ColourProperty, OriginClientscheme["Scheme"]["Colors"][ColourProperty]);
+					NewClientscheme["Borders"][BorderProperty] = Borders[BorderProperty];
+
+					foreach (KeyValuePair<string, dynamic> Property in Borders[BorderProperty])
+					{
+						if (Property.Key.ToLower().Contains("color"))
+						{
+							Dependencies.Colours.Add(Property.Value);
+						}
+
+						if (Property.Key.ToLower().Contains("image"))
+						{
+							Files.Add($"materials\\vgui\\{Property.Value}");
+						}
+					}
 				}
 			}
 
-			// Borders
-			foreach (string BorderProperty in Dependencies.Borders)
+			// Colours
+			Dictionary<string, dynamic> Colours = OriginClientscheme["Scheme"]["Colors"];
+			foreach (string ColourProperty in Dependencies.Colours)
 			{
-				if (OriginClientscheme["Scheme"]["Borders"].ContainsKey(BorderProperty))
+				if (Colours.ContainsKey(ColourProperty))
 				{
-					NewClientscheme["Borders"][BorderProperty] = OriginClientscheme["Scheme"]["Borders"][BorderProperty];
+					NewClientscheme["Colors"][ColourProperty] = Colours[ColourProperty];
 				}
 			}
 
 			// Fonts
+			Dictionary<string, dynamic> OriginFonts = OriginClientscheme["Scheme"]["Fonts"];
 			HashSet<string> FontNames = new();
-			foreach (string FontProperty in Dependencies.Fonts)
+
+			void AddFontName(Dictionary<string, dynamic> FontDefinition)
 			{
-				if (OriginClientscheme["Scheme"]["Fonts"].ContainsKey(FontProperty))
+				// Example font definition
+				// {
+				// 	"1"
+				// 	{
+				// 		"name"			"TF2 Build"
+				// 		"tall"			"24"
+				// 		"weight"		"500"
+				// 		"additive"		"0"
+				// 		"antialias"		"1"
+				// 	}
+				//
+
+				foreach (string FontDefinitionNumber in FontDefinition.Keys)
 				{
-					dynamic FontDefinition = OriginClientscheme["Scheme"]["Fonts"][FontProperty];
-					NewClientscheme["Fonts"][FontProperty] = FontDefinition;
+					// Some HUDs only have a name with an operating system tag like `name ... [$WINDOWS]`
+					foreach (KeyValuePair<string, dynamic> FontDefinitionProperty in FontDefinition[FontDefinitionNumber])
+					{
+						if (FontDefinitionProperty.Key.ToLower().Contains("name"))
+						{
+							FontNames.Add(FontDefinitionProperty.Value);
+						}
+					}
+				}
+			}
+
+			foreach (string FontDefinitionName in Dependencies.Fonts)
+			{
+				if (OriginFonts.ContainsKey(FontDefinitionName))
+				{
+					dynamic FontDefinition = OriginFonts[FontDefinitionName];
+					NewClientscheme["Fonts"][FontDefinitionName] = FontDefinition;
 
 					// HUD using #base will have multiple font definition number items
-					if (FontDefinition.GetType() == typeof(List<object>))
+					if (FontDefinition.GetType() == typeof(List<dynamic>))
 					{
 						foreach (Dictionary<string, dynamic> FontDefinitionInstance in FontDefinition)
 						{
-							foreach (KeyValuePair<string, dynamic> FontDefinitionKV in FontDefinitionInstance)
-							{
-								if (FontDefinitionKV.Value.GetType() == typeof(Dictionary<string, dynamic>))
-								{
-									foreach (KeyValuePair<string, dynamic> FontDefinitionProperty in FontDefinitionKV.Value)
-									{
-										if (FontDefinitionProperty.Key.ToLower().Contains("name"))
-										{
-											FontNames.Add(FontDefinitionProperty.Value);
-										}
-									}
-								}
-							}
+							AddFontName(FontDefinitionInstance);
 						}
 					}
 					else
 					{
-						foreach (string FontDefinitionNumber in FontDefinition.Keys)
-						{
-							foreach (string FontDefinitionProperty in FontDefinition[FontDefinitionNumber]?.Keys)
-							{
-								// Some HUDs only have a name with an operating system tag like `name ... [$WINDOWS]`
-								if (FontDefinitionProperty.ToLower().Contains("name"))
-								{
-									FontNames.Add(FontDefinition[FontDefinitionNumber][FontDefinitionProperty]);
-								}
-							}
-						}
+						AddFontName(FontDefinition);
 					}
 				}
 			}
 
 			// Add custom fonts
 			Dictionary<string, dynamic> OriginalCustomFontFiles = OriginClientscheme["Scheme"]["CustomFontFiles"];
+			Dictionary<string, dynamic> ThisCustomFontFiles = Utilities.LoadAllControls(File.Exists($"{this.FolderPath}\\resource\\clientscheme.res") ? $"{this.FolderPath}\\resource\\clientscheme.res" : "Resources\\HUD\\resource\\clientscheme.res");
 
-			int CustomFontFilesIndex = Utilities.LoadControls($"{this.FolderPath}\\resource\\clientscheme.res")["Scheme"]["CustomFontFiles"].Keys.Count + 1;
+			int HighestKeyNumber = ((Dictionary<string, dynamic>)ThisCustomFontFiles["Scheme"]["CustomFontFiles"]).Keys.ToArray().Aggregate<string, int>(0, (int a, string b) => Math.Max(a, int.Parse(b)));
+			int CustomFontFilesKeysCount = ThisCustomFontFiles["Scheme"]["CustomFontFiles"].Keys.Count + 1;
 
-			foreach (string CustomFontFileNumber in OriginalCustomFontFiles.Keys)
+			int CustomFontFilesIndex = Math.Max(HighestKeyNumber, CustomFontFilesKeysCount) + 1;
+
+			foreach (KeyValuePair<string, dynamic> CustomFontFile in OriginalCustomFontFiles)
 			{
 				foreach (string FontName in FontNames)
 				{
-					dynamic CustomFontFileDefinition = OriginalCustomFontFiles[CustomFontFileNumber];
-
-					if (CustomFontFileDefinition.GetType() == typeof(Dictionary<string, dynamic>))
+					if (CustomFontFile.Value.GetType() == typeof(Dictionary<string, dynamic>))
 					{
-						if (FontName == CustomFontFileDefinition["name"])
+						Dictionary<string, dynamic> CustomFontFileValue = CustomFontFile.Value;
+						if (CustomFontFileValue["name"] == FontName)
 						{
-							NewClientscheme["CustomFontFiles"][CustomFontFilesIndex.ToString()] = CustomFontFileDefinition;
-
+							// Normal custom font implementation
+							NewClientscheme["CustomFontFiles"][$"{CustomFontFilesIndex}"] = CustomFontFile.Value;
 							CustomFontFilesIndex++;
 
-							// Add .ttf file as well
+							// Add all properties where the key is or includes 'font'
+							//
+							// Example of using OS tags (from HexHUD/Faiths HUD https://huds.tf/site/s-Faith-s-HUD)
+							// "1"
+							// {
+							// 	"font" "resource/scheme/fonts/Renogare.ttf" [$WINDOWS]
+							// 	"font" "resource/scheme/fonts/linux/Renogare Linux.otf" [$POSIX]
+							// 	"name" "Renogare Soft"
+							// }
+							// This gets parsed as
+							// "1": {
+							// 	"font^[$WINDOWS]": "resource/scheme/fonts/linux/Renogare Linux.otf",
+							// 	"font^[$POSIX]": "esource/scheme/fonts/linux/Renogare Linux.otf",
+							// 	"name": "Renogare Soft"
+							// }
 
-							// add properties that include 'font', for if HUD only has font%[$WIN32] and font%[$OSX] or like
-							foreach (KeyValuePair<string, dynamic> property in CustomFontFileDefinition)
+							foreach (KeyValuePair<string, dynamic> Property in CustomFontFileValue)
 							{
-								if (property.Key.ToLower().Contains("font"))
+								if (Property.Key.Contains("font"))
 								{
-									Files.Add(property.Value);
+									Files.Add(Property.Value);
 								}
 							}
 						}
 					}
-					else if (CustomFontFileDefinition.GetType() == typeof(string))
+					else if (CustomFontFile.Value.GetType() == typeof(string))
 					{
-						if (CustomFontFileDefinition.Contains(FontName))
+						// 'Guess' whether the font is used by checking if the file path contains the name of the font
+						if (CustomFontFile.Value.Contains(FontName))
 						{
-							// Find a number that is probably not already in use
-							int NewKeyName = OriginalCustomFontFiles.Keys.Count + NewClientscheme["CustomFontFiles"].Keys.Count;
+							// Assume HUD developer only references font once, so dont do any
+							// more checking as to whether or not we have already added the
+							// customfontfile definition to the new clientscheme
 
-							string ToString(dynamic x)
-							{
-								return x.ToString();
-							}
-
-							List<string> Values = (((Dictionary<string, dynamic>)NewClientscheme["CustomFontFiles"]).Values).ToArray().Select(ToString).ToList();
-
-							if (!Values.Contains(CustomFontFileDefinition))
-							{
-								NewClientscheme["CustomFontFiles"][$"{NewKeyName}"] = CustomFontFileDefinition;
-								Files.Add(CustomFontFileDefinition);
-							}
+							NewClientscheme["CustomFontFiles"][$"{CustomFontFilesIndex}"] = CustomFontFile.Value;
+							CustomFontFilesIndex++;
+							Files.Add(CustomFontFile.Value);
 						}
 					}
 				}
@@ -288,7 +318,7 @@ namespace hud_merger
 
 					string[] Folders = FilePath.Split("\\");
 					// Remove File Name
-					Folders[Folders.Length - 1] = "";
+					Folders[^1] = "";
 					foreach (string BaseFile in BaseFiles)
 					{
 						AddControls(String.Join('\\', Folders) + BaseFile, true);
@@ -379,10 +409,15 @@ namespace hud_merger
 		/// </summary>
 		private void WriteHUDAnimations(string OriginFolderPath, HashSet<string> Events, string HUDName, ClientschemeDependencies Dependencies, HashSet<string> Files)
 		{
+			if (Events.Count == 0)
+			{
+				return;
+			}
+
 			string OriginHUDAnimationsManifestPath = OriginFolderPath + "\\scripts\\hudanimations_manifest.txt";
 
-			Dictionary<string, dynamic> Manifest = Utilities.VDFTryParse(File.Exists(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt");
-			dynamic HUDAnimationsManifestList = Manifest["hudanimations_manifest"]["file"];
+			Dictionary<string, dynamic> Manifest = Utilities.VDFTryParse(Utilities.TestPath(OriginHUDAnimationsManifestPath) ? OriginHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt");
+			List<string> HUDAnimationsManifestList = (List<string>)Manifest["hudanimations_manifest"]["file"];
 
 			Dictionary<string, List<HUDAnimation>> NewHUDAnimations = new();
 
@@ -392,6 +427,8 @@ namespace hud_merger
 				{
 					Dictionary<string, List<HUDAnimation>> AnimationsFile = HUDAnimations.Parse(File.ReadAllText(OriginFolderPath + "\\" + FilePath));
 
+
+					// Add clientscheme colours and sounds referenced in HUD animations
 					void AddEventDependencies(string Event, List<HUDAnimation> AnimationEvent)
 					{
 						NewHUDAnimations[Event] = AnimationEvent;
@@ -499,7 +536,7 @@ namespace hud_merger
 				File.AppendAllLines($"{this.FolderPath}\\resource\\clientscheme.res", new string[]
 				{
 					"",
-					$"\"#base\" \"clientscheme_{OriginName}.res\""
+					$"\"#base\"\t\t\"clientscheme_{OriginName}.res\""
 				});
 			}
 
@@ -519,7 +556,7 @@ namespace hud_merger
 
 			string ClientschemeDependenciesPath = $"{this.FolderPath}\\resource\\clientscheme_{OriginName}.res";
 
-			if (File.Exists(ClientschemeDependenciesPath))
+			if (Utilities.TestPath(ClientschemeDependenciesPath))
 			{
 				Dictionary<string, dynamic> PreviouslyMergedClientscheme = Utilities.VDFTryParse(ClientschemeDependenciesPath);
 				Utilities.Merge(PreviouslyMergedClientscheme, NewClientschemeContainer);
