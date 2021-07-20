@@ -52,44 +52,50 @@ namespace hud_merger
 					string VPK = Properties.Settings.Default.Team_Fortress_Folder + "\\bin\\vpk.exe";
 					string TF2MISC = Properties.Settings.Default.Team_Fortress_Folder + "\\tf\\tf2_misc_dir.vpk";
 
-					if (!File.Exists(VPK))
+					bool VPKExists = File.Exists(VPK);
+					bool TF2MISCExists = File.Exists(TF2MISC);
+
+					if (VPKExists && TF2MISCExists)
 					{
-						MessageBox.Show("Could not find vpk.exe");
+						List<string> Arguments = new()
+						{
+							"x",
+							$"\"{TF2MISC}\""
+						};
+
+						List<string> HUDFilePaths = new()
+						{
+							"resource/clientscheme.res",
+							"scripts/hudanimations_manifest.txt",
+							"scripts/hudlayout.res",
+						};
+
+						foreach (string FilePath in HUDFilePaths)
+						{
+							// Ensure vpk.exe is able to extract to folder
+							Directory.CreateDirectory(Path.GetDirectoryName($"Resources\\HUD\\{FilePath.Replace('/', '\\')}"));
+							Arguments.Add($"\"{FilePath}\"");
+						}
+
+						ProcessStartInfo info = new(VPK)
+						{
+							WorkingDirectory = Directory.GetCurrentDirectory() + "\\Resources\\HUD",
+							WindowStyle = ProcessWindowStyle.Hidden,
+							Arguments = string.Join(' ', Arguments)
+						};
+
+						Process.Start(info);
 					}
-
-					if (!File.Exists(TF2MISC))
+					else
 					{
-						MessageBox.Show("Could not find tf2_misc_dir.vpk");
+						string[] Paragraphs = new string[]
+						{
+							$"Could not find {(!VPKExists ? "vpk.exe" : "")}{(!VPKExists && !TF2MISCExists ? " and " : "")}{(!TF2MISCExists ? "tf2_misc_dir.vpk" : "")}!",
+							"HUD Merger may not create HUDs correctly if TF2 has been updated",
+							"This message can be supressed by disabling \"Extract required TF2 HUD files on startup\" in Files > Settings"
+						};
+						MessageBox.Show(string.Join("\r\n\r\n", Paragraphs), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 					}
-
-					List<string> Arguments = new()
-					{
-						"x",
-						$"\"{TF2MISC}\""
-					};
-
-					List<string> HUDFilePaths = new()
-					{
-						"resource/clientscheme.res",
-						"scripts/hudanimations_manifest.txt",
-						"scripts/hudlayout.res",
-					};
-
-					foreach (string FilePath in HUDFilePaths)
-					{
-						// Ensure vpk.exe is able to extract to folder
-						Directory.CreateDirectory(Path.GetDirectoryName($"Resources\\HUD\\{FilePath.Replace('/', '\\')}"));
-						Arguments.Add($"\"{FilePath}\"");
-					}
-
-					ProcessStartInfo info = new(VPK)
-					{
-						WorkingDirectory = Directory.GetCurrentDirectory() + "\\Resources\\HUD",
-						WindowStyle = ProcessWindowStyle.Hidden,
-						Arguments = string.Join(' ', Arguments)
-					};
-
-					Process.Start(info);
 				}
 			};
 
