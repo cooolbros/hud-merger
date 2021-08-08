@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace hud_merger
 {
-	class FilesHashSet : HashSet<string>
+	public class FilesHashSet : HashSet<string>
 	{
 		public FilesHashSet() : base(new FilePathComparer())
 		{

@@ -26,7 +26,7 @@ namespace hud_merger
 		/// <summary>Returns whether the provided HUDPanel is 'in' this HUD</summary>
 		public bool TestPanel(HUDPanel panel)
 		{
-			return File.Exists($"{this.FolderPath}\\{panel.Main.FilePath}");
+			return Utilities.TestPath($"{this.FolderPath}\\{panel.Main.FilePath}");
 		}
 
 		/// <summary>Merges an array of HUDPanels from another HUD into this HUD</summary>
@@ -42,7 +42,7 @@ namespace hud_merger
 			// Add font files to file list
 			// Copy all files
 
-			(HashSet<string> files, HashSet<string> hudLayoutEntries, HashSet<string> events) = HUD.DestructurePanels(panels);
+			(FilesHashSet files, HashSet<string> hudLayoutEntries, HashSet<string> events) = HUD.DestructurePanels(panels);
 			ClientschemeDependencies dependencies = this.GetDependencies(origin.FolderPath, files);
 			this.WriteHUDLayout(origin.FolderPath, hudLayoutEntries, dependencies, files);
 			this.WriteHUDAnimations(origin.FolderPath, events, origin.Name, dependencies, files);
@@ -55,9 +55,9 @@ namespace hud_merger
 		/// <summary>
 		/// Returns a list of Files and HUD Layout entries that should be used for the merge
 		/// </summary>
-		private static (HashSet<string> files, HashSet<string> hudLayoutEntries, HashSet<string> events) DestructurePanels(HUDPanel[] panels)
+		private static (FilesHashSet files, HashSet<string> hudLayoutEntries, HashSet<string> events) DestructurePanels(HUDPanel[] panels)
 		{
-			HashSet<string> files = new FilesHashSet();
+			FilesHashSet files = new FilesHashSet();
 			HashSet<string> hudLayoutEntries = new();
 			HashSet<string> events = new();
 			foreach (HUDPanel panel in panels)
@@ -108,7 +108,7 @@ namespace hud_merger
 		/// <summary>
 		/// Returns a set of all clientscheme dependencies used by provided HUD files
 		/// </summary>
-		private ClientschemeDependencies GetDependencies(string originFolderPath, HashSet<string> files)
+		private ClientschemeDependencies GetDependencies(string originFolderPath, FilesHashSet files)
 		{
 			ClientschemeDependencies dependencies = new();
 			dependencies.HUDPath = originFolderPath;
@@ -125,7 +125,7 @@ namespace hud_merger
 		/// <summary>
 		/// Returns the clientscheme values from a provided set of ClientschemeDependencies
 		/// </summary>
-		private Dictionary<string, dynamic> GetDependencyValues(string originClientschemePath, ClientschemeDependencies dependencies, HashSet<string> files)
+		private Dictionary<string, dynamic> GetDependencyValues(string originClientschemePath, ClientschemeDependencies dependencies, FilesHashSet files)
 		{
 			Dictionary<string, dynamic> originClientscheme = Utilities.LoadAllControls(originClientschemePath);
 
@@ -152,7 +152,7 @@ namespace hud_merger
 
 						if (property.Key.ToLower().Contains("image"))
 						{
-							files.Add($"materials\\vgui\\{property.Value}");
+							dependencies.Images.Add($"materials\\vgui\\{property.Value}");
 						}
 					}
 				}
@@ -235,18 +235,21 @@ namespace hud_merger
 
 			string HashCustomFontFileDefinition(Dictionary<string, dynamic> customFontFile)
 			{
-				List<string> fontFiles = new();
+				List<string> properties = new();
 				foreach (KeyValuePair<string, dynamic> property in customFontFile)
 				{
-					if (property.Key.Contains("font"))
+					if (property.Value.GetType() == typeof(Dictionary<string, dynamic>))
 					{
-						fontFiles.Add(FilesHashSet.EncodeFilePath(property.Value));
+						properties.Add(HashCustomFontFileDefinition(property.Value));
+					}
+					else
+					{
+						properties.Add(FilesHashSet.EncodeFilePath(property.Value));
 					}
 				}
-				fontFiles.Sort();
-				return String.Join('%', fontFiles);
+				properties.Sort();
+				return String.Join('_', properties);
 			}
-
 
 			// Create hashes for fonts that exist in this hud
 			foreach (KeyValuePair<string, dynamic> customFontFile in thisCustomFontFiles)
@@ -346,7 +349,7 @@ namespace hud_merger
 			return newClientscheme;
 		}
 
-		private void WriteHUDLayout(string originFolderPath, HashSet<string> hudLayoutEntries, ClientschemeDependencies dependencies, HashSet<string> files)
+		private void WriteHUDLayout(string originFolderPath, HashSet<string> hudLayoutEntries, ClientschemeDependencies dependencies, FilesHashSet files)
 		{
 			string originHUDLayoutPath = $"{originFolderPath}\\scripts\\hudlayout.res";
 			Dictionary<string, dynamic> originHUDLayout = new();
@@ -465,7 +468,7 @@ namespace hud_merger
 		/// <summary>
 		/// Copies HUD Animations from origin HUD, adds clientscheme variables to provided Dependencies object
 		/// </summary>
-		private void WriteHUDAnimations(string originFolderPath, HashSet<string> events, string hudName, ClientschemeDependencies dependencies, HashSet<string> files)
+		private void WriteHUDAnimations(string originFolderPath, HashSet<string> events, string hudName, ClientschemeDependencies dependencies, FilesHashSet files)
 		{
 			if (events.Count == 0)
 			{
@@ -633,7 +636,7 @@ namespace hud_merger
 		/// <summary>
 		/// Copies list of HUD Files with no processing
 		/// </summary>
-		private void CopyHUDFiles(string originFolderPath, HashSet<string> files, ClientschemeDependencies dependencies)
+		private void CopyHUDFiles(string originFolderPath, FilesHashSet files, ClientschemeDependencies dependencies)
 		{
 			foreach (string imagePath in dependencies.Images)
 			{
@@ -673,7 +676,7 @@ namespace hud_merger
 			foreach (string filePath in filesArray)
 			{
 				string sourceFileName = $"{originFolderPath}\\{filePath}";
-				if (File.Exists(sourceFileName))
+				if (Utilities.TestPath(sourceFileName))
 				{
 					string destFileName = $"{this.FolderPath}\\{filePath}";
 					Directory.CreateDirectory(Path.GetDirectoryName(destFileName));

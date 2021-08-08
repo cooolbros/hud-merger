@@ -63,10 +63,10 @@ namespace hud_merger
 		public HashSet<string> Colours { get; set; } = new();
 		public HashSet<string> Borders { get; set; } = new();
 		public HashSet<string> Fonts { get; set; } = new();
-		public HashSet<string> Images { get; set; } = new();
-		public HashSet<string> Audio { get; set; } = new();
+		public FilesHashSet Images { get; set; } = new();
+		public FilesHashSet Audio { get; set; } = new();
 
-		public void Add(string hudFile, HashSet<string> files)
+		public void Add(string hudFile, FilesHashSet files)
 		{
 			string sourceFilePath = $"{this.HUDPath}\\{hudFile}";
 			if (!File.Exists(sourceFilePath))
@@ -82,12 +82,12 @@ namespace hud_merger
 			this.Add(folderPath, obj, files);
 		}
 
-		public void Add(string relativeFolderPath, Dictionary<string, dynamic> obj, HashSet<string> files)
+		public void Add(string relativeFolderPath, Dictionary<string, dynamic> obj, FilesHashSet files)
 		{
 			// #base
 			if (obj.ContainsKey("#base"))
 			{
-				List<string> baseFiles = new();
+				FilesHashSet baseFiles = new();
 				if (obj["#base"].GetType() == typeof(List<dynamic>))
 				{
 					// List<dynamic> is not assignable to list string, add individual strings
@@ -105,7 +105,7 @@ namespace hud_merger
 
 				foreach (string baseFile in baseFiles)
 				{
-					string baseFileRelativePath = $"{relativeFolderPath}\\{String.Join('\\', Regex.Split(baseFile, "[\\/]+"))}";
+					string baseFileRelativePath = $"{relativeFolderPath}\\{baseFile}";
 					files.Add(baseFileRelativePath);
 					this.Add(baseFileRelativePath, files);
 				}

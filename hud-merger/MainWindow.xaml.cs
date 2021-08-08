@@ -326,7 +326,7 @@ namespace hud_merger
 			{
 				try
 				{
-					TargetHUD.Merge(OriginHUD, HUDPanels.Where((Panel) => Panel.Armed).ToArray());
+					TargetHUD.Merge(OriginHUD, HUDPanels.Where((panel) => panel.Armed).ToArray());
 					MessageBox.Show("Done!");
 				}
 				catch (Exception Error)
@@ -334,11 +334,6 @@ namespace hud_merger
 					MessageBox.Show(Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 			}
-		}
-
-		private void Button_Click(object sender, RoutedEventArgs e)
-		{
-
 		}
 	}
 }

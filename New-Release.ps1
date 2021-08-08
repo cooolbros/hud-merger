@@ -71,6 +71,11 @@ $aboutWindow = [xml](Get-Content $aboutWindowPath)
 $aboutWindow.Window.Grid.StackPanel.Label[1] = "Version " + $newVersion
 $aboutWindow.Save($aboutWindowPath)
 
+# Push changes (Ensure 0 commits to main since this release)
+git add .
+git commit -m "Update version number"
+git push
+
 # Restore
 Write-Host "Restoring $id"
 Remove-Item -Recurse "$id/bin" -ErrorAction "SilentlyContinue"
