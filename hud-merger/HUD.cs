@@ -475,7 +475,7 @@ namespace hud_merger
 				return;
 			}
 
-			string originHUDAnimationsManifestPath = originFolderPath + "\\scripts\\hudanimations_manifest.txt";
+			string originHUDAnimationsManifestPath = $"{originFolderPath}\\scripts\\hudanimations_manifest.txt";
 
 			Dictionary<string, dynamic> manifest = Utilities.VDFTryParse(Utilities.TestPath(originHUDAnimationsManifestPath) ? originHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt");
 			List<string> hudAnimationsManifestList = new();
@@ -484,14 +484,15 @@ namespace hud_merger
 				hudAnimationsManifestList.Add(filePath);
 			}
 
-			Dictionary<string, List<HUDAnimation>> newHUDAnimations = new();
+			string hudAnimationsPath = $"{this.FolderPath}\\scripts\\hudanimations_{hudName}.txt";
+
+			Dictionary<string, List<HUDAnimation>> newHUDAnimations = File.Exists(hudAnimationsPath) ? Utilities.HUDAnimationsTryParse(hudAnimationsPath) : new();
 
 			foreach (string filePath in hudAnimationsManifestList)
 			{
-				if (File.Exists(originFolderPath + "\\" + filePath))
+				if (File.Exists($"{originFolderPath}\\{filePath}"))
 				{
-					Dictionary<string, List<HUDAnimation>> animationsFile = HUDAnimations.Parse(File.ReadAllText(originFolderPath + "\\" + filePath));
-
+					Dictionary<string, List<HUDAnimation>> animationsFile = Utilities.HUDAnimationsTryParse($"{originFolderPath}\\{filePath}");
 
 					// Add clientscheme colours and sounds referenced in HUD animations
 					void AddEventDependencies(string @event, List<HUDAnimation> animationEvent)
@@ -506,7 +507,6 @@ namespace hud_merger
 							{
 								if (statement.Property.ToLower().Contains("color"))
 								{
-									// System.Diagnostics.Debug.WriteLine("adding " + Statement.Value);
 									dependencies.Colours.Add(statement.Value);
 								}
 							}
@@ -539,7 +539,6 @@ namespace hud_merger
 
 			}
 
-			string hudAnimationsPath = $"{this.FolderPath}\\scripts\\hudanimations_{hudName}.txt";
 			Directory.CreateDirectory(Path.GetDirectoryName(hudAnimationsPath));
 			File.WriteAllText(hudAnimationsPath, HUDAnimations.Stringify(newHUDAnimations));
 

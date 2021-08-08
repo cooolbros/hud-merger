@@ -40,6 +40,17 @@
 		}
 	},
 	{
+		"Name": "Character Info Menu",
+		"Main": {
+			"FilePath": "resource\\ui\\charinfoloadoutsubpanel.res"
+		},
+		"Files": [
+			{
+				"FilePath": "resource\\ui\\charinfopanel.res"
+			}
+		]
+	},
+	{
 		"Name": "Crafting Menu",
 		"Main": {
 			"FilePath": "resource\\ui\\craftingpanel.res"
@@ -466,6 +477,26 @@
 		]
 	},
 	{
+		"Name": "Freeze Cam",
+		"Main": {
+			"FilePath": "resource\\ui\\freezepanel_basic.res",
+			"HUDLayout": [
+				"FreezePanel"
+			]
+		},
+		"Files": [
+			{
+				"FilePath": "resource\\ui\\freezepanelcallout.res",
+				"HUDLayout": [
+					"FreezePanelCallout"
+				]
+			},
+			{
+				"FilePath": "resource\\ui\\freezepanelkillerhealth.res"
+			}
+		]
+	},
+	{
 		"Name": "Killfeed",
 		"Main": {
 			"FilePath": "scripts\\hudlayout.res",
@@ -481,12 +512,24 @@
 		},
 		"Files": [
 			{
+				"FilePath": "resource\\ui\\pvpcasualrankpanel.res"
+			},
+			{
+				"FilePath": "resource\\ui\\pvpcomprankpanel.res"
+			},
+			{
 				"FilePath": "resource\\ui\\pvprankpanel.res"
 			},
 			{
 				"FilePath": "resource\\gamemenu.res"
 			}
 		]
+	},
+	{
+		"Name": "Mann Co. Catalogue",
+		"Main": {
+			"FilePath": "resource\\ui\\charinfoarmorysubpanel.res"
+		}
 	},
 	{
 		"Name": "Mann Co. Store",
@@ -621,6 +664,20 @@
 		"Main": {
 			"FilePath": "resource\\ui\\statsummary.res"
 		}
+	},
+	{
+		"Name": "MvM Upgrade Station",
+		"Main": {
+			"FilePath": "resource\\ui\\hudupgradepanel.res",
+			"HUDLayout": [
+				"HudUpgradePanel"
+			]
+		},
+		"Files": [
+			{
+				"FilePath": "resource\\ui\\upgradebuypanel.res"
+			}
+		]
 	},
 	{
 		"Name": "Scoreboard",
@@ -790,7 +847,10 @@
 	{
 		"Name": "Taunt Menu",
 		"Main": {
-			"FilePath": "resource\\ui\\hudmenutauntselection.res"
+			"FilePath": "resource\\ui\\hudmenutauntselection.res",
+			"HUDLayout": [
+				"HudMenuTauntSelection"
+			]
 		}
 	},
 	{
@@ -799,6 +859,24 @@
 			"FilePath": "resource\\ui\\hudmediccharge.res",
 			"HUDLayout": [
 				"HudMedicCharge"
+			]
+		}
+	},
+	{
+		"Name": "Vote Menu",
+		"Main": {
+			"FilePath": "resource\\ui\\votehud.res",
+			"HUDLayout": [
+				"CHudVote"
+			]
+		}
+	},
+	{
+		"Name": "Win Panel",
+		"Main": {
+			"FilePath": "resource\\ui\\winpanel.res",
+			"HUDLayout": [
+				"WinPanel"
 			]
 		}
 	}

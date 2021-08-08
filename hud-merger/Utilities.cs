@@ -118,5 +118,18 @@ namespace hud_merger
 				throw new Exception($"Syntax error found in {filePath}, unable to merge!\r\n" + e.Message);
 			}
 		}
+
+		public static Dictionary<string, List<HUDAnimation>> HUDAnimationsTryParse(string filePath)
+		{
+			try
+			{
+				Dictionary<string, List<HUDAnimation>> animations = HUDAnimations.Parse(File.ReadAllText(filePath));
+				return animations;
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"Syntax error found in {filePath}, unable to merge!\r\n" + e.Message);
+			}
+		}
 	}
 }

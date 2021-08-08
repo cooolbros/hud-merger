@@ -130,7 +130,7 @@ namespace hud_merger
 
 							foreach (string defaultPropertyKey in currentPropertiesList)
 							{
-								if (key.ToLower().Contains(defaultPropertyKey.ToLower()))
+								if (key.ToLower().Contains(defaultPropertyKey))
 								{
 									// The 'subimage' property when used in resource/gamemenu.res specifies
 									// an image path, other instances of the key name usually specify

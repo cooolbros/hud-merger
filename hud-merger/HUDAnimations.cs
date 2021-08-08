@@ -49,7 +49,7 @@ using System.Collections.Generic;
 
 namespace hud_merger
 {
-	class HUDAnimation
+	public class HUDAnimation
 	{
 		public string Type { get; set; }
 		public string OSTag { get; set; }
@@ -118,7 +118,7 @@ namespace hud_merger
 		public string Delay { get; set; }
 	}
 
-	static class HUDAnimations
+	public static class HUDAnimations
 	{
 		public static Dictionary<string, List<HUDAnimation>> Parse(string str)
 		{
