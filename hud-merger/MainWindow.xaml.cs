@@ -99,8 +99,6 @@ namespace hud_merger
 				ClearSelected();
 				NewOriginHUD(this.FolderBrowserDialog.SelectedPath);
 			}
-			// Remember Folder
-			this.FolderBrowserDialog.SelectedPath += "\\";
 		}
 
 		private void NewOriginHUD(string folderPath)
@@ -254,8 +252,6 @@ namespace hud_merger
 				TargetFilesList.Children.Clear();
 				NewTargetHUD(this.FolderBrowserDialog.SelectedPath);
 			}
-			// Remember Folder
-			this.FolderBrowserDialog.SelectedPath += "\\";
 		}
 
 		private void NewTargetHUD(string folderPath)

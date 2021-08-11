@@ -335,7 +335,7 @@ namespace hud_merger
 			// Assign new indexes to the referenced custom font file definitions
 
 			int highestKeyNumber = ((Dictionary<string, dynamic>)thisCustomFontFiles).Keys.ToArray().Aggregate<string, int>(0, (int a, string b) => Math.Max(a, int.Parse(b)));
-			int customFontFilesKeysCount = thisCustomFontFiles.Keys.Count + 1;
+			int customFontFilesKeysCount = thisCustomFontFiles.Keys.Count;
 
 			int customFontFilesIndex = Math.Max(highestKeyNumber, customFontFilesKeysCount) + 1;
 

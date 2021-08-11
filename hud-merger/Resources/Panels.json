@@ -20,7 +20,7 @@
 		}
 	},
 	{
-		"Name": "Class Loadout Panel",
+		"Name": "Class Loadout Menu",
 		"Main": {
 			"FilePath": "resource\\ui\\classloadoutpanel.res"
 		},
@@ -357,6 +357,32 @@
 			},
 			{
 				"FilePath": "resource\\ui\\build_menu\\eureka_target_tele_exit_unavail.res"
+			}
+		]
+	},
+	{
+		"Name": "Engineer HUD Buildings Status",
+		"Main": {
+			"FilePath": "resource\\ui\\hud_obj_sentrygun.res",
+			"HUDLayout": [
+				"BuildingStatus_Engineer"
+			]
+		},
+		"Files": [
+			{
+				"FilePath": "resource\\ui\\hud_obj_dispenser.res"
+			},
+			{
+				"FilePath": "resource\\ui\\hud_obj_sentrygun_disp.res"
+			},
+			{
+				"FilePath": "resource\\ui\\hud_obj_tele.res"
+			},
+			{
+				"FilePath": "resource\\ui\\hud_obj_tele_entrance.res"
+			},
+			{
+				"FilePath": "resource\\ui\\hud_obj_tele_exit.res"
 			}
 		]
 	},
