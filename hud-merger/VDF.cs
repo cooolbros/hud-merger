@@ -10,13 +10,19 @@ namespace hud_merger
 
 		public static Dictionary<string, dynamic> Parse(string str, bool osTags = true)
 		{
-			int i = 0;
 			char[] whiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
+
+			int i = 0;
+			int line = 1;
+			int pos = 1;
 
 			string Next(bool lookAhead = false)
 			{
 				string currentToken = "";
 				int j = i;
+
+				int _line = line;
+				int _pos = pos;
 
 				if (j >= str.Length - 1)
 				{
@@ -25,6 +31,16 @@ namespace hud_merger
 
 				while ((whiteSpaceIgnore.Contains(str[j]) || str[j] == '/') && j <= str.Length - 1)
 				{
+					if (str[j] == '\n')
+					{
+						_line++;
+						_pos = 0;
+					}
+					else
+					{
+						_pos++;
+					}
+
 					if (str[j] == '/')
 					{
 						if (str[j + 1] == '/')
@@ -34,6 +50,7 @@ namespace hud_merger
 							{
 								j++;
 							}
+							_line++;
 						}
 					}
 					else
@@ -54,7 +71,7 @@ namespace hud_merger
 					{
 						if (str[j] == '\n')
 						{
-							throw new Exception($"Unexpected end of line at position {j}");
+							throw new Exception($"Unexpected EOL at position {j} (line {line}, position {pos})! Are you missing a closing \"?");
 						}
 						currentToken += str[j];
 						j++;
@@ -68,7 +85,7 @@ namespace hud_merger
 					{
 						if (str[j] == '"')
 						{
-							throw new Exception($"Unexpected double quote at position {j}");
+							throw new Exception($"Unexpected '\"' at position {j} (line {line}, position {pos})! Are you missing terminating whitespace?");
 						}
 						currentToken += str[j];
 						j++;
@@ -78,6 +95,8 @@ namespace hud_merger
 				if (!lookAhead)
 				{
 					i = j;
+					line = _line;
+					pos = _pos;
 				}
 
 				return currentToken;
@@ -146,14 +165,14 @@ namespace hud_merger
 							{
 								// Array already exists
 
-								if (nextToken == "{" || nextToken == "}")
+								if (nextToken == "}")
 								{
-									throw new Exception($"Cannot set value of {currentToken} to {nextToken}! Are you missing an opening brace?");
+									throw new Exception($"Unexpected '}}' at position {i} (line {line}, position {pos})! Are you missing an {{?");
 								}
 
 								if (nextToken == "EOF")
 								{
-									throw new Exception($"Cannot set value of {currentToken} to EOF, expected value!");
+									throw new Exception($"Unexpected EOF at position {i} (line {line}, position {pos})! Are you missing a value?");
 								}
 
 								obj[currentToken].Add(nextToken);
@@ -163,14 +182,14 @@ namespace hud_merger
 								// Primitive type already exists
 								dynamic value = obj[currentToken];
 
-								if (nextToken == "{" || nextToken == "}")
+								if (nextToken == "}")
 								{
-									throw new Exception($"Cannot set value of {currentToken} to {nextToken}! Are you missing an opening brace?");
+									throw new Exception($"Unexpected '}}' at position {i} (line {line}, position {pos})! Are you missing an opening brace?");
 								}
 
 								if (nextToken == "EOF")
 								{
-									throw new Exception($"Cannot set value of ${currentToken} to EOF, expected value!");
+									throw new Exception($"Unexpected EOF at position {i} (line {line}, position {pos})!  Are you missing a value?");
 								}
 
 								obj[currentToken] = new List<dynamic>();
@@ -181,13 +200,14 @@ namespace hud_merger
 						else
 						{
 							// Property doesn't exist
-							if (currentToken == "{" || currentToken == "}")
+							if (currentToken == "}")
 							{
+								// throw new VDFSyntaxError($"Cannot create property {currentToken}");
 								throw new Exception($"Cannot create property {currentToken}, Are you mising an opening brace?");
 							}
 							if (nextToken == "EOF")
 							{
-								throw new Exception($"Unexpected end of line, expected value for {currentToken}");
+								throw new Exception($"Unexpected EOF at position {i} (line {line}, position {pos})! Expected value for {currentToken}");
 							}
 							obj[currentToken] = nextToken;
 						}
@@ -214,7 +234,7 @@ namespace hud_merger
 					{
 						if (currentToken == "}")
 						{
-							throw new Exception("Unexpected '}'! Are you missing an opening brace?");
+							throw new Exception($"Unexpected '}}' position {i} (line {line}, position {pos}) Are you missing an opening brace?");
 						}
 					}
 				}
@@ -225,99 +245,115 @@ namespace hud_merger
 			return ParseObject();
 		}
 
-		public static string Stringify(Dictionary<string, dynamic> obj, int tabs = 0)
+		public enum IndentationKind
 		{
-			string str = "";
-			char space = ' ';
-			string newLine = "\r\n";
+			Tabs,
+			Spaces
+		}
 
-			int longestKeyLength = 0;
+		public static string Stringify(Dictionary<string, dynamic> obj, IndentationKind indentation = IndentationKind.Tabs)
+		{
+			const char tab = '\t';
+			const char space = ' ';
+			const string newLine = "\r\n";
 
-			foreach (string key in obj.Keys)
+			bool tabIndentation = indentation == IndentationKind.Tabs;
+			Func<int, string> GetIndentation = tabIndentation ? ((int level) => new String(tab, level)) : ((int level) => new String(space, level * 4));
+			Func<int, int, string> GetWhitespace = tabIndentation ? ((int longest, int current) =>
 			{
-				if (obj[key].GetType() != typeof(Dictionary<string, dynamic>))
-				{
-					longestKeyLength = Math.Max(longestKeyLength, key.Split(VDF.OSTagDelimeter)[0].Length);
-				}
-			}
-
-			longestKeyLength += 4;
-
-			foreach (string key in obj.Keys)
+				return new String(tab, ((longest + 2) / 4 - (current + 2) / 4) + 2);
+			}) : ((int longest, int current) =>
 			{
-				string[] keyTokens = key.Split(VDF.OSTagDelimeter);
+				int diffResolver = (longest + 2) - (current + 2);
+				int nextIndentResolver = 4 - (longest + 2) % 4;
+				return new String(space, diffResolver + nextIndentResolver + 4);
+			});
 
-				if (obj[key].GetType() == typeof(List<dynamic>))
+			string StringifyObject(Dictionary<string, dynamic> obj, int level = 0)
+			{
+				string str = "";
+
+				int longestKeyLength = obj.Keys.Aggregate(0, (int total, string current) => Math.Max(total, obj[current].GetType() != typeof(Dictionary<string, dynamic>) ? current.Split(VDF.OSTagDelimeter)[0].Length : 0));
+
+				foreach (string key in obj.Keys)
 				{
-					// Item has multiple instances
-					foreach (dynamic item in obj[key])
+					string[] keyTokens = key.Split(VDF.OSTagDelimeter);
+
+					if (obj[key].GetType() == typeof(List<dynamic>))
 					{
-						if (item.GetType() == typeof(Dictionary<string, dynamic>))
+						// Item has multiple instances
+						foreach (dynamic item in obj[key])
 						{
-							if (keyTokens.Length > 1)
+							if (item.GetType() == typeof(Dictionary<string, dynamic>))
 							{
-								// OS Tag
-								str += $"{new String(space, tabs * 4)}\"{keyTokens[0]}\" {keyTokens[1]}{newLine}";
+								if (keyTokens.Length > 1)
+								{
+									// OS Tag
+									str += $"{GetIndentation(level)}\"{keyTokens[0]}\" {keyTokens[1]}{newLine}";
+								}
+								else
+								{
+									// No OS Tag
+									str += $"{GetIndentation(level)}\"{key}\"{newLine}";
+								}
+								str += $"{GetIndentation(level)}{{{newLine}";
+								str += $"{StringifyObject(item, level + 1)}";
+								str += $"{GetIndentation(level)}}}{newLine}";
 							}
 							else
 							{
-								// No OS Tag
-								str += $"{new String(space, tabs * 4)}\"{key}\"{newLine}";
+								if (keyTokens.Length > 1)
+								{
+									// OS Tag
+									str += $"{GetIndentation(level)}\"{keyTokens[0]}\"{GetWhitespace(longestKeyLength, keyTokens[0].Length)}\"{item}\" {keyTokens[1]}{newLine}";
+								}
+								else
+								{
+									// No OS Tag
+									str += $"{GetIndentation(level)}\"{key}\"{GetWhitespace(longestKeyLength, key.Length)}\"{item}\"{newLine}";
+								}
 							}
-							str += $"{new String(space, tabs * 4)}{{{newLine}";
-							str += $"{VDF.Stringify(item, tabs + 1)}{new String(space, tabs * 4)}}}{newLine}";
-						}
-						else
-						{
-							if (keyTokens.Length > 1)
-							{
-								// OS Tag
-								str += $"{new String(space, tabs * 4)}\"{keyTokens[0]}\"{new String(space, longestKeyLength - keyTokens[0].Length)}\"{item}\" {keyTokens[1]}{newLine}";
-							}
-							else
-							{
-								// No OS Tag
-								str += $"{new String(space, tabs * 4)}\"{key}\"{new String(space, longestKeyLength - key.Length)}\"{item}\"{newLine}";
-							}
-						}
-					}
-				}
-				else
-				{
-					// There is only one object object/value
-					if (obj[key].GetType() == typeof(Dictionary<string, dynamic>))
-					{
-						if (keyTokens.Length > 1)
-						{
-							str += $"{new String(space, tabs * 4)}\"{keyTokens[0]}\" {keyTokens[1]}{newLine}";
-							str += $"{new String(space, tabs * 4)}{{{newLine}";
-							str += $"{VDF.Stringify(obj[key], tabs + 1)}{new String(space, tabs * 4)}}}{newLine}";
-						}
-						else
-						{
-							// No OS Tag
-							str += $"{new String(space, tabs * 4)}\"{key}\"{newLine}";
-							str += $"{new String(space, tabs * 4)}{{{newLine}";
-							str += $"{VDF.Stringify(obj[key], tabs + 1)}{new String(space, tabs * 4)}}}{newLine}";
 						}
 					}
 					else
 					{
-						if (keyTokens.Length > 1)
+						// There is only one object object/value
+						if (obj[key].GetType() == typeof(Dictionary<string, dynamic>))
 						{
-							// OS Tag
-							str += $"{new String(space, tabs * 4)}\"{keyTokens[0]}\"{new String(space, longestKeyLength - keyTokens[0].Length)}\"{obj[key]}\" {keyTokens[1]}{newLine}";
+							if (keyTokens.Length > 1)
+							{
+								// OS Tag
+								str += $"{GetIndentation(level)}\"{keyTokens[0]}\" {keyTokens[1]}{newLine}";
+							}
+							else
+							{
+								// No OS Tag
+								str += $"{GetIndentation(level)}\"{key}\"{newLine}";
+							}
+							str += $"{GetIndentation(level)}{{{newLine}";
+							str += $"{StringifyObject(obj[key], level + 1)}";
+							str += $"{GetIndentation(level)}}}{newLine}";
 						}
 						else
 						{
-							// No OS Tag
-							str += $"{new String(space, tabs * 4)}\"{key}\"{new String(space, longestKeyLength - key.Length)}\"{obj[key]}\"{newLine}";
+							if (keyTokens.Length > 1)
+							{
+								// OS Tag
+								str += $"{GetIndentation(level)}\"{keyTokens[0]}\"{GetWhitespace(longestKeyLength, keyTokens[0].Length)}\"{obj[key]}\" {keyTokens[1]}{newLine}";
+							}
+							else
+							{
+								// No OS Tag
+								str += $"{GetIndentation(level)}\"{key}\"{GetWhitespace(longestKeyLength, key.Length)}\"{obj[key]}\"{newLine}";
+							}
 						}
 					}
 				}
+
+				return str;
 			}
 
-			return str;
+			return StringifyObject(obj);
 		}
 	}
 }
