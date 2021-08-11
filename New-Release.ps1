@@ -117,8 +117,8 @@ $params = @{
 			name     = "$($repo) $($newVersion)"
 			tag_name = $newVersion
 			body     = "# $($repo) $($newVersion)`r`n`r`n$changelog"
-			draft    = $args[0] == "draft"
-			prerelease = $args[0] == "prerelease"
+			draft    = $args[0] -eq "draft"
+			prerelease = $args[0] -eq "prerelease"
 		})
 }
 
