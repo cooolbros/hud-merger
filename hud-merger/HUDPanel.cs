@@ -122,34 +122,112 @@ namespace hud_merger
 					}
 					else
 					{
-						Type T = typeof(ClientschemeDependencies);
-						foreach (PropertyInfo typeKey in T.GetProperties())
+						// Colours
+						foreach (string colourProperty in Properties.Colours)
 						{
-							dynamic currentPropertiesList = typeKey.GetValue(Properties);
-							HashSet<string> currentDependenciesList = (HashSet<string>)typeKey.GetValue(this);
-
-							foreach (string defaultPropertyKey in currentPropertiesList)
+							if (key.ToLower().Contains(colourProperty))
 							{
-								if (key.ToLower().Contains(defaultPropertyKey))
+								if (obj[key].GetType() == typeof(List<dynamic>))
 								{
-									// The 'subimage' property when used in resource/gamemenu.res specifies
-									// an image path, other instances of the key name usually specify
-									// an image element. Ignore Dictionary<string, dynamic>
-
-									if (obj[key].GetType() == typeof(List<dynamic>))
+									foreach (dynamic duplicateKey in obj[key])
 									{
-										foreach (dynamic duplicateKey in obj[key])
+										if (duplicateKey.GetType() == typeof(string))
 										{
-											if (duplicateKey.GetType() == typeof(string))
-											{
-												currentDependenciesList.Add(duplicateKey);
-											}
+											this.Colours.Add(duplicateKey);
 										}
 									}
-									else if (obj[key].GetType() == typeof(string))
+								}
+								else if (obj[key].GetType() == typeof(string))
+								{
+									this.Colours.Add(obj[key]);
+								}
+							}
+						}
+
+						// Borders
+						foreach (string borderProperty in Properties.Borders)
+						{
+							if (key.ToLower().Contains(borderProperty))
+							{
+								if (obj[key].GetType() == typeof(List<dynamic>))
+								{
+									foreach (dynamic duplicateKey in obj[key])
 									{
-										currentDependenciesList.Add(obj[key]);
+										if (duplicateKey.GetType() == typeof(string))
+										{
+											this.Borders.Add(duplicateKey);
+										}
 									}
+								}
+								else if (obj[key].GetType() == typeof(string))
+								{
+									this.Borders.Add(obj[key]);
+								}
+							}
+						}
+
+						// Fonts
+						foreach (string fontProperty in Properties.Fonts)
+						{
+							if (key.ToLower().Contains(fontProperty))
+							{
+								if (obj[key].GetType() == typeof(List<dynamic>))
+								{
+									foreach (dynamic duplicateKey in obj[key])
+									{
+										if (duplicateKey.GetType() == typeof(string))
+										{
+											this.Fonts.Add(duplicateKey);
+										}
+									}
+								}
+								else if (obj[key].GetType() == typeof(string))
+								{
+									this.Fonts.Add(obj[key]);
+								}
+							}
+						}
+
+						// Images
+						foreach (string imageProperty in Properties.Images)
+						{
+							if (key.ToLower().Contains(imageProperty))
+							{
+								if (obj[key].GetType() == typeof(List<dynamic>))
+								{
+									foreach (dynamic duplicateKey in obj[key])
+									{
+										if (duplicateKey.GetType() == typeof(string))
+										{
+											this.Images.Add($"materials\\vgui\\{duplicateKey}");
+										}
+									}
+								}
+								else if (obj[key].GetType() == typeof(string))
+								{
+									this.Images.Add($"materials\\vgui\\{obj[key]}");
+								}
+							}
+						}
+
+						// Audio
+						foreach (string audioProperty in Properties.Audio)
+						{
+							if (key.ToLower().Contains(audioProperty))
+							{
+								if (obj[key].GetType() == typeof(List<dynamic>))
+								{
+									foreach (dynamic duplicateKey in obj[key])
+									{
+										if (duplicateKey.GetType() == typeof(string))
+										{
+											this.Audio.Add($"sound\\{duplicateKey}");
+										}
+									}
+								}
+								else if (obj[key].GetType() == typeof(string))
+								{
+									this.Audio.Add($"sound\\{obj[key]}");
 								}
 							}
 						}

@@ -639,15 +639,14 @@ namespace hud_merger
 		{
 			foreach (string imagePath in dependencies.Images)
 			{
-				string[] folders = Regex.Split(imagePath, "[\\/]+");
+				files.Add($"{imagePath}.vmt");
+				files.Add($"{imagePath}.vtf");
 
-				files.Add($"materials\\vgui\\{String.Join("\\", folders)}.vmt");
-				files.Add($"materials\\vgui\\{String.Join("\\", folders)}.vtf");
+				string vmtPath = $"{originFolderPath}\\{imagePath}.vmt";
 
-				string filePath = $"{originFolderPath}\\materials\\vgui\\{String.Join("\\", folders)}.vmt";
-				if (File.Exists(filePath))
+				if (File.Exists(vmtPath))
 				{
-					Dictionary<string, dynamic> vmt = Utilities.VDFTryParse(filePath, false);
+					Dictionary<string, dynamic> vmt = Utilities.VDFTryParse(vmtPath, false);
 					Dictionary<string, dynamic> generic = vmt.First().Value;
 
 					string vtfPath = "";
@@ -666,9 +665,10 @@ namespace hud_merger
 				}
 			}
 
+
 			foreach (string audioPath in dependencies.Audio)
 			{
-				files.Add($"sound\\{audioPath}");
+				files.Add(audioPath);
 			}
 
 			string[] filesArray = files.ToArray();
