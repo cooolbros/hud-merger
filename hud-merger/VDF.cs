@@ -10,7 +10,7 @@ namespace hud_merger
 
 		public static Dictionary<string, dynamic> Parse(string str, bool osTags = true)
 		{
-			char[] whiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
+			char[] whiteSpaceIgnore = { ' ', '\t', '\r', '\n' };
 
 			int i = 0;
 			int line = 1;
@@ -34,7 +34,7 @@ namespace hud_merger
 					if (str[j] == '\n')
 					{
 						_line++;
-						_pos = 0;
+						_pos = 1;
 					}
 					else
 					{
@@ -50,7 +50,6 @@ namespace hud_merger
 							{
 								j++;
 							}
-							_line++;
 						}
 					}
 					else
@@ -67,14 +66,16 @@ namespace hud_merger
 				{
 					// Read until next quote (ignore opening quote)
 					j++;
+					_pos++;
 					while (str[j] != '"' && j < str.Length)
 					{
 						if (str[j] == '\n')
 						{
-							throw new Exception($"Unexpected EOL at position {j} (line {line}, position {pos})! Are you missing a closing \"?");
+							throw new Exception($"Unexpected EOL at position {j} (line {_line}, position {_pos})! Are you missing a closing \"?");
 						}
 						currentToken += str[j];
 						j++;
+						_pos++;
 					}
 					j++; // Skip over closing quote
 				}
@@ -85,7 +86,7 @@ namespace hud_merger
 					{
 						if (str[j] == '"')
 						{
-							throw new Exception($"Unexpected '\"' at position {j} (line {line}, position {pos})! Are you missing terminating whitespace?");
+							throw new Exception($"Unexpected '\"' at position {j} (line {_line}, position {_pos})! Are you missing terminating whitespace?");
 						}
 						currentToken += str[j];
 						j++;
@@ -202,7 +203,6 @@ namespace hud_merger
 							// Property doesn't exist
 							if (currentToken == "}")
 							{
-								// throw new VDFSyntaxError($"Cannot create property {currentToken}");
 								throw new Exception($"Cannot create property {currentToken}, Are you mising an opening brace?");
 							}
 							if (nextToken == "EOF")
@@ -234,7 +234,7 @@ namespace hud_merger
 					{
 						if (currentToken == "}")
 						{
-							throw new Exception($"Unexpected '}}' position {i} (line {line}, position {pos}) Are you missing an opening brace?");
+							throw new Exception($"Unexpected '}}' at position {i} (line {line}, position {pos})! Are you missing an opening brace?");
 						}
 					}
 				}
