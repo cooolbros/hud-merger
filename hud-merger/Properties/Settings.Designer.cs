@@ -12,8 +12,8 @@ namespace hud_merger.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
@@ -50,12 +50,12 @@ namespace hud_merger.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Team Fortress 2")]
-        public string Team_Fortress_Folder {
+        public string Team_Fortress_2_Folder {
             get {
-                return ((string)(this["Team_Fortress_Folder"]));
+                return ((string)(this["Team_Fortress_2_Folder"]));
             }
             set {
-                this["Team_Fortress_Folder"] = value;
+                this["Team_Fortress_2_Folder"] = value;
             }
         }
     }

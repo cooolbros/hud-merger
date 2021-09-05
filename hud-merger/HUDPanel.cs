@@ -58,7 +58,7 @@ namespace hud_merger
 	/// </remarks>
 	public class ClientschemeDependencies
 	{
-		private static ClientschemeDependencies Properties = JsonSerializer.Deserialize<ClientschemeDependencies>(File.ReadAllText("Resources\\Clientscheme.json"));
+		public static ClientschemeDependencies Properties = JsonSerializer.Deserialize<ClientschemeDependencies>(File.ReadAllText("Resources\\Clientscheme.json"));
 		public string HUDPath;
 		public HashSet<string> Colours { get; set; } = new();
 		public HashSet<string> Borders { get; set; } = new();

@@ -8,7 +8,7 @@
     <Setting Name="Extract_required_TF2_HUD_files_on_startup" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="Team_Fortress_Folder" Type="System.String" Scope="User">
+    <Setting Name="Team_Fortress_2_Folder" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Program Files (x86)\Steam\steamapps\common\Team Fortress 2</Value>
     </Setting>
   </Settings>

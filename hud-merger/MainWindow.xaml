@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         Title="HUD Merger"
         Width="800"
+        MinWidth="800"
         Height="450"
+        MinHeight="450"
         Icon="favicon.ico"
         WindowStartupLocation="CenterScreen">
     <Grid>

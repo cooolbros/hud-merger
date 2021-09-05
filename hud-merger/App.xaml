@@ -148,7 +148,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="HasContent" Value="true">
-                                <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
+                                <!-- <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/> -->
                                 <Setter Property="Padding" Value="4,-2,0,0"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
@@ -156,8 +156,8 @@
                                 <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="#5d5d5d"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Fill" TargetName="checkBoxRectangle" Value="{StaticResource OptionMark.Disabled.Background}"/>
-                                <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="{StaticResource OptionMark.Disabled.Border}"/>
+                                <!-- <Setter Property="Fill" TargetName="checkBoxRectangle" Value="{StaticResource OptionMark.Disabled.Background}"/> -->
+                                <!-- <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="{StaticResource OptionMark.Disabled.Border}"/> -->
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
                                 <Setter Property="Fill" TargetName="checkBoxRectangle" Value="#737373"/>

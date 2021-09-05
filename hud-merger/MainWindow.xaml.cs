@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,22 +19,34 @@ namespace hud_merger
 		private HUD OriginHUD;
 		private HUD TargetHUD;
 		private bool MergeButtonEnabled = false;
-		public HUDPanel[] HUDPanels = JsonSerializer.Deserialize<HUDPanel[]>(File.ReadAllText("Resources\\Panels.json"));
+		public static HUDPanel[] HUDPanels = JsonSerializer.Deserialize<HUDPanel[]>(File.ReadAllText("Resources\\Panels.json"));
 		StackPanel OriginFilesList = new();
 		StackPanel TargetFilesList = new();
 		System.Windows.Forms.FolderBrowserDialog FolderBrowserDialog = new()
 		{
-			SelectedPath = $"{Properties.Settings.Default.Team_Fortress_Folder}\\tf\\custom\\"
+			SelectedPath = $"{Properties.Settings.Default.Team_Fortress_2_Folder}\\tf\\custom\\"
 		};
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
+			Properties.Settings.Default.Upgrade();
+			Properties.Settings.Default.Save();
+
 			// Updater
 			bool download = Properties.Settings.Default.Download_latest_HUD_file_definitions_file_on_start_up;
 			bool extract = Properties.Settings.Default.Extract_required_TF2_HUD_files_on_startup;
-			Updater.Update(download, extract);
+			Task.WhenAll(Updater.Update(download, extract)).ContinueWith((Task task) =>
+			{
+				if (task.Exception != null)
+				{
+					foreach (Exception error in task.Exception.InnerExceptions)
+					{
+						System.Diagnostics.Debug.WriteLine($"({error.GetType().Name}): {error.Message}");
+					}
+				}
+			});
 		}
 
 		private void MenuItem_LoadOriginHUD(object sender, RoutedEventArgs e)
@@ -71,7 +85,7 @@ namespace hud_merger
 			{
 				child.Visibility = Visibility.Collapsed;
 			}
-			foreach (HUDPanel panel in this.HUDPanels)
+			foreach (HUDPanel panel in HUDPanels)
 			{
 				panel.Armed = false;
 			}
