@@ -66,9 +66,9 @@ $csproj = [xml](Get-Content $csprojPath)
 $csproj.Project.PropertyGroup.Version = $newVersion
 $csproj.Save($csprojPath)
 
-$aboutWindowPath = $id + "\\AboutWindow.xaml"
+$aboutWindowPath = "$id\\AboutWindow.xaml"
 $aboutWindow = [xml](Get-Content $aboutWindowPath)
-$aboutWindow.Window.Grid.StackPanel.Label[1] = "Version " + $newVersion
+$aboutWindow.Window.Grid.StackPanel.Label[1].InnerText = "Version $newVersion"
 $aboutWindow.Save($aboutWindowPath)
 
 # Push changes (Ensure 0 commits to main since this release)
