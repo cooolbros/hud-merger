@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	/// <summary>
 	/// Represents a custom HUD

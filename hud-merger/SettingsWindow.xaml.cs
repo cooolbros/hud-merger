@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	/// <summary>
 	/// Interaction logic for SettingsWindow.xaml

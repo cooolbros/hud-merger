@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	static class Updater
 	{

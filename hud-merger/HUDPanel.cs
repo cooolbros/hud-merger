@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	/// <summary>
 	/// Represents a component of the HUD

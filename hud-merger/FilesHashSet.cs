@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	public class FilesHashSet : HashSet<string>
 	{

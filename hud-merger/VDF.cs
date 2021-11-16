@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	static class VDF
 	{

@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	/// <summary>
 	/// Interaction logic for AboutWindow.xaml

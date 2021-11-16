@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace hud_merger
+namespace HUDMerger
 {
 	public static class Utilities
 	{
