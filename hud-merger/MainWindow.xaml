@@ -10,7 +10,7 @@
         MinWidth="800"
         Height="450"
         MinHeight="450"
-        Icon="favicon.ico"
+        Icon="Resources\favicon.ico"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
