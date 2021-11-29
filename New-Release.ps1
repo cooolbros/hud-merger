@@ -31,11 +31,11 @@ $repository_information = [Uri]::New($github_repository_url).AbsolutePath.Split(
 $author = $repository_information[1]
 $id = $repository_information[2]
 
-$authorization = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$($author):$($personal_access_token)"))
+$authorization = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$($author):$personal_access_token"))
 
 # Get latest release
 Write-Host "Getting release info for $id"
-$latestRelease = (ConvertFrom-Json (Invoke-WebRequest "https://api.github.com/repos/$($author)/$($id)/releases/latest"))
+$latestRelease = (ConvertFrom-Json (Invoke-WebRequest "https://api.github.com/repos/$author/$id/releases/latest"))
 Write-Host $latestRelease
 
 # Create version
@@ -66,7 +66,7 @@ $csproj = [xml](Get-Content $csprojPath)
 $csproj.Project.PropertyGroup.Version = $newVersion
 $csproj.Save($csprojPath)
 
-$aboutWindowPath = "$id\\AboutWindow.xaml"
+$aboutWindowPath = "src/$id/AboutWindow.xaml"
 $aboutWindow = [xml](Get-Content $aboutWindowPath)
 $aboutWindow.Window.Grid.StackPanel.Label[1].InnerText = "Version $newVersion"
 $aboutWindow.Save($aboutWindowPath)
@@ -78,22 +78,22 @@ git push
 
 # Restore
 Write-Host "Restoring $id"
-Remove-Item -Recurse "$id/bin" -ErrorAction "SilentlyContinue"
-Remove-Item -Recurse "$id/obj" -ErrorAction "SilentlyContinue"
+Remove-Item -Recurse "src/$id/bin" -ErrorAction "SilentlyContinue"
+Remove-Item -Recurse "src/$id/obj" -ErrorAction "SilentlyContinue"
 Remove-Item "$id.zip" -ErrorAction "SilentlyContinue"
 
 # Build
 Write-Host "Building $id"
 # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish
 # https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-dotnet publish hud-merger -c Release
+dotnet publish "src/$id" -c Release
 # -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true --runtime win-x64
 
 # Package
 Write-Host "Packaging $id"
-$output = "$id\bin\Release\net5.0-windows\"
-Rename-Item "$output\publish" "$id"
-Compress-Archive -Path "$output\hud-merger" -Destination "./$id.zip" -CompressionLevel "Optimal"
+$output = "src\$id\bin\Release\net5.0-windows\"
+Rename-Item "src\$output\publish" "$id"
+Compress-Archive -Path "src\$output\$id" -Destination "./$id.zip" -CompressionLevel "Optimal"
 
 
 # Create Changelog
@@ -102,22 +102,22 @@ $changelog = ""
 git log --after $latestRelease.published_at --format=%s | ForEach-Object { $changelog += " - $_`r`n" }
 
 # Create Release
-Write-Host "Creating release $($repo) $($newVersion)"
+Write-Host "Creating release $repo $newVersion"
 
 $params = @{
-	Uri     = "https://api.github.com/repos/$($author)/$($id)/releases"
+	Uri     = "https://api.github.com/repos/$author/$id/releases"
 	Method  = "POST"
 	Headers = @{
 		Authorization = "Basic $authorization"
 		Accept        = "application/vnd.github.v3+json"
 	}
 	Body    = (ConvertTo-Json @{
-			owner    = $author
-			repo     = $id
-			name     = "$($repo) $($newVersion)"
-			tag_name = $newVersion
-			body     = "# $($repo) $($newVersion)`r`n`r`n$changelog"
-			draft    = $args[0] -eq "draft"
+			owner      = $author
+			repo       = $id
+			name       = "$repo $newVersion"
+			tag_name   = $newVersion
+			body       = "# $repo $newVersion`r`n`r`n$changelog"
+			draft      = $args[0] -eq "draft"
 			prerelease = $args[0] -eq "prerelease"
 		})
 }
