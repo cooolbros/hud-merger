@@ -18,7 +18,7 @@ namespace HUDMerger
 
 		public static string EncodeFilePath(string filePath)
 		{
-			return String.Join('\\', Regex.Split(filePath, "[\\/]+"));
+			return String.Join('\\', Regex.Split(filePath, @"[/\\]+"));
 		}
 	}
 
