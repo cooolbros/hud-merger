@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HUDMergerVDF;
+using HUDMergerVDF.Models;
 
 namespace HUDMerger
 {
@@ -645,7 +647,7 @@ namespace HUDMerger
 
 				if (File.Exists(vmtPath))
 				{
-					Dictionary<string, dynamic> vmt = Utilities.VDFTryParse(vmtPath, false);
+					Dictionary<string, dynamic> vmt = Utilities.VDFTryParse(vmtPath, new VDFParseOptions { OSTags = VDFOSTags.None });
 					Dictionary<string, dynamic> generic = vmt.First().Value;
 
 					string vtfPath = "";

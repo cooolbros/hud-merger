@@ -1,128 +1,55 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HUDMergerVDF.Exceptions;
+using HUDMergerVDF.Models;
 
-namespace HUDMerger
+namespace HUDMergerVDF
 {
+	/// <summary>
+	/// Provides functionality to serialize objects or value types to VDF and to deserialize VDF into objects or value types
+	/// </summary>
 	static class VDF
 	{
+		/// <summary>
+		/// Char in Dictionary key to indicate that the Key/Value has an OS Tag
+		/// </summary>
 		public static char OSTagDelimeter = '^';
 
-		public static Dictionary<string, dynamic> Parse(string str, bool osTags = true)
+		/// <summary>
+		/// Parse VDF into a Dictionary
+		/// </summary>
+		/// <param name="str">string</param>
+		/// <param name="options">options</param>
+		/// <returns></returns>
+		/// <exception cref="VDFSyntaxException"></exception>
+		public static Dictionary<string, dynamic> Parse(string str, VDFParseOptions options = default)
 		{
-			char[] whiteSpaceIgnore = { ' ', '\t', '\r', '\n' };
+			options ??= new VDFParseOptions();
 
-			int i = 0;
-			int line = 1;
-			int pos = 1;
-
-			string Next(bool lookAhead = false)
-			{
-				string currentToken = "";
-				int j = i;
-
-				int _line = line;
-				int _pos = pos;
-
-				if (j >= str.Length - 1)
-				{
-					return "EOF";
-				}
-
-				while ((whiteSpaceIgnore.Contains(str[j]) || str[j] == '/') && j <= str.Length - 1)
-				{
-					if (str[j] == '\n')
-					{
-						_line++;
-						_pos = 1;
-					}
-					else
-					{
-						_pos++;
-					}
-
-					if (str[j] == '/')
-					{
-						if (str[j + 1] == '/')
-						{
-							// prevent index out of bounds error if file doesn't end in a new line
-							while (j < str.Length && str[j] != '\n')
-							{
-								j++;
-							}
-						}
-					}
-					else
-					{
-						j++;
-					}
-					if (j >= str.Length)
-					{
-						return "EOF";
-					}
-				}
-
-				if (str[j] == '"')
-				{
-					// Read until next quote (ignore opening quote)
-					j++;
-					_pos++;
-					while (str[j] != '"' && j < str.Length)
-					{
-						if (str[j] == '\n')
-						{
-							throw new Exception($"Unexpected EOL at position {j} (line {_line}, position {_pos})! Are you missing a closing \"?");
-						}
-						currentToken += str[j];
-						j++;
-						_pos++;
-					}
-					j++; // Skip over closing quote
-				}
-				else
-				{
-					// Read until whitespace (or end of file)
-					while (!whiteSpaceIgnore.Contains(str[j]) && j < str.Length - 1)
-					{
-						if (str[j] == '"')
-						{
-							throw new Exception($"Unexpected '\"' at position {j} (line {_line}, position {_pos})! Are you missing terminating whitespace?");
-						}
-						currentToken += str[j];
-						j++;
-					}
-				}
-
-				if (!lookAhead)
-				{
-					i = j;
-					line = _line;
-					pos = _pos;
-				}
-
-				return currentToken;
-			}
+			VDFTokeniser tokeniser = new VDFTokeniser(str, options);
 
 			Dictionary<string, dynamic> ParseObject(bool isobject = false)
 			{
 				Dictionary<string, dynamic> obj = new();
 
-				string currentToken = Next();
-				string nextToken = Next(true);
+				string currentToken = tokeniser.Read();
+				string nextToken = tokeniser.Read(true);
 
-				while (currentToken != "}" && nextToken != "EOF")
+				string objectTerminator = isobject ? "}" : "EOF";
+				while (currentToken != objectTerminator)
 				{
-					if (nextToken.StartsWith('[') && nextToken.EndsWith(']') && osTags)
+					if (nextToken.StartsWith('[') && nextToken.EndsWith(']') && (tokeniser.Options.OSTags == VDFOSTags.Objects || tokeniser.Options.OSTags == VDFOSTags.All))
 					{
 						// Object with OS Tag
-						currentToken += $"{OSTagDelimeter}{Next()}";
-						Next(); // Skip over opening brace
+						currentToken += $"{OSTagDelimeter}{tokeniser.Read()}";
+						tokeniser.Read(); // Skip over opening brace
 						obj[currentToken] = ParseObject(true);
 					}
 					else if (nextToken == "{")
 					{
 						// Object
-						Next(); // Skip over opening brace
+						tokeniser.Read(); // Skip over opening brace
 
 						if (obj.ContainsKey(currentToken))
 						{
@@ -135,9 +62,7 @@ namespace HUDMerger
 							{
 								// Object already exists
 								dynamic value = obj[currentToken];
-								obj[currentToken] = new List<dynamic>();
-								obj[currentToken].Add(value);
-								obj[currentToken].Add(ParseObject(true));
+								obj[currentToken] = new List<dynamic>() { value, ParseObject(true) };
 							}
 						}
 						else
@@ -150,13 +75,18 @@ namespace HUDMerger
 					{
 						// Primitive
 
-						Next(); // Skip over value
+						tokeniser.Read(); // Skip over value
 
 						// Check primitive os tag
-						string tokenLookAhead = Next(true);
-						if (tokenLookAhead.StartsWith('[') && tokenLookAhead.EndsWith(']') && osTags)
+						string tokenLookAhead = tokeniser.Read(true);
+						if (tokenLookAhead.StartsWith('[') && tokenLookAhead.EndsWith(']') && (tokeniser.Options.OSTags == VDFOSTags.Strings || tokeniser.Options.OSTags == VDFOSTags.All))
 						{
-							currentToken += $"{OSTagDelimeter}{Next()}";
+							currentToken += $"{OSTagDelimeter}{tokeniser.Read()}";
+						}
+
+						if (currentToken == objectTerminator)
+						{
+							throw new VDFSyntaxException(currentToken, tokeniser.Position, tokeniser.Line, tokeniser.Character);
 						}
 
 						if (obj.ContainsKey(currentToken))
@@ -165,78 +95,24 @@ namespace HUDMerger
 							if (obj[currentToken].GetType() == typeof(List<dynamic>))
 							{
 								// Array already exists
-
-								if (nextToken == "}")
-								{
-									throw new Exception($"Unexpected '}}' at position {i} (line {line}, position {pos})! Are you missing an {{?");
-								}
-
-								if (nextToken == "EOF")
-								{
-									throw new Exception($"Unexpected EOF at position {i} (line {line}, position {pos})! Are you missing a value?");
-								}
-
 								obj[currentToken].Add(nextToken);
 							}
 							else
 							{
 								// Primitive type already exists
 								dynamic value = obj[currentToken];
-
-								if (nextToken == "}")
-								{
-									throw new Exception($"Unexpected '}}' at position {i} (line {line}, position {pos})! Are you missing an opening brace?");
-								}
-
-								if (nextToken == "EOF")
-								{
-									throw new Exception($"Unexpected EOF at position {i} (line {line}, position {pos})!  Are you missing a value?");
-								}
-
-								obj[currentToken] = new List<dynamic>();
-								obj[currentToken].Add(value);
-								obj[currentToken].Add(nextToken);
+								obj[currentToken] = new List<dynamic>() { value, nextToken };
 							}
 						}
 						else
 						{
 							// Property doesn't exist
-							if (currentToken == "}")
-							{
-								throw new Exception($"Cannot create property {currentToken}, Are you mising an opening brace?");
-							}
-							if (nextToken == "EOF")
-							{
-								throw new Exception($"Unexpected EOF at position {i} (line {line}, position {pos})! Expected value for {currentToken}");
-							}
 							obj[currentToken] = nextToken;
 						}
 					}
 
-					currentToken = Next();
-					nextToken = Next(true);
-
-					if (currentToken == "EOF")
-					{
-						if (isobject)
-						{
-							// we are expecting a closing brace not EOF, error!
-							throw new Exception("Unexpected end of file! Are you missing a closing brace?");
-						}
-						else
-						{
-							// we are not inside an object, possibly parsing #base statements, EOF is fine
-							break;
-						}
-					}
-
-					if (!isobject)
-					{
-						if (currentToken == "}")
-						{
-							throw new Exception($"Unexpected '}}' at position {i} (line {line}, position {pos})! Are you missing an opening brace?");
-						}
-					}
+					currentToken = tokeniser.Read();
+					nextToken = tokeniser.Read(true);
 				}
 
 				return obj;
@@ -245,19 +121,21 @@ namespace HUDMerger
 			return ParseObject();
 		}
 
-		public enum IndentationKind
+		/// <summary>
+		/// Stringify a Dictionary into VDF
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="indentation"></param>
+		/// <returns></returns>
+		public static string Stringify(Dictionary<string, dynamic> obj, VDFStringifyOptions options = default)
 		{
-			Tabs,
-			Spaces
-		}
+			VDFStringifyOptions _options = options ?? new VDFStringifyOptions();
 
-		public static string Stringify(Dictionary<string, dynamic> obj, IndentationKind indentation = IndentationKind.Tabs)
-		{
 			const char tab = '\t';
 			const char space = ' ';
 			const string newLine = "\r\n";
 
-			bool tabIndentation = indentation == IndentationKind.Tabs;
+			bool tabIndentation = _options.Indentation == VDFIndentation.Tabs;
 			Func<int, string> GetIndentation = tabIndentation ? ((int level) => new String(tab, level)) : ((int level) => new String(space, level * 4));
 			Func<int, int, string> GetWhitespace = tabIndentation ? ((int longest, int current) =>
 			{

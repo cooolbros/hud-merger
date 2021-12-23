@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using HUDMergerVDF;
+using HUDMergerVDF.Models;
 
 namespace HUDMerger
 {
@@ -106,11 +108,11 @@ namespace HUDMerger
 			return true;
 		}
 
-		public static Dictionary<string, dynamic> VDFTryParse(string filePath, bool osTags = true)
+		public static Dictionary<string, dynamic> VDFTryParse(string filePath, VDFParseOptions options = default)
 		{
 			try
 			{
-				Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(filePath), osTags);
+				Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(filePath), options);
 				return obj;
 			}
 			catch (Exception e)
