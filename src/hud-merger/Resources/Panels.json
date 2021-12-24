@@ -723,6 +723,26 @@
 		]
 	},
 	{
+		"Name": "Source Scheme",
+		"Main": {
+			"FilePath": "resource\\sourcescheme.res"
+		}
+	},
+	{
+		"Name": "Source Scheme Net Graph",
+		"RequiredKeyValue": {
+			"FilePath": "resource\\sourcescheme.res",
+			"KeyPath": "Scheme.Fonts.DefaultFixedOutline"
+		},
+		"Scheme": {
+			"SourceScheme": {
+				"Fonts": [
+					"DefaultFixedOutline"
+				]
+			}
+		}
+	},
+	{
 		"Name": "Spy Disguise Menu",
 		"Main": {
 			"FilePath": "resource\\ui\\disguise_menu\\hudmenuspydisguise.res",
