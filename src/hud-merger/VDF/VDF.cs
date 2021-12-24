@@ -19,8 +19,8 @@ namespace HUDMergerVDF
 		/// <summary>
 		/// Parse VDF into a Dictionary
 		/// </summary>
-		/// <param name="str">string</param>
-		/// <param name="options">options</param>
+		/// <param name="str">String</param>
+		/// <param name="options">Options</param>
 		/// <returns></returns>
 		/// <exception cref="VDFSyntaxException"></exception>
 		public static Dictionary<string, dynamic> Parse(string str, VDFParseOptions options = default)
@@ -124,8 +124,8 @@ namespace HUDMergerVDF
 		/// <summary>
 		/// Stringify a Dictionary into VDF
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="indentation"></param>
+		/// <param name="obj">Object</param>
+		/// <param name="options">Stringify Options</param>
 		/// <returns></returns>
 		public static string Stringify(Dictionary<string, dynamic> obj, VDFStringifyOptions options = default)
 		{

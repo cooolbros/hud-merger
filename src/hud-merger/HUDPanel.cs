@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -21,6 +22,12 @@ namespace HUDMerger
 
 		/// <summary>Other HUDFiles that contribute to this HUDPanel but are non essential</summary>
 		public HUDFile[] Files { get; set; }
+
+		/// <summary>(Optional) Nested object that must exist inside the FilePath for this HUDFile to exist</summary>
+		public KeyValueLocation RequiredKeyValue { get; init; }
+
+		/// <summary>Dependencies to add when merging this panel</summary>
+		public SchemeDependenciesManager Scheme { get; set; }
 
 		/// <summary>(Usage) Whether the panel should be merged</summary>
 		public bool Armed = false;
@@ -59,42 +66,51 @@ namespace HUDMerger
 	public class ClientschemeDependencies
 	{
 		public static ClientschemeDependencies Properties = JsonSerializer.Deserialize<ClientschemeDependencies>(File.ReadAllText("Resources\\Clientscheme.json"));
-		public string HUDPath;
 		public HashSet<string> Colours { get; set; } = new();
 		public HashSet<string> Borders { get; set; } = new();
 		public HashSet<string> Fonts { get; set; } = new();
 		public FilesHashSet Images { get; set; } = new();
 		public FilesHashSet Audio { get; set; } = new();
 
-		public void Add(string hudFile, FilesHashSet files)
+		/// <summary>
+		/// Add all dependencies referenced in files
+		/// </summary>
+		/// <param name="hudPath">Absolute path to HUD folder</param>
+		/// <param name="files">Files to add dependencies in (Additional #base files will be added to this set)</param>
+		public void Add(string hudPath, FilesHashSet files)
 		{
-			string sourceFilePath = $"{this.HUDPath}\\{hudFile}";
-			if (!File.Exists(sourceFilePath))
+			foreach (string hudFile in files.ToArray())
 			{
-				System.Diagnostics.Debug.WriteLine("Could not find " + sourceFilePath);
+				this.Add(hudPath, hudFile, files);
 			}
-
-			string[] folders = hudFile.Split('\\');
-			folders[^1] = "";
-			string folderPath = String.Join('\\', folders);
-
-			Dictionary<string, dynamic> obj = File.Exists(sourceFilePath) ? Utilities.VDFTryParse(sourceFilePath) : new();
-			this.Add(folderPath, obj, files);
 		}
 
-		public void Add(string relativeFolderPath, Dictionary<string, dynamic> obj, FilesHashSet files)
+		/// <summary>
+		/// Add dependencies referenced in a file
+		/// </summary>
+		/// <param name="hudPath">Absolute path to HUD folder</param>
+		/// <param name="hudFile">Relative path to file</param>
+		/// <param name="files">FilesHashSet to add #base files to</param>
+		public void Add(string hudPath, string hudFile, FilesHashSet files)
 		{
+			string absoluteFilePath = Path.Join(hudPath, hudFile);
+			if (!File.Exists(absoluteFilePath))
+			{
+				System.Diagnostics.Debug.WriteLine("Could not find " + absoluteFilePath);
+				return;
+			}
+
+			Dictionary<string, dynamic> obj = Utilities.VDFTryParse(absoluteFilePath);
+
 			// #base
 			if (obj.ContainsKey("#base"))
 			{
 				FilesHashSet baseFiles = new();
 				if (obj["#base"].GetType() == typeof(List<dynamic>))
 				{
-					// List<dynamic> is not assignable to list string, add individual strings
 					foreach (dynamic baseFile in obj["#base"])
 					{
 						baseFiles.Add(baseFile);
-						// Files.Add(BaseFile)
 					}
 				}
 				else
@@ -103,14 +119,25 @@ namespace HUDMerger
 					baseFiles.Add(obj["#base"]);
 				}
 
+				string relativeFolderPath = Path.GetDirectoryName(hudFile);
+
 				foreach (string baseFile in baseFiles)
 				{
-					string baseFileRelativePath = $"{relativeFolderPath}\\{baseFile}";
+					string baseFileRelativePath = Path.Join(relativeFolderPath, baseFile);
+					this.Add(hudPath, baseFileRelativePath, files);
 					files.Add(baseFileRelativePath);
-					this.Add(baseFileRelativePath, files);
 				}
 			}
 
+			this.Add(obj);
+		}
+
+		/// <summary>
+		/// Add dependencies referenced in a Dictionary
+		/// </summary>
+		/// <param name="obj">Object</param>
+		public void Add(Dictionary<string, dynamic> obj)
+		{
 			// Look at primitive properties and add matches to Dependencies Dictionary
 			void IterateDictionary(Dictionary<string, dynamic> obj)
 			{
