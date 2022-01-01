@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HUDMerger.Models;
 using HUDMergerVDF;
 using HUDMergerVDF.Models;
 
-namespace HUDMerger
+namespace HUDMerger.Models
 {
 	/// <summary>
 	/// Represents a custom HUD

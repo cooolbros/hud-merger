@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace HUDMerger
+namespace HUDMerger.Models
 {
 	public class FilesHashSet : HashSet<string>
 	{
 		public FilesHashSet() : base(new FilePathComparer())
 		{
-
 		}
 
 		public new bool Add(string item)

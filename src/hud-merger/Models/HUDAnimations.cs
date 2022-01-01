@@ -47,7 +47,7 @@ using System.Collections.Generic;
 //
 //  SetString <panel name> <string varname> <stringvalue> <set time>
 
-namespace HUDMerger
+namespace HUDMerger.Models
 {
 	public class HUDAnimation
 	{

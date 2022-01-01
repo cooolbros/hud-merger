@@ -1,6 +1,6 @@
 using System;
 
-namespace HUDMerger
+namespace HUDMerger.Models
 {
 	/// <summary>
 	/// Stores a file and key path to a Key/Value

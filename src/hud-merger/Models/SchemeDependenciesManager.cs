@@ -1,6 +1,6 @@
 using System;
 
-namespace HUDMerger
+namespace HUDMerger.Models
 {
 	public class SchemeDependenciesManager
 	{
