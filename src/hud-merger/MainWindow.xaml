@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HUDMerger"
+        xmlns:views="clr-namespace:HUDMerger.Views"
         mc:Ignorable="d"
         Title="HUD Merger"
         Width="800"
@@ -13,70 +14,6 @@
         Icon="Resources\favicon.ico"
         WindowStartupLocation="CenterScreen">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <!-- Menu -->
-        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="1">
-            <MenuItem Header="_File">
-                <MenuItem Header="Load Origin HUD" Click="MenuItem_LoadOriginHUD" />
-                <MenuItem Header="Load Target HUD" Click="MenuItem_LoadTargetHUD" />
-                <Separator />
-                <MenuItem Header="Settings" Click="MenuItem_Settings" />
-                <Separator />
-                <MenuItem Header="Quit" Click="MenuItem_Quit" />
-            </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Command="Cut" />
-                <MenuItem Command="Copy" />
-                <MenuItem Command="Paste" />
-            </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="About" Click="MenuItem_About" />
-            </MenuItem>
-        </Menu>
-        <!-- Origin HUD Status -->
-        <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="10,10,5,5">
-            <StackPanel>
-                <Label Name="OriginHUDStatusTitle" Content="No HUD Selected" Style="{StaticResource StatusTitle}" />
-                <Label Name="OriginHUDStatusInfo" Content="HUD to copy files from" Style="{StaticResource StatusInfo}" />
-            </StackPanel>
-        </Grid>
-        <!-- Target HUD Status -->
-        <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="5,10,10,5">
-            <StackPanel>
-                <Label Name="TargetHUDStatusTitle" Content="No HUD Selected" Style="{StaticResource StatusTitle}" />
-                <Label Name="TargetHUDStatusInfo" Content="HUD to copy files to" Style="{StaticResource StatusInfo}" />
-            </StackPanel>
-        </Grid>
-        <!-- Origin HUD Files -->
-        <Grid Name="OriginHUDFilesContainer" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="10,5,5,5">
-            <Button Template="{StaticResource SelectHUDButtonTemplate}" Click="NewOriginHUD_Click">
-                <StackPanel>
-                    <Label Content="+" Style="{StaticResource SelectHUDButtonPlus}" />
-                    <Label Content="Open Folder" Style="{StaticResource SelectHUDOpenFolder}" />
-                </StackPanel>
-            </Button>
-        </Grid>
-        <!-- Target HUD Files -->
-        <Grid Name="TargetHUDFilesContainer" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="5,5,10,5">
-            <Button Template="{StaticResource SelectHUDButtonTemplate}" Click="NewTargetHUD_Click">
-                <StackPanel>
-                    <Label Content="+" Style="{StaticResource SelectHUDButtonPlus}" />
-                    <Label Content="Open Folder" Style="{StaticResource SelectHUDOpenFolder}" />
-                </StackPanel>
-            </Button>
-        </Grid>
-        <!-- Footer -->
-        <Grid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="1" Margin="10,5,10,10">
-            <Button Name="MergeButton" Style="{StaticResource AccentButton}" IsEnabled="False" Click="MergeButton_Click">Merge</Button>
-        </Grid>
+        <views:MainWindowView />
     </Grid>
 </Window>

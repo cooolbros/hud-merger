@@ -30,7 +30,7 @@ namespace HUDMerger.Models
 		{
 			foreach (string hudFile in files.ToArray())
 			{
-				this.Add(hudPath, hudFile, files);
+				Add(hudPath, hudFile, files);
 			}
 		}
 
@@ -73,12 +73,12 @@ namespace HUDMerger.Models
 				foreach (string baseFile in baseFiles)
 				{
 					string baseFileRelativePath = Path.Join(relativeFolderPath, baseFile);
-					this.Add(hudPath, baseFileRelativePath, files);
+					Add(hudPath, baseFileRelativePath, files);
 					files.Add(baseFileRelativePath);
 				}
 			}
 
-			this.Add(obj);
+			Add(obj);
 		}
 
 		/// <summary>
@@ -109,13 +109,13 @@ namespace HUDMerger.Models
 									{
 										if (duplicateKey.GetType() == typeof(string))
 										{
-											this.Colours.Add(duplicateKey);
+											Colours.Add(duplicateKey);
 										}
 									}
 								}
 								else if (obj[key].GetType() == typeof(string))
 								{
-									this.Colours.Add(obj[key]);
+									Colours.Add(obj[key]);
 								}
 							}
 						}
@@ -131,13 +131,13 @@ namespace HUDMerger.Models
 									{
 										if (duplicateKey.GetType() == typeof(string))
 										{
-											this.Borders.Add(duplicateKey);
+											Borders.Add(duplicateKey);
 										}
 									}
 								}
 								else if (obj[key].GetType() == typeof(string))
 								{
-									this.Borders.Add(obj[key]);
+									Borders.Add(obj[key]);
 								}
 							}
 						}
@@ -153,13 +153,13 @@ namespace HUDMerger.Models
 									{
 										if (duplicateKey.GetType() == typeof(string))
 										{
-											this.Fonts.Add(duplicateKey);
+											Fonts.Add(duplicateKey);
 										}
 									}
 								}
 								else if (obj[key].GetType() == typeof(string))
 								{
-									this.Fonts.Add(obj[key]);
+									Fonts.Add(obj[key]);
 								}
 							}
 						}
@@ -175,13 +175,13 @@ namespace HUDMerger.Models
 									{
 										if (duplicateKey.GetType() == typeof(string))
 										{
-											this.Images.Add($"materials\\vgui\\{duplicateKey}");
+											Images.Add($"materials\\vgui\\{duplicateKey}");
 										}
 									}
 								}
 								else if (obj[key].GetType() == typeof(string))
 								{
-									this.Images.Add($"materials\\vgui\\{obj[key]}");
+									Images.Add($"materials\\vgui\\{obj[key]}");
 								}
 							}
 						}
@@ -197,13 +197,13 @@ namespace HUDMerger.Models
 									{
 										if (duplicateKey.GetType() == typeof(string))
 										{
-											this.Audio.Add($"sound\\{duplicateKey}");
+											Audio.Add($"sound\\{duplicateKey}");
 										}
 									}
 								}
 								else if (obj[key].GetType() == typeof(string))
 								{
-									this.Audio.Add($"sound\\{obj[key]}");
+									Audio.Add($"sound\\{obj[key]}");
 								}
 							}
 						}

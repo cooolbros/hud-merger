@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="HUDMerger.Views.MainWindowView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:HUDMerger.Views"
+             xmlns:viewmodels="clr-namespace:HUDMerger.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance Type={x:Type viewmodels:MainWindowViewModel}}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type viewmodels:SelectHUDViewModel}">
+                <Button Template="{StaticResource SelectHUDButtonTemplate}" Command="{Binding SelectHUDCommand}">
+                    <StackPanel>
+                        <Label Content="+" Style="{StaticResource SelectHUDButtonPlus}" />
+                        <Label Content="Open Folder" Style="{StaticResource SelectHUDOpenFolder}" />
+                    </StackPanel>
+                </Button>
+            </DataTemplate>
+        </Grid.Resources>
+        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="1">
+            <MenuItem Header="_File">
+                <MenuItem Header="Load Source HUD" Command="{Binding NewSourceHUDCommand}" />
+                <MenuItem Header="Load Target HUD" Command="{Binding NewTargetHUDCommand}" />
+                <Separator />
+                <MenuItem Header="Settings" Command="{Binding ShowSettingsWindowCommand}" />
+                <Separator />
+                <MenuItem Header="Quit" Command="{Binding QuitCommand}" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Command="Cut" />
+                <MenuItem Command="Copy" />
+                <MenuItem Command="Paste" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="About" Command="{Binding ShowAboutWindowCommand}" />
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="10 10 5 5">
+            <local:HUDInfoView DataContext="{Binding SourceHUDInfoViewModel}" />
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="5 10 10 5">
+            <local:HUDInfoView DataContext="{Binding TargetHUDInfoViewModel}" />
+        </Grid>
+        <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" Grid.RowSpan="1" Margin="10 5 5 5">
+            <Grid.Resources>
+                <DataTemplate DataType="{x:Type viewmodels:SourceHUDPanelsListViewModel}">
+                    <local:SourceHUDPanelsListView />
+                </DataTemplate>
+            </Grid.Resources>
+            <ContentControl Content="{Binding SourceHUDPanelsListViewModel}" />
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="2" Margin="5 5 10 5">
+            <Grid.Resources>
+                <DataTemplate DataType="{x:Type viewmodels:TargetHUDPanelsListViewModel}">
+                    <local:TargetHUDPanelsListView />
+                </DataTemplate>
+            </Grid.Resources>
+            <ContentControl Content="{Binding TargetHUDPanelsListViewModel}" />
+        </Grid>
+        <Grid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="1" Margin="10 5 10 10">
+            <Button Content="Merge" Command="{Binding MergeCommand}"  Style="{StaticResource AccentButton}" />
+        </Grid>
+    </Grid>
+</UserControl>

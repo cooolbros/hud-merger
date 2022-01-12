@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using HUDMerger.Models;
+using HUDMerger.ViewModels;
 
 namespace HUDMerger
 {
@@ -24,7 +26,7 @@ namespace HUDMerger
 					{
 						throw result.Exception;
 					}
-					MainWindow.HUDPanels = result.Result;
+					((MainWindowViewModel)Application.Current.MainWindow.DataContext).HUDPanels = result.Result.Select(hudPanel => new HUDPanelViewModel(hudPanel)).ToArray();
 				}));
 
 				tasks.Add(Download<ClientschemeDependencies>(Properties.Resources.ClientschemeURL).ContinueWith((Task<ClientschemeDependencies> result) =>

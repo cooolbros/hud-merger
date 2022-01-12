@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="HUDMerger.Views.TargetHUDPanelsListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:HUDMerger.Views"
+             xmlns:viewmodels="clr-namespace:HUDMerger.ViewModels"
+             xmlns:converters="clr-namespace:HUDMerger.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="240" d:DesignWidth="377" d:DataContext="{d:DesignInstance Type={x:Type viewmodels:TargetHUDPanelsListViewModel}}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label Content="Files to copy" FontSize="18" />
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding HUDPanels}" Margin="3">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:HUDPanelView ToggleSelected="{Binding ToggleSelectedCommand}" Visibility="{Binding Armed, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter=Visible, TargetNullValue=Collapsed}" Margin="0 0 0 3" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

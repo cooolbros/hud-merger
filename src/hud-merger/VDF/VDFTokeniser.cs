@@ -29,53 +29,53 @@ namespace HUDMergerVDF
 
 		public VDFTokeniser(string str, VDFParseOptions options = default)
 		{
-			this.Str = str;
-			this.Options = options ?? new VDFParseOptions();
-			this.Position = 0;
-			this.Line = 0;
-			this.Character = 0;
-			this.Quoted = 0;
+			Str = str;
+			Options = options ?? new VDFParseOptions();
+			Position = 0;
+			Line = 0;
+			Character = 0;
+			Quoted = 0;
 		}
 
 		public string Read(bool peek = false)
 		{
 			string currentToken = "";
 
-			if (this._peekToken != null)
+			if (_peekToken != null)
 			{
-				currentToken = this._peekToken;
-				this.Position = this._peekPosition;
-				this.Line = this._peekLine;
-				this.Character = this._peekCharacter;
-				this.Quoted = this._peekQuoted;
-				this._peekToken = null;
+				currentToken = _peekToken;
+				Position = _peekPosition;
+				Line = _peekLine;
+				Character = _peekCharacter;
+				Quoted = _peekQuoted;
+				_peekToken = null;
 				return currentToken;
 			}
 
-			int i = this.Position;
-			int line = this.Line;
-			int character = this.Character;
-			byte quoted = this.Quoted;
+			int i = Position;
+			int line = Line;
+			int character = Character;
+			byte quoted = Quoted;
 
-			if (i >= this.Str.Length)
+			if (i >= Str.Length)
 			{
 				return "EOF";
 			}
 
-			while (i < this.Str.Length && (VDFTokeniser.WhiteSpaceIgnore.Contains(this.Str[i]) || this.Str[i] == '/'))
+			while (i < Str.Length && (VDFTokeniser.WhiteSpaceIgnore.Contains(Str[i]) || Str[i] == '/'))
 			{
-				if (this.Str[i] == '\n')
+				if (Str[i] == '\n')
 				{
 					line++;
 					character = 0;
 				}
-				else if (this.Str[i] == '/')
+				else if (Str[i] == '/')
 				{
 					int i1 = i + 1;
-					if (i1 < this.Str.Length && this.Str[i1] == '/')
+					if (i1 < Str.Length && Str[i1] == '/')
 					{
 						i++;
-						while (i < this.Str.Length && this.Str[i] != '\n')
+						while (i < Str.Length && Str[i] != '\n')
 						{
 							i++;
 						}
@@ -95,51 +95,51 @@ namespace HUDMergerVDF
 				i++;
 			}
 
-			if (i >= this.Str.Length)
+			if (i >= Str.Length)
 			{
 				return "EOF";
 			}
 
-			if (this.Str[i] == '"')
+			if (Str[i] == '"')
 			{
 				i++;
 				character++;
 				quoted = 1;
 
-				while (this.Str[i] != '"')
+				while (Str[i] != '"')
 				{
-					if (i >= this.Str.Length)
+					if (i >= Str.Length)
 					{
 						throw new VDFSyntaxException("EOF", i, line, character, "\"");
 					}
 
-					if (this.Str[i] == '\n')
+					if (Str[i] == '\n')
 					{
-						if (!this.Options.AllowMultilineStrings)
+						if (!Options.AllowMultilineStrings)
 						{
 							throw new VDFSyntaxException("\n", i, line, character, "\"");
 						}
 						line++;
 					}
 
-					if (this.Str[i] == '\\')
+					if (Str[i] == '\\')
 					{
 						currentToken += '\\';
 						i++;
 						character++;
 
-						if (i >= this.Str.Length)
+						if (i >= Str.Length)
 						{
 							throw new VDFSyntaxException("\\", i, line, character);
 						}
 
-						currentToken += this.Str[i];
+						currentToken += Str[i];
 						i++;
 						character++;
 					}
 					else
 					{
-						currentToken += this.Str[i];
+						currentToken += Str[i];
 						i++;
 						character++;
 					}
@@ -151,30 +151,30 @@ namespace HUDMergerVDF
 			else
 			{
 				quoted = 0;
-				while (i < this.Str.Length && !VDFTokeniser.WhiteSpaceIgnore.Contains(this.Str[i]))
+				while (i < Str.Length && !VDFTokeniser.WhiteSpaceIgnore.Contains(Str[i]))
 				{
-					if (this.Str[i] == '\\')
+					if (Str[i] == '\\')
 					{
 						currentToken += '\\';
 						i++;
 						character++;
 
-						if (i >= this.Str.Length)
+						if (i >= Str.Length)
 						{
 							throw new VDFSyntaxException("\\", i, line, character);
 						}
 
-						currentToken += this.Str[i];
+						currentToken += Str[i];
 						i++;
 						character++;
 					}
-					else if (VDFTokeniser.WhiteSpaceTokenTerminate.Contains(this.Str[i]))
+					else if (VDFTokeniser.WhiteSpaceTokenTerminate.Contains(Str[i]))
 					{
 						if (currentToken == "")
 						{
 							// VDFTokeniser.WhiteSpaceTokenTerminate contains a '"' but it that should not be
 							// the case here because if currentToken is "" it would be a quoted token
-							currentToken += this.Str[i];
+							currentToken += Str[i];
 							i++;
 							character++;
 						}
@@ -182,7 +182,7 @@ namespace HUDMergerVDF
 					}
 					else
 					{
-						currentToken += this.Str[i];
+						currentToken += Str[i];
 						i++;
 						character++;
 					}
@@ -191,18 +191,18 @@ namespace HUDMergerVDF
 
 			if (peek)
 			{
-				this._peekToken = currentToken;
-				this._peekPosition = i;
-				this._peekLine = line;
-				this._peekCharacter = character;
-				this._peekQuoted = quoted;
+				_peekToken = currentToken;
+				_peekPosition = i;
+				_peekLine = line;
+				_peekCharacter = character;
+				_peekQuoted = quoted;
 			}
 			else
 			{
-				this.Position = i;
-				this.Line = line;
-				this.Character = character;
-				this.Quoted = quoted;
+				Position = i;
+				Line = line;
+				Character = character;
+				Quoted = quoted;
 			}
 
 			return currentToken;

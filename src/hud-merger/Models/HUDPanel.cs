@@ -22,12 +22,5 @@ namespace HUDMerger.Models
 
 		/// <summary>Dependencies to add when merging this panel</summary>
 		public SchemeDependenciesManager Scheme { get; set; }
-
-		/// <summary>(Usage) Whether the panel should be merged</summary>
-		public bool Armed = false;
-
-		// These are GUI related and should be removed/replaced if GUI changes
-		public Border OriginListItem;
-		public Border TargetListItem;
 	}
 }

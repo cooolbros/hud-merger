@@ -25,8 +25,8 @@ namespace HUDMerger.Models
 		/// <param name="folderPath">Absolute path to HUD folder</param>
 		public HUD(string folderPath)
 		{
-			this.Name = new DirectoryInfo(folderPath).Name;
-			this.FolderPath = folderPath;
+			Name = new DirectoryInfo(folderPath).Name;
+			FolderPath = folderPath;
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace HUDMerger.Models
 			{
 				try
 				{
-					Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(Path.Join(this.FolderPath, panel.RequiredKeyValue.FilePath)));
+					Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(Path.Join(FolderPath, panel.RequiredKeyValue.FilePath)));
 					Dictionary<string, dynamic> objectRef = obj;
 					string[] objectPath = panel.RequiredKeyValue.KeyPath.Split('.');
 					foreach (string elementName in objectPath)
@@ -62,7 +62,7 @@ namespace HUDMerger.Models
 					return false;
 				}
 			}
-			return Utilities.TestPath($"{this.FolderPath}\\{panel.Main.FilePath}");
+			return Utilities.TestPath($"{FolderPath}\\{panel.Main.FilePath}");
 		}
 
 		/// <summary>
@@ -84,12 +84,12 @@ namespace HUDMerger.Models
 
 			(FilesHashSet files, HashSet<string> hudLayoutEntries, SchemeDependenciesManager dependencies, HashSet<string> events) = HUD.DestructurePanels(panels);
 			dependencies.ClientScheme.Add(origin.FolderPath, files);
-			this.WriteHUDLayout(origin.FolderPath, hudLayoutEntries, dependencies.ClientScheme, files);
-			this.WriteHUDAnimations(origin.FolderPath, events, origin.Name, dependencies.ClientScheme, files);
-			this.WriteScheme("client", this.GetDependencyValues(origin.FolderPath, "resource\\clientscheme.res", dependencies.ClientScheme, files));
-			this.WriteScheme("source", this.GetDependencyValues(origin.FolderPath, "resource\\sourcescheme.res", dependencies.SourceScheme, files));
-			this.CopyHUDFiles(origin.FolderPath, files, dependencies.ClientScheme);
-			this.WriteInfoVDF();
+			WriteHUDLayout(origin.FolderPath, hudLayoutEntries, dependencies.ClientScheme, files);
+			WriteHUDAnimations(origin.FolderPath, events, origin.Name, dependencies.ClientScheme, files);
+			WriteScheme("client", GetDependencyValues(origin.FolderPath, "resource\\clientscheme.res", dependencies.ClientScheme, files));
+			WriteScheme("source", GetDependencyValues(origin.FolderPath, "resource\\sourcescheme.res", dependencies.SourceScheme, files));
+			CopyHUDFiles(origin.FolderPath, files, dependencies.ClientScheme);
+			WriteInfoVDF();
 		}
 
 		/// <summary>
@@ -237,8 +237,8 @@ namespace HUDMerger.Models
 
 			// Highest Key Number
 			int highestKeyNumber = ((Dictionary<string, dynamic>)Utilities.LoadControls(File.Exists(
-				Path.Join(this.FolderPath, "resource\\clientscheme.res"))
-				? this.FolderPath
+				Path.Join(FolderPath, "resource\\clientscheme.res"))
+				? FolderPath
 				: "Resources\\HUD",
 				"resource\\clientscheme.res")["Scheme"]["CustomFontFiles"])
 				.Keys.Aggregate<string, int>(0, (int a, string b) => Math.Max(a, int.Parse(b)));
@@ -284,8 +284,8 @@ namespace HUDMerger.Models
 		{
 			Dictionary<string, dynamic> originHUDLayout = Utilities.LoadControls(originFolderPath, "scripts\\hudlayout.res").First(kv => kv.Value.GetType() == typeof(Dictionary<string, dynamic>)).Value;
 
-			string thisHUDLayoutPath = Path.Join(this.FolderPath, "scripts\\hudlayout.res");
-			Dictionary<string, dynamic> newHUDLayout = Utilities.LoadControls(File.Exists(thisHUDLayoutPath) ? this.FolderPath : "Resources\\HUD", "scripts\\hudlayout.res");
+			string thisHUDLayoutPath = Path.Join(FolderPath, "scripts\\hudlayout.res");
+			Dictionary<string, dynamic> newHUDLayout = Utilities.LoadControls(File.Exists(thisHUDLayoutPath) ? FolderPath : "Resources\\HUD", "scripts\\hudlayout.res");
 
 			newHUDLayout.TryAdd("Resource/HudLayout.res", new Dictionary<string, dynamic>());
 
@@ -301,8 +301,8 @@ namespace HUDMerger.Models
 				dependencies.Add(originHUDLayout[hudLayoutEntry]);
 			}
 
-			Directory.CreateDirectory(Path.Join(this.FolderPath, "scripts"));
-			File.WriteAllText(Path.Join(this.FolderPath, "scripts\\hudlayout.res"), VDF.Stringify(newHUDLayout));
+			Directory.CreateDirectory(Path.Join(FolderPath, "scripts"));
+			File.WriteAllText(Path.Join(FolderPath, "scripts\\hudlayout.res"), VDF.Stringify(newHUDLayout));
 
 			files.Remove("scripts\\hudlayout.res");
 		}
@@ -320,7 +320,7 @@ namespace HUDMerger.Models
 			Dictionary<string, dynamic> newSchemeContainer = new();
 			newSchemeContainer["Scheme"] = newScheme;
 
-			string schemePath = Path.Join(this.FolderPath, $"resource\\{schemeType}scheme.res");
+			string schemePath = Path.Join(FolderPath, $"resource\\{schemeType}scheme.res");
 
 			if (Utilities.TestPath(schemePath))
 			{
@@ -331,7 +331,7 @@ namespace HUDMerger.Models
 			else
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(schemePath));
-				Utilities.CopyResourceToHUD($"resource\\{schemeType}scheme.res", this.FolderPath);
+				Utilities.CopyResourceToHUD($"resource\\{schemeType}scheme.res", FolderPath);
 				File.WriteAllText(schemePath, VDF.Stringify(newSchemeContainer));
 			}
 		}
@@ -352,7 +352,7 @@ namespace HUDMerger.Models
 				hudAnimationsManifestList.Add(filePath);
 			}
 
-			string hudAnimationsPath = $"{this.FolderPath}\\scripts\\hudanimations_{hudName}.txt";
+			string hudAnimationsPath = $"{FolderPath}\\scripts\\hudanimations_{hudName}.txt";
 
 			Dictionary<string, List<HUDAnimation>> newHUDAnimations = File.Exists(hudAnimationsPath) ? Utilities.HUDAnimationsTryParse(hudAnimationsPath) : new();
 
@@ -422,7 +422,7 @@ namespace HUDMerger.Models
 				newManifestLines.Add($"\t\"file\"\t\t\"scripts/hudanimations_{hudName}.txt\"");
 			}
 
-			string targetHUDAnimationsManifestPath = $"{this.FolderPath}\\scripts\\hudanimations_manifest.txt";
+			string targetHUDAnimationsManifestPath = $"{FolderPath}\\scripts\\hudanimations_manifest.txt";
 
 			Dictionary<string, dynamic> targetManifest = Utilities.VDFTryParse(File.Exists(targetHUDAnimationsManifestPath) ? targetHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt");
 			dynamic targetHUDAnimationsManifestList = targetManifest["hudanimations_manifest"]["file"];
@@ -434,7 +434,7 @@ namespace HUDMerger.Models
 
 			newManifestLines.Add($"}}");
 
-			File.WriteAllLines($"{this.FolderPath}\\scripts\\hudanimations_manifest.txt", newManifestLines);
+			File.WriteAllLines($"{FolderPath}\\scripts\\hudanimations_manifest.txt", newManifestLines);
 		}
 
 		/// <summary>
@@ -443,9 +443,9 @@ namespace HUDMerger.Models
 		private void WriteClientscheme(string originName, Dictionary<string, dynamic> newClientscheme)
 		{
 			bool writeBaseStatement = true;
-			if (Utilities.TestPath($"{this.FolderPath}\\resource\\clientscheme.res"))
+			if (Utilities.TestPath($"{FolderPath}\\resource\\clientscheme.res"))
 			{
-				string[] lines = File.ReadAllLines($"{this.FolderPath}\\resource\\clientscheme.res");
+				string[] lines = File.ReadAllLines($"{FolderPath}\\resource\\clientscheme.res");
 				int i = 0;
 				while (writeBaseStatement && i < lines.Length)
 				{
@@ -459,13 +459,13 @@ namespace HUDMerger.Models
 			else
 			{
 				// If clientscheme doesn't exist it is crucial to have one with default tf properties
-				Directory.CreateDirectory($"{this.FolderPath}\\resource");
-				File.Copy("Resources\\HUD\\resource\\clientscheme.res", $"{this.FolderPath}\\resource\\clientscheme.res");
+				Directory.CreateDirectory($"{FolderPath}\\resource");
+				File.Copy("Resources\\HUD\\resource\\clientscheme.res", $"{FolderPath}\\resource\\clientscheme.res");
 			}
 
 			if (writeBaseStatement)
 			{
-				File.AppendAllLines($"{this.FolderPath}\\resource\\clientscheme.res", new string[]
+				File.AppendAllLines($"{FolderPath}\\resource\\clientscheme.res", new string[]
 				{
 					"",
 					$"\"#base\"\t\t\"clientscheme_{originName}.res\""
@@ -484,9 +484,9 @@ namespace HUDMerger.Models
 			}
 			Dictionary<string, dynamic> newClientschemeContainer = new();
 			newClientschemeContainer["Scheme"] = newClientscheme;
-			Directory.CreateDirectory($"{this.FolderPath}\\resource");
+			Directory.CreateDirectory($"{FolderPath}\\resource");
 
-			string clientschemeDependenciesPath = $"{this.FolderPath}\\resource\\clientscheme_{originName}.res";
+			string clientschemeDependenciesPath = $"{FolderPath}\\resource\\clientscheme_{originName}.res";
 
 			if (Utilities.TestPath(clientschemeDependenciesPath))
 			{
@@ -532,7 +532,7 @@ namespace HUDMerger.Models
 			foreach (string filePath in filesArray)
 			{
 				string sourceFileName = Path.Join(originFolderPath, filePath);
-				string destFileName = Path.Join(this.FolderPath, filePath);
+				string destFileName = Path.Join(FolderPath, filePath);
 				if (Utilities.TestPath(sourceFileName))
 				{
 					Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
@@ -557,12 +557,12 @@ namespace HUDMerger.Models
 		private void WriteInfoVDF()
 		{
 			// UI Version
-			string infoVDFPath = Path.Join(this.FolderPath, "info.vdf");
+			string infoVDFPath = Path.Join(FolderPath, "info.vdf");
 			if (!File.Exists(infoVDFPath))
 			{
 				Dictionary<string, dynamic> infoVDF = new();
-				infoVDF[this.Name] = new Dictionary<string, dynamic>();
-				infoVDF[this.Name]["ui_version"] = 3;
+				infoVDF[Name] = new Dictionary<string, dynamic>();
+				infoVDF[Name]["ui_version"] = 3;
 				File.WriteAllText(infoVDFPath, VDF.Stringify(infoVDF));
 			}
 		}

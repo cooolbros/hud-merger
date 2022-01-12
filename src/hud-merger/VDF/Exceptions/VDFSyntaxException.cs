@@ -11,9 +11,9 @@ namespace HUDMergerVDF.Exceptions
 
 		public VDFSyntaxException(string unexpectedToken, int position, int line, int character, string expectedValue = "") : base($"Unexpected \"{unexpectedToken}\" at position {position} (line {line + 1}, character {character + 1})! {(expectedValue != "" ? $"Are you missing a{(new char[] { 'a', 'e', 'i', 'o', 'u' }.Contains(expectedValue[0]) ? "n" : "")} {expectedValue}" : "")}")
 		{
-			this.Position = position;
-			this.Line = line;
-			this.Position = character;
+			Position = position;
+			Line = line;
+			Position = character;
 		}
 	}
 }

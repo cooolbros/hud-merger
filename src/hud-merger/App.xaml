@@ -2,8 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:HUDMerger"
-             StartupUri="MainWindow.xaml">
+             xmlns:converters="clr-namespace:HUDMerger.Converters">
     <Application.Resources>
+        <converters:BooleanEvaluateConverter x:Key="BooleanEvaluateConverter" />
         <SolidColorBrush x:Key="_Blue" Color="#0073CF" />
         <SolidColorBrush x:Key="_BlueHover" Color="#338FD8" />
         <SolidColorBrush x:Key="_MergeButtonBackground" Color="#D7D7D7" />
@@ -60,8 +61,14 @@
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
         <Style TargetType="Border" x:Key="PanelBorder">
+            <Setter Property="Background" Value="{Binding Armed, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=Transparent}" />
             <Setter Property="CornerRadius" Value="2" />
-            <Setter Property="Margin" Value="0,0,0,3" />
+            <Setter Property="Margin" Value="0 0 0 0" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding Armed, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=#E6E6E6}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style TargetType="Label" x:Key="PanelLabel">
             <Setter Property="FontSize" Value="15" />
@@ -76,7 +83,7 @@
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
-                  <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <ControlTemplate TargetType="{x:Type ButtonBase}">
                         <Border x:Name="buttonBorder" Background="#CCCCCC" BorderThickness="0" BorderBrush="Transparent" SnapsToDevicePixels="True" CornerRadius="2">
                             <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
@@ -102,12 +109,12 @@
         <Style x:Key="AccentButton" TargetType="{x:Type ButtonBase}">
             <Setter Property="FontSize" Value="15" />
             <Setter Property="Foreground" Value="#FFFFFF" />
-            <Setter Property="Padding" Value="50,10" />
+            <Setter Property="Padding" Value="50 10" />
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
-                  <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <ControlTemplate TargetType="{x:Type ButtonBase}">
                         <Border x:Name="buttonBorder" Background="{StaticResource _Blue}" BorderThickness="0" BorderBrush="Transparent" SnapsToDevicePixels="True" CornerRadius="2">
                             <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
@@ -133,48 +140,48 @@
         <!-- Settings -->
         <Style x:Key="CheckBoxStyle1" TargetType="{x:Type CheckBox}">
             <Setter Property="FontSize" Value="16" />
-            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Margin" Value="0,0,0,10" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type CheckBox}">
                         <Grid x:Name="templateRoot" Background="Transparent" SnapsToDevicePixels="True">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="25"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="25" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Rectangle x:Name="checkBoxRectangle" Width="20" Height="20" Fill="Transparent" Stroke="#898989" StrokeThickness="1" RadiusX="2" RadiusY="2" />
-                            <Label x:Name="checkBoxLabel" Content="&#xE001;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" Padding="0" Opacity="0" />
-                            <ContentPresenter x:Name="contentPresenter" Grid.Column="1" Focusable="False" HorizontalAlignment="Left" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+                            <Label x:Name="checkBoxLabel" Content="" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" Padding="0" Opacity="0" />
+                            <ContentPresenter x:Name="contentPresenter" Grid.Column="1" Focusable="False" HorizontalAlignment="Left" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="HasContent" Value="true">
                                 <!-- <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/> -->
-                                <Setter Property="Padding" Value="4,-2,0,0"/>
+                                <Setter Property="Padding" Value="4 -2 0 0" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Fill" TargetName="checkBoxRectangle" Value="Transparent"/>
-                                <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="#5d5d5d"/>
+                                <Setter Property="Fill" TargetName="checkBoxRectangle" Value="Transparent" />
+                                <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="#5d5d5d" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <!-- <Setter Property="Fill" TargetName="checkBoxRectangle" Value="{StaticResource OptionMark.Disabled.Background}"/> -->
-                                <!-- <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="{StaticResource OptionMark.Disabled.Border}"/> -->
+                                <!-- <Setter Property="Fill" TargetName="checkBoxRectangle" Value="{StaticResource OptionMark.Disabled.Background}" /> -->
+                                <!-- <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="{StaticResource OptionMark.Disabled.Border}" /> -->
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Fill" TargetName="checkBoxRectangle" Value="#737373"/>
-                                <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="#000000"/>
+                                <Setter Property="Fill" TargetName="checkBoxRectangle" Value="#737373" />
+                                <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="#000000" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="true">
-                                <Setter Property="Fill" TargetName="checkBoxRectangle" Value="{StaticResource _Blue}"/>
-                                <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="{StaticResource _Blue}"/>
-                                <Setter Property="Opacity" TargetName="checkBoxLabel" Value="1"/>
+                                <Setter Property="Fill" TargetName="checkBoxRectangle" Value="{StaticResource _Blue}" />
+                                <Setter Property="Stroke" TargetName="checkBoxRectangle" Value="{StaticResource _Blue}" />
+                                <Setter Property="Opacity" TargetName="checkBoxLabel" Value="1" />
                             </Trigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                    <Condition Property="IsChecked" Value="True"/>
+                                    <Condition Property="IsMouseOver" Value="True" />
+                                    <Condition Property="IsChecked" Value="True" />
                                 </MultiTrigger.Conditions>
-                            <Setter TargetName="checkBoxRectangle" Property="Fill" Value="{StaticResource _BlueHover}" />
-                            <Setter TargetName="checkBoxRectangle" Property="Stroke" Value="{StaticResource _BlueHover}" />
+                                <Setter TargetName="checkBoxRectangle" Property="Fill" Value="{StaticResource _BlueHover}" />
+                                <Setter TargetName="checkBoxRectangle" Property="Stroke" Value="{StaticResource _BlueHover}" />
                             </MultiTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -187,15 +194,15 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
-                        <Border x:Name="textBoxBorder" BorderThickness="2" BorderBrush="#898989" SnapsToDevicePixels="True" Padding="10,5,20,5" CornerRadius="2">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        <Border x:Name="textBoxBorder" BorderThickness="1.5" BorderBrush="#898989" SnapsToDevicePixels="True" Padding="10 5 20 5" CornerRadius="2">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="textBoxBorder" Property="BorderBrush" Value="#5D5D5D"/>
+                                <Setter TargetName="textBoxBorder" Property="BorderBrush" Value="#5D5D5D" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
-                                <Setter TargetName="textBoxBorder" Property="BorderBrush" Value="{StaticResource _Blue}"/>
+                                <Setter TargetName="textBoxBorder" Property="BorderBrush" Value="{StaticResource _Blue}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
