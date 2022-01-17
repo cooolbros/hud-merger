@@ -22,8 +22,7 @@ namespace HUDMerger
 			UpdateStatus.Foreground = Brushes.Black;
 			try
 			{
-				List<Task> tasks = Updater.Update(true, true);
-				await Task.WhenAll(tasks);
+				await Task.WhenAll(Updater.Update(true, true));
 				UpdateStatus.Content = $"Last updated on {DateTime.Now}";
 			}
 			catch (Exception error)

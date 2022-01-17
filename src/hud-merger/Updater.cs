@@ -14,93 +14,86 @@ namespace HUDMerger
 {
 	static class Updater
 	{
-		public static List<Task> Update(bool download, bool extract)
+		public static Task Update(bool download, bool extract)
 		{
-			List<Task> tasks = new();
-
 			if (download)
 			{
-				tasks.Add(Download<HUDPanel[]>(Properties.Resources.PanelsURL).ContinueWith((Task<HUDPanel[]> result) =>
-				{
-					if (result.Exception != null)
-					{
-						throw result.Exception;
-					}
-					((MainWindowViewModel)Application.Current.MainWindow.DataContext).HUDPanels = result.Result.Select(hudPanel => new HUDPanelViewModel(hudPanel)).ToArray();
-				}));
+				Task t1 = DownloadResource<ClientschemeDependencies>("Clientscheme.json").ContinueWith((Task<ClientschemeDependencies> result) => ClientschemeDependencies.Properties = result.Result);
+				Task t2 = DownloadResource<HUDPanel[]>("Panels.json").ContinueWith((Task<HUDPanel[]> result) => MainWindowViewModel.HUDPanels = result.Result.Select(hudPanel => new HUDPanelViewModel(hudPanel)).ToArray());
+				Task t3 = DownloadAndOrExtract(extract);
 
-				tasks.Add(Download<ClientschemeDependencies>(Properties.Resources.ClientschemeURL).ContinueWith((Task<ClientschemeDependencies> result) =>
-				{
-					if (result.Exception != null)
-					{
-						throw result.Exception;
-					}
-					ClientschemeDependencies.Properties = result.Result;
-				}));
+				return Task.WhenAll(new List<Task>() { t1, t2, t3 });
 			}
-
-			if (extract)
+			else if (extract)
 			{
-				string vpk = $"{Properties.Settings.Default.Team_Fortress_2_Folder}\\bin\\vpk.exe";
-				string tf2Misc = $"{Properties.Settings.Default.Team_Fortress_2_Folder}\\tf\\tf2_misc_dir.vpk";
-
-				bool vpkExists = File.Exists(vpk);
-				bool tf2MiscExists = File.Exists(tf2Misc);
-
-				if (vpkExists && tf2MiscExists)
-				{
-					List<string> args = new()
-					{
-						"x",
-						$"\"{tf2Misc}\""
-					};
-
-					List<string> hudFilePaths = new()
-					{
-						"resource/clientscheme.res",
-						"scripts/hudanimations_manifest.txt",
-						"scripts/hudlayout.res",
-					};
-
-					foreach (string filePath in hudFilePaths)
-					{
-						// Ensure vpk.exe is able to extract to folder
-						Directory.CreateDirectory(Path.GetDirectoryName($"Resources\\HUD\\{filePath.Replace('/', '\\')}"));
-						args.Add($"\"{filePath}\"");
-					}
-
-					ProcessStartInfo processStartInfo = new(vpk)
-					{
-						WorkingDirectory = $"{Directory.GetCurrentDirectory()}\\Resources\\HUD",
-						Arguments = string.Join(' ', args),
-					};
-
-					Process process = Process.Start(processStartInfo);
-
-					tasks.Add(process.WaitForExitAsync());
-
-					process.Close();
-					process.Dispose();
-				}
-				else
-				{
-					string[] paragraphs = new string[]
-					{
-						$"Could not find {(!vpkExists ? "vpk.exe" : "")}{(!vpkExists && !tf2MiscExists ? " and " : "")}{(!tf2MiscExists ? "tf2_misc_dir.vpk" : "")}!",
-						"HUD Merger may not create HUDs correctly if TF2 has been updated",
-						"This message can be supressed by disabling \"Extract required TF2 HUD files on startup\" in Files > Settings"
-					};
-					MessageBox.Show(string.Join("\r\n\r\n", paragraphs), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-				}
+				return Task.WhenAll(Extract(JsonSerializer.Deserialize<Dictionary<string, string[]>>(File.OpenRead("Resources\\HUDFiles.json"))));
 			}
 
+			return default(Task);
+		}
+
+		/// <summary>
+		/// Try to download HUDFiles.json then extract files listed, if the download files extract files listed in the local version of HUDFiles.json
+		/// </summary>
+		/// <param name="extract"></param>
+		/// <returns></returns>
+		private static async Task DownloadAndOrExtract(bool extract)
+		{
+			try
+			{
+				Dictionary<string, string[]> vpkFiles = await DownloadResource<Dictionary<string, string[]>>("HUDFiles.json");
+				if (extract)
+				{
+					Extract(vpkFiles);
+				}
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine(e.Message);
+				if (extract)
+				{
+					await Task.WhenAll(Extract(JsonSerializer.Deserialize<Dictionary<string, string[]>>(File.OpenRead("Resources\\HUDFiles.json"))));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Extract files from a vpk using vpk.exe
+		/// </summary>
+		/// <param name="vpkFiles"></param>
+		private static IEnumerable<Task> Extract(Dictionary<string, string[]> vpkFiles)
+		{
+			List<Task> tasks = new List<Task>();
+			foreach (KeyValuePair<string, string[]> vpkFile in vpkFiles)
+			{
+				List<string> args = new List<string>
+				{
+					$"x",
+					$"\"{Properties.Settings.Default.Team_Fortress_2_Folder}\\{vpkFile.Key}\""
+				};
+
+				foreach (string file in vpkFile.Value)
+				{
+					Directory.CreateDirectory(Path.Join("Resources\\HUD", Path.GetDirectoryName(file)));
+					args.Add($"\"{file}\"");
+				}
+
+				ProcessStartInfo processStartInfo = new($"{Properties.Settings.Default.Team_Fortress_2_Folder}\\bin\\vpk.exe")
+				{
+					WorkingDirectory = $"{Directory.GetCurrentDirectory()}\\Resources\\HUD",
+					Arguments = string.Join(' ', args)
+				};
+
+				Process process = Process.Start(processStartInfo);
+				tasks.Add(process.WaitForExitAsync());
+			}
 			return tasks;
 		}
 
-		private static async Task<T> Download<T>(string url)
+		private static async Task<T> DownloadResource<T>(string resourcePath)
 		{
-			string json = await new HttpClient().GetStringAsync(url);
-			File.WriteAllText(string.Join('\\', new Uri(url).LocalPath.Split('/')[^2..]), json);
+			string json = await new HttpClient().GetStringAsync($"{Properties.Resources.ResourcesURL}/{resourcePath}");
+			File.WriteAllText($"Resources\\{resourcePath}", json);
 			return JsonSerializer.Deserialize<T>(json);
 		}
 	}

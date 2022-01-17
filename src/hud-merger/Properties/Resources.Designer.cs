@@ -61,20 +61,11 @@ namespace HUDMerger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://raw.githubusercontent.com/cooolbros/hud-merger/main/src/hud-merger/Resources/Clientscheme.json.
+        ///   Looks up a localized string similar to https://raw.githubusercontent.com/cooolbros/hud-merger/main/src/hud-merger/Resources.
         /// </summary>
-        internal static string ClientschemeURL {
+        internal static string ResourcesURL {
             get {
-                return ResourceManager.GetString("ClientschemeURL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://raw.githubusercontent.com/cooolbros/hud-merger/main/srchud-merger/Resources/Panels.json.
-        /// </summary>
-        internal static string PanelsURL {
-            get {
-                return ResourceManager.GetString("PanelsURL", resourceCulture);
+                return ResourceManager.GetString("ResourcesURL", resourceCulture);
             }
         }
     }

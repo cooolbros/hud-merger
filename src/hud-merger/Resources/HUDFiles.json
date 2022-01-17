@@ -1,0 +1,11 @@
+{
+	"platform\\platform_misc_dir.vpk": [
+		"resource\\sourceschemebase.res"
+	],
+	"tf\\tf2_misc_dir.vpk": [
+		"resource\\clientscheme.res",
+		"resource\\sourcescheme.res",
+		"scripts\\hudanimations_manifest.txt",
+		"scripts\\hudlayout.res"
+	]
+}

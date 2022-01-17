@@ -21,12 +21,13 @@ namespace HUDMerger.ViewModels
 		public ICommand NewSourceHUDCommand { get; }
 		public ICommand NewTargetHUDCommand { get; }
 
+		public ICommand ShowBackupsWindowCommand { get; }
 		public ICommand ShowSettingsWindowCommand { get; }
 		public ICommand ShowAboutWindowCommand { get; }
 
 		public ICommand QuitCommand { get; }
 
-		public HUDPanelViewModel[] HUDPanels;
+		public static HUDPanelViewModel[] HUDPanels;
 
 		private HUD _sourceHUD;
 		public HUD SourceHUD
@@ -36,7 +37,6 @@ namespace HUDMerger.ViewModels
 			{
 				_sourceHUD = value;
 				OnPropertyChanged(nameof(SourceHUD));
-				MergeCommand.OnCanExecuteChanged();
 			}
 		}
 
@@ -48,7 +48,6 @@ namespace HUDMerger.ViewModels
 			{
 				_targetHUD = value;
 				OnPropertyChanged(nameof(TargetHUD));
-				MergeCommand.OnCanExecuteChanged();
 			}
 		}
 
@@ -88,6 +87,7 @@ namespace HUDMerger.ViewModels
 
 			NewSourceHUDCommand = new RelayCommand(NewSourceHUD);
 			NewTargetHUDCommand = new RelayCommand(NewTargetHUD);
+			ShowBackupsWindowCommand = new RelayCommand(() => ShowWindow(new BackupsWindow()));
 			ShowSettingsWindowCommand = new RelayCommand(() => ShowWindow(new SettingsWindow()));
 			ShowAboutWindowCommand = new RelayCommand(() => ShowWindow(new AboutWindow()));
 			QuitCommand = new RelayCommand(System.Windows.Application.Current.Shutdown);
@@ -118,6 +118,8 @@ namespace HUDMerger.ViewModels
 				}
 				SourceHUD = new HUD(FolderBrowserDialog.SelectedPath);
 				SourceHUDInfoViewModel.HUD = SourceHUD;
+
+				SourceHUDPanelsListViewModel?.Dispose();
 				SourceHUDPanelsListViewModel = new SourceHUDPanelsListViewModel(HUDPanels.Where(hudPanel => hudPanel.TestPanel(SourceHUD)));
 			}
 		}
@@ -132,6 +134,8 @@ namespace HUDMerger.ViewModels
 			{
 				TargetHUD = new HUD(FolderBrowserDialog.SelectedPath);
 				TargetHUDInfoViewModel.HUD = TargetHUD;
+
+				TargetHUDPanelsListViewModel?.Dispose();
 				TargetHUDPanelsListViewModel = new TargetHUDPanelsListViewModel(HUDPanels);
 			}
 		}

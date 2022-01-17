@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HUDMerger.Models;
 using HUDMergerVDF;
 using HUDMergerVDF.Models;
 
@@ -13,11 +12,17 @@ namespace HUDMerger.Models
 	/// </summary>
 	public class HUD
 	{
-		/// <summary>HUD Name (name of HUD folder)</summary>
+		/// <summary>
+		/// HUD Name (name of HUD folder)
+		/// </summary>
 		public string Name { get; }
 
-		/// <summary>Absolute path to HUD Folder</summary>
+		/// <summary>
+		/// Absolute path to HUD Folder
+		/// </summary>
 		public string FolderPath { get; }
+
+		public HUDBackupManager Backup { get; }
 
 		/// <summary>
 		/// Create HUD
@@ -27,6 +32,7 @@ namespace HUDMerger.Models
 		{
 			Name = new DirectoryInfo(folderPath).Name;
 			FolderPath = folderPath;
+			Backup = new HUDBackupManager(this);
 		}
 
 		/// <summary>
@@ -438,69 +444,6 @@ namespace HUDMerger.Models
 		}
 
 		/// <summary>
-		/// Applies NewClientscheme to this HUD using #base
-		/// </summary>
-		private void WriteClientscheme(string originName, Dictionary<string, dynamic> newClientscheme)
-		{
-			bool writeBaseStatement = true;
-			if (Utilities.TestPath($"{FolderPath}\\resource\\clientscheme.res"))
-			{
-				string[] lines = File.ReadAllLines($"{FolderPath}\\resource\\clientscheme.res");
-				int i = 0;
-				while (writeBaseStatement && i < lines.Length)
-				{
-					if (lines[i].Contains($"clientscheme_{originName}.res"))
-					{
-						writeBaseStatement = false;
-					}
-					i++;
-				}
-			}
-			else
-			{
-				// If clientscheme doesn't exist it is crucial to have one with default tf properties
-				Directory.CreateDirectory($"{FolderPath}\\resource");
-				File.Copy("Resources\\HUD\\resource\\clientscheme.res", $"{FolderPath}\\resource\\clientscheme.res");
-			}
-
-			if (writeBaseStatement)
-			{
-				File.AppendAllLines($"{FolderPath}\\resource\\clientscheme.res", new string[]
-				{
-					"",
-					$"\"#base\"\t\t\"clientscheme_{originName}.res\""
-				});
-			}
-
-			// ALWAYS create new clientscheme.res
-
-			// Remove empty clientscheme sections
-			foreach (string key in newClientscheme.Keys)
-			{
-				if (newClientscheme[key].Keys.Count == 0)
-				{
-					newClientscheme.Remove(key);
-				}
-			}
-			Dictionary<string, dynamic> newClientschemeContainer = new();
-			newClientschemeContainer["Scheme"] = newClientscheme;
-			Directory.CreateDirectory($"{FolderPath}\\resource");
-
-			string clientschemeDependenciesPath = $"{FolderPath}\\resource\\clientscheme_{originName}.res";
-
-			if (Utilities.TestPath(clientschemeDependenciesPath))
-			{
-				Dictionary<string, dynamic> previouslyMergedClientscheme = Utilities.VDFTryParse(clientschemeDependenciesPath);
-				Utilities.Merge(previouslyMergedClientscheme, newClientschemeContainer);
-				File.WriteAllText(clientschemeDependenciesPath, VDF.Stringify(previouslyMergedClientscheme));
-			}
-			else
-			{
-				File.WriteAllText(clientschemeDependenciesPath, VDF.Stringify(newClientschemeContainer));
-			}
-		}
-
-		/// <summary>
 		/// Copies list of HUD Files with no processing
 		/// </summary>
 		private void CopyHUDFiles(string originFolderPath, FilesHashSet files, ClientschemeDependencies dependencies)
@@ -516,12 +459,14 @@ namespace HUDMerger.Models
 				{
 					Dictionary<string, dynamic> vmt = Utilities.VDFTryParse(vmtPath, new VDFParseOptions { OSTags = VDFOSTags.None });
 					Dictionary<string, dynamic> generic = vmt.First().Value;
-					string vtfPath = $"{generic.First(kv => kv.Key.ToLower().Contains("basetexture")).Value}";
-					files.Add(Path.Join("materials", $"{vtfPath}"));
-					files.Add(Path.Join("materials", $"{vtfPath}.vtf"));
+					string vtfPath = $"{generic.FirstOrDefault(kv => kv.Key.ToLower().Contains("basetexture")).Value}";
+					if (!String.IsNullOrEmpty(vtfPath))
+					{
+						files.Add(Path.Join("materials", $"{vtfPath}"));
+						files.Add(Path.Join("materials", $"{vtfPath}.vtf"));
+					}
 				}
 			}
-
 
 			foreach (string audioPath in dependencies.Audio)
 			{

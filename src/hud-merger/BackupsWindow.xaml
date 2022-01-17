@@ -1,0 +1,21 @@
+﻿<Window x:Class="HUDMerger.BackupsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HUDMerger"
+        xmlns:views="clr-namespace:HUDMerger.Views"
+        xmlns:viewmodels="clr-namespace:HUDMerger.ViewModels"
+        mc:Ignorable="d"
+        Title="BackupsWindow"
+        Width="950"
+        MinWidth="950"
+        Height="300"
+        MinHeight="300"
+        Icon="Resources\favicon.ico"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance Type=viewmodels:BackupsWindowViewModel}">
+    <Grid>
+        <views:BackupsWindowView HUDNameClick="{Binding HUDNameClickCommand}" FileNameClick="{Binding FileNameClickCommand}" CreationTimeClick="{Binding CreationTimeClickCommand}" />
+    </Grid>
+</Window>

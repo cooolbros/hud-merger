@@ -8,7 +8,7 @@
              xmlns:converters="clr-namespace:HUDMerger.Converters"
              mc:Ignorable="d"
              d:DesignHeight="31" d:DesignWidth="355" d:DataContext="{d:DesignInstance Type={x:Type viewmodels:HUDPanelViewModel}}">
-    <Border Style="{StaticResource PanelBorder}" MouseLeftButtonUp="Border_MouseLeftButtonUp">
+    <Border Style="{StaticResource PanelBorder}" MouseLeftButtonUp="Border_MouseLeftButtonUp" Cursor="Hand">
         <Label Content="{Binding Name}" Style="{StaticResource PanelLabel}" Foreground="{Binding Armed, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter=#FFFFFF, TargetNullValue=#000000}" />
     </Border>
 </UserControl>

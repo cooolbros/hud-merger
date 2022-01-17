@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace HUDMerger.Commands
 {
-	public abstract class CommandBase : ICommand
+	public abstract class CommandBase : ICommand, IDisposable
 	{
 		public event EventHandler CanExecuteChanged;
 
@@ -18,5 +18,9 @@ namespace HUDMerger.Commands
 		}
 
 		public abstract void Execute(object parameter);
+
+		public virtual void Dispose()
+		{
+		}
 	}
 }

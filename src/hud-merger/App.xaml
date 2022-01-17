@@ -139,7 +139,7 @@
         </Style>
         <!-- Settings -->
         <Style x:Key="CheckBoxStyle1" TargetType="{x:Type CheckBox}">
-            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontSize" Value="15" />
             <Setter Property="Margin" Value="0,0,0,10" />
             <Setter Property="Template">
                 <Setter.Value>
