@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using HUDMergerVDF.Exceptions;
 using HUDMergerVDF.Models;
@@ -27,6 +28,9 @@ namespace HUDMergerVDF
 		private int _peekCharacter;
 		private byte _peekQuoted;
 
+		// EOFRead
+		private bool EOFRead;
+
 		public VDFTokeniser(string str, VDFParseOptions options = default)
 		{
 			Str = str;
@@ -35,6 +39,7 @@ namespace HUDMergerVDF
 			Line = 0;
 			Character = 0;
 			Quoted = 0;
+			EOFRead = false;
 		}
 
 		public string Read(bool peek = false)
@@ -59,6 +64,14 @@ namespace HUDMergerVDF
 
 			if (i >= Str.Length)
 			{
+				if (!peek)
+				{
+					if (EOFRead)
+					{
+						throw new EndOfStreamException();
+					}
+					EOFRead = true;
+				}
 				return "EOF";
 			}
 
@@ -97,6 +110,14 @@ namespace HUDMergerVDF
 
 			if (i >= Str.Length)
 			{
+				if (!peek)
+				{
+					if (EOFRead)
+					{
+						throw new EndOfStreamException();
+					}
+					EOFRead = true;
+				}
 				return "EOF";
 			}
 
