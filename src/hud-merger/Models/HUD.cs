@@ -304,6 +304,13 @@ namespace HUDMerger.Models
 				{
 					newHUDLayout["Resource/HudLayout.res"][hudLayoutEntry][zpos.Key] = zpos.Value;
 				}
+
+				// Add HUD Layout entries referenced with pin_to_sibling (primarily used for forcing engineer building status position)
+				foreach (KeyValuePair<string, dynamic> pin_to_sibling in ((Dictionary<string, dynamic>)originHUDLayout[hudLayoutEntry]).Where(kv => kv.Key.ToLower().StartsWith("pin_to_sibling") && originHUDLayout.ContainsKey(kv.Value)))
+				{
+					newHUDLayout["Resource/HudLayout.res"][pin_to_sibling.Value] = originHUDLayout[pin_to_sibling.Value];
+				}
+
 				dependencies.Add(originHUDLayout[hudLayoutEntry]);
 			}
 
