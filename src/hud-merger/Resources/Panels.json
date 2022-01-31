@@ -547,6 +547,9 @@
 				"FilePath": "resource\\ui\\pvprankpanel.res"
 			},
 			{
+				"FilePath": "resource\\ui\\steamfriendpanel.res"
+			},
+			{
 				"FilePath": "resource\\gamemenu.res"
 			}
 		]
