@@ -136,8 +136,6 @@ namespace HUDMerger
 				}
 				else if (File.Exists(Path.Join("Resources\\HUD", _filePath)))
 				{
-					System.Diagnostics.Debugger.Break();
-
 					obj = VDFTryParse(Path.Join("Resources\\HUD", _filePath));
 				}
 				else
