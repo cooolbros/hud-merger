@@ -371,7 +371,10 @@ namespace HUDMerger.Models
 					// Add clientscheme colours and sounds referenced in HUD animations
 					void AddEventDependencies(string @event, List<HUDAnimation> animationEvent)
 					{
-						newHUDAnimations[@event] = animationEvent;
+						if (!newHUDAnimations.ContainsKey(@event))
+						{
+							newHUDAnimations[@event] = animationEvent;
+						}
 
 						foreach (dynamic statement in animationEvent)
 						{
