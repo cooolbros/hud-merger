@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -21,7 +22,7 @@ namespace HUDMerger.ViewModels
 		public ICommand NewSourceHUDCommand { get; }
 		public ICommand NewTargetHUDCommand { get; }
 
-		public ICommand ShowBackupsWindowCommand { get; }
+		public ICommand ShowBackupsCommand { get; }
 		public ICommand ShowSettingsWindowCommand { get; }
 		public ICommand ShowAboutWindowCommand { get; }
 
@@ -87,7 +88,7 @@ namespace HUDMerger.ViewModels
 
 			NewSourceHUDCommand = new RelayCommand(NewSourceHUD);
 			NewTargetHUDCommand = new RelayCommand(NewTargetHUD);
-			ShowBackupsWindowCommand = new RelayCommand(() => ShowWindow(new BackupsWindow()));
+			ShowBackupsCommand = new RelayCommand(() => Process.Start("explorer", $"\"{Path.Join(Directory.GetCurrentDirectory(), ".hud_backups")}\""));
 			ShowSettingsWindowCommand = new RelayCommand(() => ShowWindow(new SettingsWindow()));
 			ShowAboutWindowCommand = new RelayCommand(() => ShowWindow(new AboutWindow()));
 			QuitCommand = new RelayCommand(System.Windows.Application.Current.Shutdown);
