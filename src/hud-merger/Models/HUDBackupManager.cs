@@ -27,23 +27,38 @@ namespace HUDMerger.Models
 		/// <summary>
 		/// Returns the most recent HUD backup
 		/// </summary>
-		public HUDBackup MostRecent => Backups[^1];
+		public HUDBackup MostRecent => Backups.Last();
+
+		static HUDBackupManager()
+		{
+			Directory.CreateDirectory(Path.Join(Directory.GetCurrentDirectory(), BackupDirectory));
+		}
 
 		public HUDBackupManager(HUD hud)
 		{
 			HUD = hud;
 			HUDBackupPath = Path.Join(Directory.GetCurrentDirectory(), BackupDirectory, hud.Name);
 
+			if (Directory.Exists(HUDBackupPath))
+			{
+				this.Backups = new DirectoryInfo(HUDBackupPath)
+				.GetFiles()
+				.OrderBy(file => file.CreationTime)
+				.Select(file => new HUDBackup(HUD.Name, file))
+				.ToList();
+			}
+			else
+			{
+				this.Backups = new List<HUDBackup>();
+			}
+		}
+
+		private void CreateDirectory()
+		{
 			if (!Directory.Exists(HUDBackupPath))
 			{
 				Directory.CreateDirectory(HUDBackupPath);
 			}
-
-			this.Backups = new DirectoryInfo(HUDBackupPath)
-			.GetFiles()
-			.OrderBy(file => file.CreationTime)
-			.Select(file => new HUDBackup(HUD.Name, file))
-			.ToList();
 		}
 
 		/// <summary>
@@ -51,6 +66,7 @@ namespace HUDMerger.Models
 		/// </summary>
 		public void Create()
 		{
+			CreateDirectory();
 			string zipPath = Path.Join(HUDBackupPath, $"{HUD.Name}_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.zip");
 			ZipFile.CreateFromDirectory(HUD.FolderPath, zipPath);
 			Backups.Add(new HUDBackup(HUD.Name, new FileInfo(zipPath)));
