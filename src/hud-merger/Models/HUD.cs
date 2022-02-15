@@ -288,6 +288,8 @@ namespace HUDMerger.Models
 
 		private void WriteHUDLayout(string originFolderPath, HashSet<string> hudLayoutEntries, ClientschemeDependencies dependencies, FilesHashSet files)
 		{
+			if (!hudLayoutEntries.Any()) return;
+
 			Dictionary<string, dynamic> originHUDLayout = Utilities.LoadControls(originFolderPath, "scripts\\hudlayout.res").First(kv => kv.Value.GetType() == typeof(Dictionary<string, dynamic>)).Value;
 
 			string thisHUDLayoutPath = Path.Join(FolderPath, "scripts\\hudlayout.res");
@@ -317,6 +319,13 @@ namespace HUDMerger.Models
 			Directory.CreateDirectory(Path.Join(FolderPath, "scripts"));
 			File.WriteAllText(Path.Join(FolderPath, "scripts\\hudlayout.res"), VDF.Stringify(newHUDLayout));
 
+#if DEBUG
+			if (files.Contains("scripts\\hudlayout.res"))
+			{
+				throw new Exception();
+			}
+#endif
+
 			files.Remove("scripts\\hudlayout.res");
 		}
 
@@ -327,8 +336,7 @@ namespace HUDMerger.Models
 		/// <param name="newScheme">Scheme contents</param>
 		private void WriteScheme(string schemeType, Dictionary<string, dynamic> newScheme)
 		{
-			if (!newScheme.Any(kv => kv.Value.Count > 0)) return;
-			if (newScheme.All(kv => kv.Value.Count == 0)) return;
+			if (newScheme.All(kv => !((Dictionary<string, dynamic>)kv.Value).Any())) return;
 
 			Dictionary<string, dynamic> newSchemeContainer = new();
 			newSchemeContainer["Scheme"] = newScheme;
@@ -343,7 +351,6 @@ namespace HUDMerger.Models
 			}
 			else
 			{
-				Directory.CreateDirectory(Path.GetDirectoryName(schemePath));
 				Utilities.CopyResourceToHUD($"resource\\{schemeType}scheme.res", FolderPath);
 				File.WriteAllText(schemePath, VDF.Stringify(newSchemeContainer));
 			}
@@ -354,11 +361,14 @@ namespace HUDMerger.Models
 		/// </summary>
 		private void WriteHUDAnimations(string originFolderPath, HashSet<string> events, string hudName, ClientschemeDependencies dependencies, FilesHashSet files)
 		{
-			if (events.Count == 0) return;
+			if (!events.Any()) return;
 
 			string originHUDAnimationsManifestPath = $"{originFolderPath}\\scripts\\hudanimations_manifest.txt";
 
-			Dictionary<string, dynamic> manifest = Utilities.VDFTryParse(Utilities.TestPath(originHUDAnimationsManifestPath) ? originHUDAnimationsManifestPath : "Resources\\HUD\\scripts\\hudanimations_manifest.txt");
+			Dictionary<string, dynamic> manifest = Utilities.VDFTryParse(Utilities.TestPath(originHUDAnimationsManifestPath)
+				? originHUDAnimationsManifestPath
+				: "Resources\\HUD\\scripts\\hudanimations_manifest.txt");
+
 			List<string> hudAnimationsManifestList = new();
 			foreach (dynamic filePath in manifest["hudanimations_manifest"]["file"])
 			{
@@ -378,6 +388,7 @@ namespace HUDMerger.Models
 					// Add clientscheme colours and sounds referenced in HUD animations
 					void AddEventDependencies(string @event, List<HUDAnimation> animationEvent)
 					{
+						// Add first occurrence of event
 						if (!newHUDAnimations.ContainsKey(@event))
 						{
 							newHUDAnimations[@event] = animationEvent;
@@ -495,12 +506,10 @@ namespace HUDMerger.Models
 				}
 				else
 				{
-					System.Diagnostics.Debug.WriteLine($"Could not find {sourceFileName}");
 					if (Utilities.TestPath(destFileName))
 					{
 						// Delete file to avoid conflicts
 						File.Delete(destFileName);
-						System.Diagnostics.Debug.WriteLine($"Deleting \"{destFileName}\" to avoid conflicts");
 					}
 				}
 			}
