@@ -31,7 +31,7 @@ namespace HUDMergerVDF
 
 			Dictionary<string, dynamic> ParseObject(bool isobject = false)
 			{
-				Dictionary<string, dynamic> obj = new();
+				Dictionary<string, dynamic> obj = new(options.KeyComparer);
 
 				string currentToken = tokeniser.Read();
 				string nextToken = tokeniser.Read(true);

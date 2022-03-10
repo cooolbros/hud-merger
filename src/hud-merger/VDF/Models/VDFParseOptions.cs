@@ -16,5 +16,10 @@ namespace HUDMergerVDF.Models
 		/// OS Tags
 		/// </summary>
 		public VDFOSTags OSTags { get; init; } = VDFOSTags.All;
+
+		/// <summary>
+		/// Dictionary Key Comparer
+		/// </summary>
+		public StringComparer KeyComparer { get; init; } = StringComparer.OrdinalIgnoreCase;
 	}
 }
