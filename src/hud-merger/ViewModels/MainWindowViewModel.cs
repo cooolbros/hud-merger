@@ -125,9 +125,6 @@ namespace HUDMerger.ViewModels
 			}
 		}
 
-		/// <summary>
-		///
-		/// </summary>
 		private void NewTargetHUD()
 		{
 			DialogResult result = FolderBrowserDialog.ShowDialog();
