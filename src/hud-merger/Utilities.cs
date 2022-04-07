@@ -11,34 +11,6 @@ namespace HUDMerger
 {
 	public static class Utilities
 	{
-		public static void Merge(Dictionary<string, dynamic> obj1, Dictionary<string, dynamic> obj2)
-		{
-			foreach (string i in obj1.Keys)
-			{
-				if (obj1[i].GetType() == typeof(Dictionary<string, dynamic>))
-				{
-					if (obj2.ContainsKey(i) && obj2[i].GetType() == typeof(Dictionary<string, dynamic>))
-					{
-						Merge(obj1[i], obj2[i]);
-					}
-				}
-				else
-				{
-					if (obj2.ContainsKey(i))
-					{
-						obj1[i] = obj2[i];
-					}
-				}
-			}
-			foreach (string j in obj2.Keys)
-			{
-				if (!obj1.ContainsKey(j))
-				{
-					obj1[j] = obj2[j];
-				}
-			}
-		}
-
 		/// <summary>
 		/// Loads controls from a file the same way TF2 does.
 		/// </summary>
