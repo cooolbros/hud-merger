@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using HUDMergerVDF;
+using HUDMergerVDF.Exceptions;
 
 // sample animation script
 //
@@ -49,169 +52,176 @@ using System.Collections.Generic;
 
 namespace HUDMerger.Models
 {
-	public class HUDAnimation
+	public abstract class HUDAnimation
 	{
-		public string Type { get; set; }
+		public abstract string Type { get; }
 		public string OSTag { get; set; }
+		public abstract override string ToString();
+
+		protected string Print(string str)
+		{
+			return Regex.IsMatch(str, "\\s") ? $"\"{str}\"" : str;
+		}
+
+		protected string PrintOSTag()
+		{
+			return OSTag != null ? $" {OSTag}" : "";
+		}
 	}
 
-	class Animate : HUDAnimation
+	public class Animate : HUDAnimation
 	{
+		public override string Type => nameof(Animate);
 		public string Element { get; set; }
 		public string Property { get; set; }
 		public string Value { get; set; }
 		public string Interpolator { get; set; }
-		public string Frequency { get; set; }
 		public string Bias { get; set; }
+		public string Frequency { get; set; }
 		public string Delay { get; set; }
 		public string Duration { get; set; }
+
+		private string GetInterpolator()
+		{
+			if (Interpolator == "Gain" || Interpolator == "Bias")
+			{
+				return $"{Interpolator} {Bias}";
+			}
+			else if (Interpolator == "Pulse")
+			{
+				return $"{Interpolator} {Frequency}";
+			}
+
+			return Interpolator;
+		}
+
+		public override string ToString()
+		{
+			return $"{Type} {Print(Element)} {Print(Property)} {Print(Value)} {GetInterpolator()} {Delay} {Duration}" + PrintOSTag();
+		}
 	}
 
-	class RunEvent : HUDAnimation
+	public class RunEvent : HUDAnimation
 	{
+		public override string Type => nameof(RunEvent);
 		public string Event { get; set; }
 		public string Delay { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Type} {Print(Event)} {Delay}" + PrintOSTag();
+		}
 	}
 
-	class StopEvent : HUDAnimation
+	public class StopEvent : HUDAnimation
 	{
+		public override string Type => nameof(StopEvent);
 		public string Event { get; set; }
 		public string Delay { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Type} {Print(Event)} {Delay}" + PrintOSTag();
+		}
 	}
 
-	class SetVisible : HUDAnimation
+	public class SetVisible : HUDAnimation
 	{
+		public override string Type => nameof(SetVisible);
 		public string Element { get; set; }
 		public string Delay { get; set; }
 		public string Duration { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Type} {Print(Element)} {Delay} {Duration}" + PrintOSTag();
+		}
 	}
 
-	class FireCommand : HUDAnimation
+	public class FireCommand : HUDAnimation
 	{
+		public override string Type => nameof(FireCommand);
 		public string Delay { get; set; }
 		public string Command { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Type} {Delay} {Print(Command)}" + PrintOSTag();
+		}
 	}
 
-	class RunEventChild : HUDAnimation
+	public class RunEventChild : HUDAnimation
 	{
+		public override string Type => nameof(RunEventChild);
 		public string Element { get; set; }
 		public string Event { get; set; }
 		public string Delay { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Type} {Print(Element)} {Print(Event)} {Delay}" + PrintOSTag();
+		}
 	}
 
-	class SetInputEnabled : HUDAnimation
+	public class SetInputEnabled : HUDAnimation
 	{
+		public override string Type => nameof(SetInputEnabled);
 		public string Element { get; set; }
 		public int Visible { get; set; }
 		public string Delay { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Type} {Print(Element)} {Visible} {Delay}" + PrintOSTag();
+		}
 	}
 
-	class PlaySound : HUDAnimation
+	public class PlaySound : HUDAnimation
 	{
+		public override string Type => nameof(PlaySound);
 		public string Delay { get; set; }
 		public string Sound { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Type} {Delay} {Print(Sound)}" + PrintOSTag();
+		}
 	}
 
-	class StopPanelAnimations : HUDAnimation
+	public class StopPanelAnimations : HUDAnimation
 	{
+		public override string Type => nameof(StopPanelAnimations);
 		public string Element { get; set; }
 		public string Delay { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Type} {Print(Element)} {Delay}" + PrintOSTag();
+		}
 	}
 
 	public static class HUDAnimations
 	{
 		public static Dictionary<string, List<HUDAnimation>> Parse(string str)
 		{
-			int i = 0;
-			char[] whiteSpaceIgnore = new char[] { ' ', '\t', '\r', '\n' };
-
-			string Next(bool lookAhead = false)
-			{
-				string currentToken = "";
-				int j = i;
-
-				if (j >= str.Length - 1)
-				{
-					return "EOF";
-				}
-
-				while ((whiteSpaceIgnore.Contains(str[j]) || str[j] == '/') && j < str.Length - 1)
-				{
-					if (str[j] == '/')
-					{
-						if (str[j + 1] == '/')
-						{
-							while (str[j] != '\n' && j < str.Length - 1)
-							{
-								j++;
-							}
-						}
-					}
-					else
-					{
-						j++;
-					}
-					if (j >= str.Length)
-					{
-						return "EOF";
-					}
-				}
-
-				if (str[j] == '"')
-				{
-					// Read until next quote (ignore opening quote)
-					j++;
-					while (str[j] != '"' && j < str.Length - 1)
-					{
-						if (str[j] == '\n')
-						{
-							throw new Exception($"Unexpected end of line at position {j}");
-						}
-						currentToken += str[j];
-						j++;
-					}
-					j++; // Skip over closing quote
-				}
-				else
-				{
-					// Read until whitespace (or end of file)
-					while (j < str.Length && !whiteSpaceIgnore.Contains(str[j]))
-					{
-						if (str[j] == '"')
-						{
-							throw new Exception($"Unexpected double quote at position {j}");
-						}
-						currentToken += str[j];
-						j++;
-					}
-				}
-
-				if (!lookAhead)
-				{
-					i = j;
-				}
-
-				//if (j > Str.Length)
-				//{
-				//	return "EOF";
-				//}
-
-				return currentToken;
-			}
+			VDFTokeniser tokeniser = new VDFTokeniser(str);
 
 			Dictionary<string, List<HUDAnimation>> ParseFile()
 			{
 				Dictionary<string, List<HUDAnimation>> animations = new();
 
-				string currentToken = Next();
+				string currentToken = tokeniser.Read();
 
-				// System.Diagnostics.Debugger.Break();
-
-				while (currentToken == "event")
+				while (currentToken != "EOF")
 				{
-					string eventName = Next();
+					if (currentToken != "event")
+					{
+						throw new VDFSyntaxException(currentToken, tokeniser.Position, tokeniser.Line, tokeniser.Character, "event");
+					}
+
+					string eventName = tokeniser.Read();
 					animations[eventName] = ParseEvent();
-					currentToken = Next();
+					currentToken = tokeniser.Read();
 				}
 
 				return animations;
@@ -219,130 +229,114 @@ namespace HUDMerger.Models
 
 			List<HUDAnimation> ParseEvent()
 			{
-				List<HUDAnimation> @event = new();
-				string nextToken = Next();
-				if (nextToken == "{")
+				List<HUDAnimation> _event = new();
+				string nextToken = tokeniser.Read();
+
+				if (nextToken != "{")
 				{
-					// string NextToken = Next();
-					while (nextToken != "}" && nextToken != "EOF")
+					throw new VDFSyntaxException(nextToken, tokeniser.Position, tokeniser.Line, tokeniser.Character, "{");
+				}
+
+				while (nextToken != "}")
+				{
+					// NextToken is not a closing brace therefore it is the animation type
+					// Pass the animation type to the animation
+					nextToken = tokeniser.Read();
+					if (nextToken != "}")
 					{
-						// NextToken is not a closing brace therefore it is the animation type
-						// Pass the animation type to the animation
-						nextToken = Next();
-						if (nextToken != "}")
-						{
-							@event.Add(ParseAnimation(nextToken));
-						}
+						_event.Add(ParseAnimation(nextToken));
 					}
 				}
-				else
-				{
-					throw new Exception($"Unexpected {nextToken} at position {i}! Are you missing an opening brace?");
-				}
-				return @event;
+
+				return _event;
 			}
 
 			void SetInterpolator(Animate animation)
 			{
-				string interpolator = Next().ToLower();
-				if (interpolator == "pulse")
+				string interpolator = tokeniser.Read().ToLower();
+				switch (interpolator)
 				{
-					animation.Interpolator = interpolator;
-					animation.Frequency = Next();
-				}
-				else if (new string[] { "gain", "bias" }.Contains(interpolator))
-				{
-					animation.Interpolator = interpolator[0].ToString().ToUpper() + interpolator.Substring(1, interpolator.Length - 1);
-					animation.Bias = Next();
-				}
-				else
-				{
-					animation.Interpolator = interpolator;
+					case "gain":
+					case "bias":
+						animation.Interpolator = interpolator[0].ToString().ToUpper() + interpolator.Substring(1, interpolator.Length - 1).ToLower();
+						animation.Bias = tokeniser.Read();
+						break;
+					case "pulse":
+						animation.Interpolator = interpolator;
+						animation.Frequency = tokeniser.Read();
+						break;
+					default:
+						animation.Interpolator = interpolator;
+						break;
 				}
 			}
-
 
 			HUDAnimation ParseAnimation(string animationType)
 			{
 				dynamic animation;
 				animationType = animationType.ToLower();
 
-				if (animationType == "animate")
+				switch (animationType)
 				{
-					animation = new Animate();
-					animation.Type = animationType;
-					animation.Element = Next();
-					animation.Property = Next();
-					animation.Value = Next();
-					SetInterpolator(animation);
-					animation.Delay = Next();
-					animation.Duration = Next();
-				}
-				else if (animationType == "runevent")
-				{
-					animation = new RunEvent();
-					animation.Type = animationType;
-					animation.Event = Next();
-					animation.Delay = Next();
-				}
-				else if (animationType == "stopevent")
-				{
-					animation = new StopEvent();
-					animation.Type = animationType;
-					animation.Event = Next();
-					animation.Delay = Next();
-				}
-				else if (animationType == "setvisible")
-				{
-					animation = new SetVisible();
-					animation.Type = animationType;
-					animation.Element = Next();
-					animation.Delay = Next();
-					animation.Duration = Next();
-				}
-				else if (animationType == "firecommand")
-				{
-					animation = new FireCommand();
-					animation.Type = animationType;
-					animation.Delay = Next();
-					animation.Command = Next();
-				}
-				else if (animationType == "runeventchild")
-				{
-					animation = new RunEventChild();
-					animation.Type = animationType;
-					animation.Element = Next();
-					animation.Event = Next();
-					animation.Delay = Next();
-				}
-				else if (animationType == "setinputenabled")
-				{
-					animation = new SetInputEnabled();
-					animation.Element = Next();
-					animation.Visible = int.Parse(Next());
-					animation.Delay = Next();
-				}
-				else if (animationType == "playsound")
-				{
-					animation = new PlaySound();
-					animation.Delay = Next();
-					animation.Sound = Next();
-				}
-				else if (animationType == "stoppanelanimations")
-				{
-					animation = new StopPanelAnimations();
-					animation.Element = Next();
-					animation.Delay = Next();
-				}
-				else
-				{
-					System.Diagnostics.Debug.WriteLine(str.Substring(i - 25, 25));
-					throw new Exception($"Unexpected {animationType} at position {i}");
+					case "animate":
+						animation = new Animate();
+						animation.Element = tokeniser.Read();
+						animation.Property = tokeniser.Read();
+						animation.Value = tokeniser.Read();
+						SetInterpolator(animation);
+						animation.Delay = tokeniser.Read();
+						animation.Duration = tokeniser.Read();
+						break;
+					case "runevent":
+						animation = new RunEvent();
+						animation.Event = tokeniser.Read();
+						animation.Delay = tokeniser.Read();
+						break;
+					case "stopevent":
+						animation = new StopEvent();
+						animation.Event = tokeniser.Read();
+						animation.Delay = tokeniser.Read();
+						break;
+					case "setvisible":
+						animation = new SetVisible();
+						animation.Element = tokeniser.Read();
+						animation.Delay = tokeniser.Read();
+						animation.Duration = tokeniser.Read();
+						break;
+					case "firecommand":
+						animation = new FireCommand();
+						animation.Delay = tokeniser.Read();
+						animation.Command = tokeniser.Read();
+						break;
+					case "runeventchild":
+						animation = new RunEventChild();
+						animation.Element = tokeniser.Read();
+						animation.Event = tokeniser.Read();
+						animation.Delay = tokeniser.Read();
+						break;
+					case "setinputenabled":
+						animation = new SetInputEnabled();
+						animation.Element = tokeniser.Read();
+						animation.Visible = int.Parse(tokeniser.Read());
+						animation.Delay = tokeniser.Read();
+						break;
+					case "playsound":
+						animation = new PlaySound();
+						animation.Delay = tokeniser.Read();
+						animation.Sound = tokeniser.Read();
+						break;
+					case "stoppanelanimations":
+						animation = new StopPanelAnimations();
+						animation.Element = tokeniser.Read();
+						animation.Delay = tokeniser.Read();
+						break;
+					default:
+						throw new VDFSyntaxException(animationType, tokeniser.Position, tokeniser.Line, tokeniser.Character);
 				}
 
-				if (Next(true).StartsWith('['))
+				if (tokeniser.Read(true).StartsWith('['))
 				{
-					animation.OSTag = Next();
+					animation.OSTag = tokeniser.Read();
 				}
 
 				return animation;
@@ -353,81 +347,10 @@ namespace HUDMerger.Models
 
 		public static string Stringify(Dictionary<string, List<HUDAnimation>> animations)
 		{
-			string str = "";
-			char tab = '\t';
-			string newLine = "\r\n";
+			const char tab = '\t';
+			const string newLine = "\r\n";
 
-			string FormatWhiteSpace(string str)
-			{
-				return System.Text.RegularExpressions.Regex.IsMatch(str, "\\s") ? $"\"{str}\"" : str;
-			}
-
-			string GetInterpolator(Animate animation)
-			{
-				string interpolator = animation.Interpolator.ToLower();
-				switch (interpolator)
-				{
-					case "Pulse":
-						return $"Pulse {animation.Frequency}";
-					case "Gain":
-					case "Bias":
-						return $"Gain {animation.Bias}";
-					default:
-						return $"{animation.Interpolator}";
-				}
-			}
-
-			foreach (string @event in animations.Keys)
-			{
-				str += $"event {@event}{newLine}{{{newLine}";
-				foreach (dynamic execution in animations[@event])
-				{
-					str += tab;
-					Type T = execution.GetType();
-					if (T == typeof(Animate))
-					{
-						str += $"Animate {FormatWhiteSpace(execution.Element)} {FormatWhiteSpace(execution.Property)} {FormatWhiteSpace(execution.Value)} {GetInterpolator(execution)} {execution.Delay} {execution.Duration}";
-					}
-					else if (T == typeof(RunEvent))
-					{
-						str += $"RunEvent {FormatWhiteSpace(execution.Event)} {execution.Delay}";
-					}
-					else if (T == typeof(StopEvent))
-					{
-						str += $"StopEvent {FormatWhiteSpace(execution.Event)} {execution.Delay}";
-					}
-					else if (T == typeof(SetVisible))
-					{
-						str += $"SetVisible {FormatWhiteSpace(execution.Element)} {execution.Delay} {execution.Duration}";
-					}
-					else if (T == typeof(FireCommand))
-					{
-						str += $"FireCommand {execution.Delay} {FormatWhiteSpace(execution.Command)}";
-					}
-					else if (T == typeof(RunEventChild))
-					{
-						str += $"RunEventChild {FormatWhiteSpace(execution.Element)} {FormatWhiteSpace(execution.Event)} {execution.Delay}";
-					}
-					else if (T == typeof(SetVisible))
-					{
-						str += $"SetVisible {FormatWhiteSpace(execution.Element)} {execution.Visible} {execution.Delay}";
-					}
-					else if (T == typeof(PlaySound))
-					{
-						str += $"PlaySound {execution.Delay} {FormatWhiteSpace(execution.Sound)}";
-					}
-
-					if (execution.OSTag != null)
-					{
-						str += " " + execution.OSTag;
-					}
-
-					str += newLine;
-				}
-				str += $"}}{newLine}";
-			}
-
-			return str;
+			return animations.Aggregate("", (string a, KeyValuePair<string, List<HUDAnimation>> _event) => a + $"event {_event.Key}{newLine}{{{newLine}{_event.Value.Aggregate("", (string a, HUDAnimation animation) => a + $"{tab}{animation}{newLine}")}}}{newLine}");
 		}
 	}
 }
