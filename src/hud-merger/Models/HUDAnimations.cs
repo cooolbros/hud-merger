@@ -129,12 +129,12 @@ namespace HUDMerger.Models
 	{
 		public override string Type => nameof(SetVisible);
 		public string Element { get; set; }
+		public bool Visible { get; set; }
 		public string Delay { get; set; }
-		public string Duration { get; set; }
 
 		public override string ToString()
 		{
-			return $"{Type} {Print(Element)} {Delay} {Duration}" + PrintOSTag();
+			return $"{Type} {Print(Element)} {(Visible ? 1 : 0)} {Delay}" + PrintOSTag();
 		}
 	}
 
@@ -167,12 +167,12 @@ namespace HUDMerger.Models
 	{
 		public override string Type => nameof(SetInputEnabled);
 		public string Element { get; set; }
-		public int Visible { get; set; }
+		public bool Enabled { get; set; }
 		public string Delay { get; set; }
 
 		public override string ToString()
 		{
-			return $"{Type} {Print(Element)} {Visible} {Delay}" + PrintOSTag();
+			return $"{Type} {Print(Element)} {(Enabled ? 1 : 0)} {Delay}" + PrintOSTag();
 		}
 	}
 
@@ -208,7 +208,7 @@ namespace HUDMerger.Models
 
 			Dictionary<string, List<HUDAnimation>> ParseFile()
 			{
-				Dictionary<string, List<HUDAnimation>> animations = new();
+				Dictionary<string, List<HUDAnimation>> animations = new(StringComparer.OrdinalIgnoreCase);
 
 				string currentToken = tokeniser.Read();
 
@@ -251,6 +251,11 @@ namespace HUDMerger.Models
 				return _event;
 			}
 
+			static string ParseInterpolator(string interpolator)
+			{
+				return interpolator[0].ToString().ToUpper() + interpolator.Substring(1, interpolator.Length - 1).ToLower();
+			}
+
 			void SetInterpolator(Animate animation)
 			{
 				string interpolator = tokeniser.Read().ToLower();
@@ -258,15 +263,15 @@ namespace HUDMerger.Models
 				{
 					case "gain":
 					case "bias":
-						animation.Interpolator = interpolator[0].ToString().ToUpper() + interpolator.Substring(1, interpolator.Length - 1).ToLower();
+						animation.Interpolator = ParseInterpolator(interpolator);
 						animation.Bias = tokeniser.Read();
 						break;
 					case "pulse":
-						animation.Interpolator = interpolator;
+						animation.Interpolator = ParseInterpolator(interpolator);
 						animation.Frequency = tokeniser.Read();
 						break;
 					default:
-						animation.Interpolator = interpolator;
+						animation.Interpolator = ParseInterpolator(interpolator);
 						break;
 				}
 			}
@@ -300,8 +305,19 @@ namespace HUDMerger.Models
 					case "setvisible":
 						animation = new SetVisible();
 						animation.Element = tokeniser.Read();
+						string visible = tokeniser.Read();
+						switch (visible)
+						{
+							case "0":
+								animation.Visible = false;
+								break;
+							case "1":
+								animation.Visible = true;
+								break;
+							default:
+								throw new VDFSyntaxException(visible, tokeniser.Position, tokeniser.Line, tokeniser.Character, "\"0\" or \"1\"");
+						}
 						animation.Delay = tokeniser.Read();
-						animation.Duration = tokeniser.Read();
 						break;
 					case "firecommand":
 						animation = new FireCommand();
@@ -317,7 +333,18 @@ namespace HUDMerger.Models
 					case "setinputenabled":
 						animation = new SetInputEnabled();
 						animation.Element = tokeniser.Read();
-						animation.Visible = int.Parse(tokeniser.Read());
+						string enabled = tokeniser.Read();
+						switch (enabled)
+						{
+							case "0":
+								animation.Enabled = false;
+								break;
+							case "1":
+								animation.Enabled = true;
+								break;
+							default:
+								throw new VDFSyntaxException(enabled, tokeniser.Position, tokeniser.Line, tokeniser.Character, "\"0\" or \"1\"");
+						}
 						animation.Delay = tokeniser.Read();
 						break;
 					case "playsound":
