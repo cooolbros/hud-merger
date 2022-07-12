@@ -1,14 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HUDMerger.Models.Tests
 {
 	[TestClass()]
 	public class HUDAnimationsTests
 	{
-		private string Animations = String.Join("\r\n", new string[]
+		private readonly string Animations = String.Join("\r\n", new string[]
 		{
 			"event TestEvent",
 			"{",
