@@ -22,8 +22,6 @@ namespace HUDMerger.Models
 		/// </summary>
 		public string FolderPath { get; }
 
-		public HUDBackupManager Backup { get; }
-
 		/// <summary>
 		/// Create HUD
 		/// </summary>
@@ -32,7 +30,6 @@ namespace HUDMerger.Models
 		{
 			Name = new DirectoryInfo(folderPath).Name;
 			FolderPath = folderPath;
-			Backup = new HUDBackupManager(this);
 		}
 
 		/// <summary>

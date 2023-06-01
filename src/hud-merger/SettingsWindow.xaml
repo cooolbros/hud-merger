@@ -27,9 +27,7 @@
                 <Button Content="Update Files Now" Style="{StaticResource EnabledButton}" FontSize="15" Padding="20,5" Click="UpdateFilesNowButton_Click" />
                 <Label Name="UpdateStatus" Content="" FontSize="16" Margin="5,0,0,0" VerticalAlignment="Center" />
             </WrapPanel>
-            <Grid Height="2" Background="#EEEEEE" Margin="0 0 0 10" />
-            <CheckBox Content="Backup HUDs before merging" Style="{StaticResource CheckBoxStyle1}" IsChecked="{Binding Backup_HUDs, Source={x:Static Properties:Settings.Default}, Mode=TwoWay}" ToolTip="Create a restorable backup of the Target HUD before merging. The backup can be restored if an error occurs while merging." />
-            <CheckBox Content="Delete HUD backups on successful merge" Style="{StaticResource CheckBoxStyle1}" IsChecked="{Binding Delete_Backups, Source={x:Static Properties:Settings.Default}, Mode=TwoWay}" ToolTip="Delete HUD backups when a merge is successful." />
+            <Grid Height="2" Background="#EEEEEE" />
             <Label Content="Team Fortress 2 Folder" FontSize="15" ToolTip="Path to Team Fortress 2 Installation. Used for extracting required HUD files." />
             <TextBox Style="{StaticResource TextBoxStyle1}" HorizontalAlignment="Left" MinWidth="480" Text="{Binding Team_Fortress_2_Folder, Source={x:Static Properties:Settings.Default}, Mode=TwoWay}" />
         </StackPanel>

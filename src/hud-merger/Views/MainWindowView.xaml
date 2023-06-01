@@ -33,8 +33,6 @@
                 <MenuItem Header="Load Source HUD" Command="{Binding NewSourceHUDCommand}" />
                 <MenuItem Header="Load Target HUD" Command="{Binding NewTargetHUDCommand}" />
                 <Separator />
-                <MenuItem Header="Backups" Command="{Binding ShowBackupsCommand}" />
-                <Separator />
                 <MenuItem Header="Settings" Command="{Binding ShowSettingsWindowCommand}" />
                 <Separator />
                 <MenuItem Header="Quit" Command="{Binding QuitCommand}" />
