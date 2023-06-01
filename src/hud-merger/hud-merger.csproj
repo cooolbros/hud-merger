@@ -8,6 +8,7 @@
     <ApplicationIcon>Resources\favicon.ico</ApplicationIcon>
     <Authors>Peter Wobcke</Authors>
     <Version>1.2.6</Version>
+    <Nullable>Enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />

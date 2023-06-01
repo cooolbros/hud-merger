@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
     <RootNamespace>hud_mergerTests</RootNamespace>
-    <Nullable>enable</Nullable>
+    <Nullable>Enable</Nullable>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
