@@ -7,7 +7,7 @@
 			"type": "process",
 			"args": [
 				"build",
-				"${workspaceFolder}/src/HUDMerger/HUDMerger.csproj",
+				"${workspaceFolder}/src/HUDMerger.sln",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary"
 			],
@@ -19,7 +19,7 @@
 			"type": "process",
 			"args": [
 				"publish",
-				"${workspaceFolder}/src/HUDMerger/HUDMerger.csproj",
+				"${workspaceFolder}/src/HUDMerger.sln",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary"
 			],
@@ -32,9 +32,8 @@
 			"args": [
 				"watch",
 				"run",
-				"${workspaceFolder}/src/HUDMerger/HUDMerger.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
+				"--project",
+				"${workspaceFolder}/src/HUDMerger.sln"
 			],
 			"problemMatcher": "$msCompile"
 		}
