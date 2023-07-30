@@ -1,20 +1,20 @@
 @ECHO OFF
 
-RMDIR /s /q hud-merger\bin
-RMDIR /s /q hud-merger\obj
+RMDIR /s /q HUDMerger\bin
+RMDIR /s /q HUDMerger\obj
 
 @REM https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish
 @REM https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-dotnet publish hud-merger -c Release
+dotnet publish HUDMerger -c Release
 @REM -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true --runtime win-x64
 
-@REM start hud-merger\bin\Release\net5.0-windows\publish\
+@REM start HUDMerger\bin\Release\net5.0-windows\publish\
 
-CD hud-merger\bin\Release\net5.0-windows
+CD HUDMerger\bin\Release\net5.0-windows
 
-RENAME publish hud-merger
-7z a hud-merger.zip hud-merger
-RMDIR /S /Q hud-merger
+RENAME publish HUDMerger
+7z a hud-merger.zip HUDMerger
+RMDIR /S /Q HUDMerger
 RMDIR /S /Q ref
 RMDIR /S /Q Resources
 
