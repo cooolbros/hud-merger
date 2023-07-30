@@ -1,19 +1,18 @@
 using System;
 using System.ComponentModel;
 
-namespace HUDMerger.ViewModels
+namespace HUDMerger.ViewModels;
+
+public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
 {
-	public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
+	public event PropertyChangedEventHandler PropertyChanged;
+
+	protected void OnPropertyChanged(string propertyName)
 	{
-		public event PropertyChangedEventHandler PropertyChanged;
+		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+	}
 
-		protected void OnPropertyChanged(string propertyName)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		public virtual void Dispose()
-		{
-		}
+	public virtual void Dispose()
+	{
 	}
 }

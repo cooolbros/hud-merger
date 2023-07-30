@@ -1,35 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HUDMerger.ViewModels
+namespace HUDMerger.ViewModels;
+
+public class SourceHUDPanelsListViewModel : ViewModelBase
 {
-	public class SourceHUDPanelsListViewModel : ViewModelBase
+	private string _searchText;
+	public string SearchText
 	{
-		private string _searchText;
-		public string SearchText
+		get => _searchText;
+		set
 		{
-			get => _searchText;
-			set
-			{
-				_searchText = value;
-				OnPropertyChanged(nameof(SearchText));
-				UpdateHUDPanelsVisibility();
-			}
+			_searchText = value;
+			OnPropertyChanged(nameof(SearchText));
+			UpdateHUDPanelsVisibility();
 		}
+	}
 
-		public IEnumerable<HUDPanelViewModel> HUDPanels { get; }
+	public IEnumerable<HUDPanelViewModel> HUDPanels { get; }
 
-		public SourceHUDPanelsListViewModel(IEnumerable<HUDPanelViewModel> hudPanelViewModels)
+	public SourceHUDPanelsListViewModel(IEnumerable<HUDPanelViewModel> hudPanelViewModels)
+	{
+		HUDPanels = hudPanelViewModels;
+	}
+
+	private void UpdateHUDPanelsVisibility()
+	{
+		foreach (HUDPanelViewModel hudPanelViewModel in HUDPanels)
 		{
-			HUDPanels = hudPanelViewModels;
-		}
-
-		private void UpdateHUDPanelsVisibility()
-		{
-			foreach (HUDPanelViewModel hudPanelViewModel in HUDPanels)
-			{
-				hudPanelViewModel.Visible = hudPanelViewModel.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-			}
+			hudPanelViewModel.Visible = hudPanelViewModel.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

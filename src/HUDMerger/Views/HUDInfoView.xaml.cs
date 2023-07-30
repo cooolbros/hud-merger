@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Windows.Controls;
 
-namespace HUDMerger.Views
+namespace HUDMerger.Views;
+
+/// <summary>
+/// Interaction logic for HUDView.xaml
+/// </summary>
+public partial class HUDInfoView : UserControl
 {
-	/// <summary>
-	/// Interaction logic for HUDView.xaml
-	/// </summary>
-	public partial class HUDInfoView : UserControl
+	public HUDInfoView()
 	{
-		public HUDInfoView()
-		{
-			InitializeComponent();
-		}
+		InitializeComponent();
 	}
 }

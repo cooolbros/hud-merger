@@ -8,59 +8,58 @@ using System.Windows;
 using HUDMerger.Models;
 using HUDMerger.ViewModels;
 
-namespace HUDMerger.Commands
+namespace HUDMerger.Commands;
+
+public class MergeCommand : CommandBase
 {
-	public class MergeCommand : CommandBase
+	private readonly MainWindowViewModel _mainWindowViewModel;
+
+	public MergeCommand(MainWindowViewModel mainWindowViewModel)
 	{
-		private readonly MainWindowViewModel _mainWindowViewModel;
+		_mainWindowViewModel = mainWindowViewModel;
+		_mainWindowViewModel.PropertyChanged += _mainWindowViewModel_PropertyChanged;
+	}
 
-		public MergeCommand(MainWindowViewModel mainWindowViewModel)
+	private void _mainWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName == nameof(MainWindowViewModel.SourceHUD) || e.PropertyName == nameof(MainWindowViewModel.TargetHUD))
 		{
-			_mainWindowViewModel = mainWindowViewModel;
-			_mainWindowViewModel.PropertyChanged += _mainWindowViewModel_PropertyChanged;
+			OnCanExecuteChanged();
 		}
+	}
 
-		private void _mainWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	public override bool CanExecute(object parameter)
+	{
+		return _mainWindowViewModel.SourceHUD != null && _mainWindowViewModel.TargetHUD != null && base.CanExecute(parameter);
+	}
+
+	public override void Execute(object parameter)
+	{
+		try
 		{
-			if (e.PropertyName == nameof(MainWindowViewModel.SourceHUD) || e.PropertyName == nameof(MainWindowViewModel.TargetHUD))
+			if (Utilities.PathContainsPath(Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD.FolderPath) && Process.GetProcessesByName("hl2").Any())
 			{
-				OnCanExecuteChanged();
+				MessageBox.Show("HL2 process open, cannot merge!", "HL2 Open Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
 			}
+
+			_mainWindowViewModel.TargetHUD.Merge(_mainWindowViewModel.SourceHUD, MainWindowViewModel.HUDPanels.Where(hudPanelViewModel => hudPanelViewModel.Armed).Select(hudPanelViewModel => hudPanelViewModel.HUDPanel).ToArray());
+			MessageBox.Show("Done!");
 		}
-
-		public override bool CanExecute(object parameter)
+		catch (Exception e)
 		{
-			return _mainWindowViewModel.SourceHUD != null && _mainWindowViewModel.TargetHUD != null && base.CanExecute(parameter);
-		}
-
-		public override void Execute(object parameter)
-		{
-			try
-			{
-				if (Utilities.PathContainsPath(Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD.FolderPath) && Process.GetProcessesByName("hl2").Any())
-				{
-					MessageBox.Show("HL2 process open, cannot merge!", "HL2 Open Error", MessageBoxButton.OK, MessageBoxImage.Error);
-					return;
-				}
-
-				_mainWindowViewModel.TargetHUD.Merge(_mainWindowViewModel.SourceHUD, MainWindowViewModel.HUDPanels.Where(hudPanelViewModel => hudPanelViewModel.Armed).Select(hudPanelViewModel => hudPanelViewModel.HUDPanel).ToArray());
-				MessageBox.Show("Done!");
-			}
-			catch (Exception e)
-			{
-				List<string> paragraphs = new List<string>
+			List<string> paragraphs = new List<string>
 				{
 					e.Message,
 				};
 
-				MessageBox.Show(String.Join("\r\n\r\n", paragraphs), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			}
+			MessageBox.Show(String.Join("\r\n\r\n", paragraphs), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
+	}
 
-		public override void Dispose()
-		{
-			base.Dispose();
-			_mainWindowViewModel.PropertyChanged -= _mainWindowViewModel_PropertyChanged;
-		}
+	public override void Dispose()
+	{
+		base.Dispose();
+		_mainWindowViewModel.PropertyChanged -= _mainWindowViewModel_PropertyChanged;
 	}
 }

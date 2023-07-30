@@ -1,17 +1,16 @@
 using System;
 
-namespace HUDMergerVDF.Models
-{
-	public enum VDFIndentation
-	{
-		/// <summary>
-		/// Tabs
-		/// </summary>
-		Tabs,
+namespace HUDMergerVDF.Models;
 
-		/// <summary>
-		/// Spaces
-		/// </summary>
-		Spaces
-	}
+public enum VDFIndentation
+{
+	/// <summary>
+	/// Tabs
+	/// </summary>
+	Tabs,
+
+	/// <summary>
+	/// Spaces
+	/// </summary>
+	Spaces
 }

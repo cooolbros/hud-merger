@@ -1,26 +1,25 @@
 using System;
 using System.Windows.Input;
 
-namespace HUDMerger.Commands
+namespace HUDMerger.Commands;
+
+public abstract class CommandBase : ICommand, IDisposable
 {
-	public abstract class CommandBase : ICommand, IDisposable
+	public event EventHandler CanExecuteChanged;
+
+	public virtual bool CanExecute(object parameter)
 	{
-		public event EventHandler CanExecuteChanged;
+		return true;
+	}
 
-		public virtual bool CanExecute(object parameter)
-		{
-			return true;
-		}
+	public void OnCanExecuteChanged()
+	{
+		CanExecuteChanged?.Invoke(this, new EventArgs());
+	}
 
-		public void OnCanExecuteChanged()
-		{
-			CanExecuteChanged?.Invoke(this, new EventArgs());
-		}
+	public abstract void Execute(object parameter);
 
-		public abstract void Execute(object parameter);
-
-		public virtual void Dispose()
-		{
-		}
+	public virtual void Dispose()
+	{
 	}
 }

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Windows.Controls;
 
-namespace HUDMerger.Views
+namespace HUDMerger.Views;
+
+/// <summary>
+/// Interaction logic for SourceHUDPanelsListView.xaml
+/// </summary>
+public partial class SourceHUDPanelsListView : UserControl
 {
-	/// <summary>
-	/// Interaction logic for SourceHUDPanelsListView.xaml
-	/// </summary>
-	public partial class SourceHUDPanelsListView : UserControl
+	public SourceHUDPanelsListView()
 	{
-		public SourceHUDPanelsListView()
-		{
-			InitializeComponent();
-		}
+		InitializeComponent();
 	}
 }
