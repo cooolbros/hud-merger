@@ -6,7 +6,7 @@ using VDF.Models;
 
 namespace VDF;
 
-internal class VDFTokeniser
+public class VDFTokeniser
 {
 	private static readonly char[] WhiteSpaceIgnore = { ' ', '\t', '\r', '\n' };
 	private static readonly char[] WhiteSpaceTokenTerminate = { '"', '{', '}' };
