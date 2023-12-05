@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
-    <RootNamespace>hud_mergerTests</RootNamespace>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>HUDMergerTests</RootNamespace>
     <Nullable>Enable</Nullable>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
