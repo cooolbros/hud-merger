@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VDF.Exceptions;
 using VDF.Models;
 
@@ -12,7 +13,7 @@ public static class VDFSerializer
 
 		static KeyValues ReadKeyValues(VDFTokeniser tokeniser, bool isObject)
 		{
-			KeyValues keyValues = new();
+			KeyValues keyValues = [];
 
 			while (true)
 			{
@@ -22,7 +23,7 @@ public static class VDFSerializer
 					null when !isObject => null,
 					null => throw new VDFSyntaxException(
 						null,
-						new[] { "key" },
+						["key"],
 						tokeniser.Index,
 						tokeniser.Line,
 						tokeniser.Character
@@ -30,7 +31,7 @@ public static class VDFSerializer
 					{ Type: VDFTokenType.String } token => ReadKeyValue(tokeniser, token.Value),
 					VDFToken token => throw new VDFSyntaxException(
 						token,
-						new[] { "key" },
+						["key"],
 						tokeniser.Index,
 						tokeniser.Line,
 						tokeniser.Character
@@ -80,14 +81,14 @@ public static class VDFSerializer
 				},
 				VDFToken token => throw new VDFSyntaxException(
 					token,
-					new[] { "value", "{" },
+					["value", "{"],
 					tokeniser.Index,
 					tokeniser.Line,
 					tokeniser.Character
 				),
 				null => throw new VDFSyntaxException(
 					null,
-					new[] { "value", "{" },
+					["value", "{"],
 					tokeniser.Index,
 					tokeniser.Line,
 					tokeniser.Character
@@ -109,13 +110,13 @@ public static class VDFSerializer
 		return ReadKeyValues(tokeniser, false);
 	}
 
-	public static string Serialize(KeyValues keyValues, int level = 0)
+	public static string Serialize(IEnumerable<KeyValue> keyValues, int level = 0)
 	{
 		string str = "";
 
 		foreach (KeyValue keyValue in keyValues)
 		{
-			if (keyValue.Value is KeyValues kvs)
+			if (keyValue.Value is IEnumerable<KeyValue> kvs)
 			{
 				str += $"{new string('\t', level)}\"{keyValue.Key}\"{(keyValue.Conditional != null ? $" {keyValue.Conditional}" : "")}\r\n";
 				str += $"{new string('\t', level)}{{\r\n";
@@ -125,6 +126,12 @@ public static class VDFSerializer
 			{
 				str += $"{new string('\t', level)}\"{keyValue.Key}\"\t\"{value}\"{(keyValue.Conditional != null ? $" {keyValue.Conditional}" : "")}\r\n";
 			}
+#if DEBUG
+			else
+			{
+				throw new ArgumentException("keyValue.Value");
+			}
+#endif
 		}
 
 		return str;

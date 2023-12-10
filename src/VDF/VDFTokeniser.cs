@@ -6,21 +6,16 @@ using VDF.Models;
 
 namespace VDF;
 
-public class VDFTokeniser
+public class VDFTokeniser(string str)
 {
-	private static readonly char[] WhiteSpaceIgnore = { ' ', '\t', '\r', '\n' };
-	private static readonly char[] WhiteSpaceTokenTerminate = { '"', '{', '}' };
+	private static readonly char[] WhiteSpaceIgnore = [' ', '\t', '\r', '\n'];
+	private static readonly char[] WhiteSpaceTokenTerminate = ['"', '{', '}'];
 
-	private readonly string Str;
+	private readonly string Str = str;
 	public int Index { get; private set; } = 0;
 	public int Line { get; private set; } = 0;
 	public int Character { get; private set; } = 0;
 	private bool EOFRead = false;
-
-	public VDFTokeniser(string str)
-	{
-		Str = str;
-	}
 
 	public VDFToken? Read(bool peek = false)
 	{
@@ -102,7 +97,7 @@ public class VDFTokeniser
 						{
 							throw new VDFSyntaxException(
 								new VDFToken { Type = VDFTokenType.String, Value = "EOF" },
-								new[] { "char", "\"" },
+								["char", "\""],
 								index,
 								line,
 								character
@@ -118,7 +113,7 @@ public class VDFTokeniser
 							{
 								throw new VDFSyntaxException(
 									new VDFToken { Type = VDFTokenType.String, Value = "EOF" },
-									new[] { "char" },
+									["char"],
 									index,
 									line,
 									character
@@ -129,7 +124,7 @@ public class VDFTokeniser
 						{
 							throw new VDFSyntaxException(
 								new VDFToken { Type = VDFTokenType.String, Value = "\\n" },
-								new[] { "\"" },
+								["\""],
 								index,
 								line,
 								character
@@ -172,7 +167,7 @@ public class VDFTokeniser
 							{
 								throw new VDFSyntaxException(
 									new VDFToken { Type = VDFTokenType.String, Value = "EOF" },
-									new[] { "char" },
+									["char"],
 									index,
 									line,
 									character
