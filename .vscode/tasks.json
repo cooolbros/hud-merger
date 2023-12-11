@@ -9,7 +9,7 @@
 				"build",
 				"${workspaceFolder}/src/HUDMerger.sln",
 				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
+				"/consoleloggerparameters:NoSummary;ForceNoAlign"
 			],
 			"problemMatcher": "$msCompile"
 		},
@@ -21,7 +21,7 @@
 				"publish",
 				"${workspaceFolder}/src/HUDMerger.sln",
 				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
+				"/consoleloggerparameters:NoSummary;ForceNoAlign"
 			],
 			"problemMatcher": "$msCompile"
 		},
