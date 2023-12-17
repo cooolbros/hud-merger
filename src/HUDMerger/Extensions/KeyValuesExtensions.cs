@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VDF;
 using VDF.Models;
 
 namespace HUDMerger.Extensions;
@@ -26,5 +27,22 @@ public static class KeyValuesExtensions
 			string str when strict => throw new NotSupportedException(),
 			_ => [],
 		};
+	}
+
+	public static HashSet<KeyValue> ToHashSet(this KeyValues source)
+	{
+		return source
+			.Select((kv) => new KeyValue
+			{
+				Key = kv.Key,
+				Value = kv.Value switch
+				{
+					string str => str,
+					KeyValues keyValues => keyValues.ToHashSet(),
+					_ => throw new NotSupportedException()
+				},
+				Conditional = kv.Conditional
+			})
+			.ToHashSet(KeyValueComparer.KeyComparer);
 	}
 }
