@@ -29,6 +29,18 @@ public static class KeyValuesExtensions
 		};
 	}
 
+	public static void ForAll(this KeyValues source, Action<KeyValue> action)
+	{
+		foreach (KeyValue keyValue in source)
+		{
+			if (keyValue.Value is KeyValues keyValues)
+			{
+				keyValues.ForAll(action);
+			}
+			action(keyValue);
+		}
+	}
+
 	public static HashSet<KeyValue> ToHashSet(this KeyValues source)
 	{
 		return source
