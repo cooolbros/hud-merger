@@ -1,8 +1,8 @@
 [
 	{
 		"Name": "Ammo",
-		"Main": {
-			"FilePath": "resource\\ui\\hudammoweapons.res",
+		"Main": "resource\\ui\\hudammoweapons.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudWeaponAmmo"
 			],
@@ -15,70 +15,46 @@
 	},
 	{
 		"Name": "Backpack Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\econ\\backpackpanel.res"
-		}
+		"Main": "resource\\ui\\econ\\backpackpanel.res"
 	},
 	{
 		"Name": "Class Loadout Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\classloadoutpanel.res"
-		},
+		"Main": "resource\\ui\\classloadoutpanel.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\itemselectionpanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\loadoutpresetpanel.res"
-			}
+			"resource\\ui\\itemselectionpanel.res",
+			"resource\\ui\\loadoutpresetpanel.res"
 		]
 	},
 	{
 		"Name": "Class Selection Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\classselection.res"
-		}
+		"Main": "resource\\ui\\classselection.res"
 	},
 	{
 		"Name": "Character Info Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\charinfoloadoutsubpanel.res"
-		},
+		"Main": "resource\\ui\\charinfoloadoutsubpanel.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\charinfopanel.res"
-			}
+			"resource\\ui\\charinfopanel.res"
 		]
 	},
 	{
 		"Name": "Crafting Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\craftingpanel.res"
-		},
+		"Main": "resource\\ui\\craftingpanel.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\craftingstatusdialog.res"
-			},
-			{
-				"FilePath": "resource\\ui\\dynamicrecipepanel.res"
-			}
+			"resource\\ui\\craftingstatusdialog.res",
+			"resource\\ui\\dynamicrecipepanel.res"
 		]
 	},
 	{
 		"Name": "Capture The Flag Status",
-		"Main": {
-			"FilePath": "resource\\ui\\hudobjectiveflagpanel.res"
-		},
+		"Main": "resource\\ui\\hudobjectiveflagpanel.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\flagstatus.res"
-			}
+			"resource\\ui\\flagstatus.res"
 		]
 	},
 	{
 		"Name": "Damage Numbers",
-		"Main": {
-			"FilePath": "resource\\ui\\huddamageaccount.res",
+		"Main": "resource\\ui\\huddamageaccount.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"CDamageAccountPanel"
 			]
@@ -86,310 +62,138 @@
 	},
 	{
 		"Name": "Engineer Build Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\build_menu\\hudmenuengybuild.res",
+		"Main": "resource\\ui\\build_menu\\hudmenuengybuild.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudMenuEngyBuild"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\base_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\base_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\base_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\base_selectable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\base_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\dispenser_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\dispenser_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\dispenser_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\dispenser_selectable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\dispenser_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\hudmenuengybuild.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\sentry_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\sentry_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\sentry_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\sentry_selectable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\sentry_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_entrance_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_entrance_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_entrance_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_entrance_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_exit_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_exit_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_exit_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_exit_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\tele_selectable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\base_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\base_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\base_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\base_selectable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\base_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\dispenser_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\dispenser_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\dispenser_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\dispenser_selectable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\dispenser_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\sentry_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\sentry_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\sentry_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\sentry_selectable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\sentry_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_entrance_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_entrance_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_entrance_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_entrance_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_exit_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_exit_already_built.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_exit_cant_afford.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_exit_unavailable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\tele_selectable.res"
-			}
+			"resource\\ui\\build_menu\\pipboy\\base_active.res",
+			"resource\\ui\\build_menu\\pipboy\\base_already_built.res",
+			"resource\\ui\\build_menu\\pipboy\\base_cant_afford.res",
+			"resource\\ui\\build_menu\\pipboy\\base_selectable.res",
+			"resource\\ui\\build_menu\\pipboy\\base_unavailable.res",
+			"resource\\ui\\build_menu\\pipboy\\dispenser_active.res",
+			"resource\\ui\\build_menu\\pipboy\\dispenser_already_built.res",
+			"resource\\ui\\build_menu\\pipboy\\dispenser_cant_afford.res",
+			"resource\\ui\\build_menu\\pipboy\\dispenser_selectable.res",
+			"resource\\ui\\build_menu\\pipboy\\dispenser_unavailable.res",
+			"resource\\ui\\build_menu\\pipboy\\hudmenuengybuild.res",
+			"resource\\ui\\build_menu\\pipboy\\sentry_active.res",
+			"resource\\ui\\build_menu\\pipboy\\sentry_already_built.res",
+			"resource\\ui\\build_menu\\pipboy\\sentry_cant_afford.res",
+			"resource\\ui\\build_menu\\pipboy\\sentry_selectable.res",
+			"resource\\ui\\build_menu\\pipboy\\sentry_unavailable.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_entrance_active.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_entrance_already_built.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_entrance_cant_afford.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_entrance_unavailable.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_exit_active.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_exit_already_built.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_exit_cant_afford.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_exit_unavailable.res",
+			"resource\\ui\\build_menu\\pipboy\\tele_selectable.res",
+			"resource\\ui\\build_menu\\base_active.res",
+			"resource\\ui\\build_menu\\base_already_built.res",
+			"resource\\ui\\build_menu\\base_cant_afford.res",
+			"resource\\ui\\build_menu\\base_selectable.res",
+			"resource\\ui\\build_menu\\base_unavailable.res",
+			"resource\\ui\\build_menu\\dispenser_active.res",
+			"resource\\ui\\build_menu\\dispenser_already_built.res",
+			"resource\\ui\\build_menu\\dispenser_cant_afford.res",
+			"resource\\ui\\build_menu\\dispenser_selectable.res",
+			"resource\\ui\\build_menu\\dispenser_unavailable.res",
+			"resource\\ui\\build_menu\\sentry_active.res",
+			"resource\\ui\\build_menu\\sentry_already_built.res",
+			"resource\\ui\\build_menu\\sentry_cant_afford.res",
+			"resource\\ui\\build_menu\\sentry_selectable.res",
+			"resource\\ui\\build_menu\\sentry_unavailable.res",
+			"resource\\ui\\build_menu\\tele_entrance_active.res",
+			"resource\\ui\\build_menu\\tele_entrance_already_built.res",
+			"resource\\ui\\build_menu\\tele_entrance_cant_afford.res",
+			"resource\\ui\\build_menu\\tele_entrance_unavailable.res",
+			"resource\\ui\\build_menu\\tele_exit_active.res",
+			"resource\\ui\\build_menu\\tele_exit_already_built.res",
+			"resource\\ui\\build_menu\\tele_exit_cant_afford.res",
+			"resource\\ui\\build_menu\\tele_exit_unavailable.res",
+			"resource\\ui\\build_menu\\tele_selectable.res"
 		]
 	},
 	{
 		"Name": "Engineer Destroy Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\destroy_menu\\hudmenuengydestroy.res",
+		"Main": "resource\\ui\\destroy_menu\\hudmenuengydestroy.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudMenuEngyDestroy"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\base_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\base_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\dispenser_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\dispenser_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\hudmenuengydestroy.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\sentry_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\sentry_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\tele_entrance_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\tele_entrance_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\tele_exit_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\pipboy\\tele_exit_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\base_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\base_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\dispenser_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\dispenser_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\sentry_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\sentry_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\tele_entrance_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\tele_entrance_inactive.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\tele_exit_active.res"
-			},
-			{
-				"FilePath": "resource\\ui\\destroy_menu\\tele_exit_inactive.res"
-			}
+			"resource\\ui\\destroy_menu\\pipboy\\base_active.res",
+			"resource\\ui\\destroy_menu\\pipboy\\base_inactive.res",
+			"resource\\ui\\destroy_menu\\pipboy\\dispenser_active.res",
+			"resource\\ui\\destroy_menu\\pipboy\\dispenser_inactive.res",
+			"resource\\ui\\destroy_menu\\pipboy\\hudmenuengydestroy.res",
+			"resource\\ui\\destroy_menu\\pipboy\\sentry_active.res",
+			"resource\\ui\\destroy_menu\\pipboy\\sentry_inactive.res",
+			"resource\\ui\\destroy_menu\\pipboy\\tele_entrance_active.res",
+			"resource\\ui\\destroy_menu\\pipboy\\tele_entrance_inactive.res",
+			"resource\\ui\\destroy_menu\\pipboy\\tele_exit_active.res",
+			"resource\\ui\\destroy_menu\\pipboy\\tele_exit_inactive.res",
+			"resource\\ui\\destroy_menu\\base_active.res",
+			"resource\\ui\\destroy_menu\\base_inactive.res",
+			"resource\\ui\\destroy_menu\\dispenser_active.res",
+			"resource\\ui\\destroy_menu\\dispenser_inactive.res",
+			"resource\\ui\\destroy_menu\\sentry_active.res",
+			"resource\\ui\\destroy_menu\\sentry_inactive.res",
+			"resource\\ui\\destroy_menu\\tele_entrance_active.res",
+			"resource\\ui\\destroy_menu\\tele_entrance_inactive.res",
+			"resource\\ui\\destroy_menu\\tele_exit_active.res",
+			"resource\\ui\\destroy_menu\\tele_exit_inactive.res"
 		]
 	},
 	{
 		"Name": "Engineer Eureka Effect Teleport Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\build_menu\\hudmenueurekaeffect.res",
+		"Main": "resource\\ui\\build_menu\\hudmenueurekaeffect.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudEurekaEffectTeleportMenu"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\eureka_target_home_avail.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\eureka_target_home_unavail.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\eureka_target_tele_exit_avail.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\eureka_target_tele_exit_unavail.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\pipboy\\hudmenueurekaeffect.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\base_active_teleport_target.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\base_unavailable_teleport_target.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\eureka_target_home_avail.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\eureka_target_home_unavail.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\eureka_target_tele_exit_avail.res"
-			},
-			{
-				"FilePath": "resource\\ui\\build_menu\\eureka_target_tele_exit_unavail.res"
-			}
+			"resource\\ui\\build_menu\\pipboy\\eureka_target_home_avail.res",
+			"resource\\ui\\build_menu\\pipboy\\eureka_target_home_unavail.res",
+			"resource\\ui\\build_menu\\pipboy\\eureka_target_tele_exit_avail.res",
+			"resource\\ui\\build_menu\\pipboy\\eureka_target_tele_exit_unavail.res",
+			"resource\\ui\\build_menu\\pipboy\\hudmenueurekaeffect.res",
+			"resource\\ui\\build_menu\\base_active_teleport_target.res",
+			"resource\\ui\\build_menu\\base_unavailable_teleport_target.res",
+			"resource\\ui\\build_menu\\eureka_target_home_avail.res",
+			"resource\\ui\\build_menu\\eureka_target_home_unavail.res",
+			"resource\\ui\\build_menu\\eureka_target_tele_exit_avail.res",
+			"resource\\ui\\build_menu\\eureka_target_tele_exit_unavail.res"
 		]
 	},
 	{
 		"Name": "Engineer HUD Buildings Status",
-		"Main": {
-			"FilePath": "resource\\ui\\hud_obj_sentrygun.res",
+		"Main": "resource\\ui\\hud_obj_sentrygun.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"BuildingStatus_Engineer"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\hud_obj_dispenser.res"
-			},
-			{
-				"FilePath": "resource\\ui\\hud_obj_sentrygun_disp.res"
-			},
-			{
-				"FilePath": "resource\\ui\\hud_obj_tele.res"
-			},
-			{
-				"FilePath": "resource\\ui\\hud_obj_tele_entrance.res"
-			},
-			{
-				"FilePath": "resource\\ui\\hud_obj_tele_exit.res"
-			}
+			"resource\\ui\\hud_obj_dispenser.res",
+			"resource\\ui\\hud_obj_sentrygun_disp.res",
+			"resource\\ui\\hud_obj_tele.res",
+			"resource\\ui\\hud_obj_tele_entrance.res",
+			"resource\\ui\\hud_obj_tele_exit.res"
 		]
 	},
 	{
 		"Name": "Engineer Metal",
-		"Main": {
-			"FilePath": "resource\\ui\\hudaccountpanel.res",
+		"Main": "resource\\ui\\hudaccountpanel.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"CHudAccountPanel"
 			]
@@ -397,8 +201,11 @@
 	},
 	{
 		"Name": "Health",
-		"Main": {
-			"FilePath": "resource\\ui\\hudplayerhealth.res",
+		"Main": "resource\\ui\\hudplayerhealth.res",
+		"Dependencies": {
+			"HUDLayout": [
+				"CHealthAccountPanel"
+			],
 			"Events": [
 				"HudHealthBonusPulse",
 				"HudHealthBonusPulseLoop",
@@ -409,123 +216,66 @@
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\hudhealthaccount.res",
-				"HUDLayout": [
-					"CHealthAccountPanel"
-				]
-			}
+			"resource\\ui\\hudhealthaccount.res"
 		]
 	},
 	{
 		"Name": "Item Charge Counters",
-		"Main": {
-			"FilePath": "resource\\ui\\huditemeffectmeter_killstreak.res"
-		},
+		"Main": "resource\\ui\\huditemeffectmeter_killstreak.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_demoman.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_engineer.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_halloweensouls.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_kartcharge.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_killstreak.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_organs.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_powerupbottle.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_sniper.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_spy.res"
-			},
-			{
-				"FilePath": "resource\\ui\\hudspellselection.res"
-			}
+			"resource\\ui\\huditemeffectmeter_demoman.res",
+			"resource\\ui\\huditemeffectmeter_engineer.res",
+			"resource\\ui\\huditemeffectmeter_halloweensouls.res",
+			"resource\\ui\\huditemeffectmeter_kartcharge.res",
+			"resource\\ui\\huditemeffectmeter_killstreak.res",
+			"resource\\ui\\huditemeffectmeter_organs.res",
+			"resource\\ui\\huditemeffectmeter_powerupbottle.res",
+			"resource\\ui\\huditemeffectmeter_sniper.res",
+			"resource\\ui\\huditemeffectmeter_spy.res",
+			"resource\\ui\\hudspellselection.res"
 		]
 	},
 	{
 		"Name": "Item Charge Meters",
-		"Main": {
-			"FilePath": "resource\\ui\\huditemeffectmeter.res",
+		"Main": "resource\\ui\\huditemeffectmeter.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudItemEffectMeter"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_cleaver.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_heavy.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_particlecannon.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_pomson.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_pyro.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_raygun.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_sapper.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_scout.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_sniperfocus.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_sodapopper.res"
-			},
-			{
-				"FilePath": "resource\\ui\\huditemeffectmeter_spyknife.res"
-			},
-			{
-				"FilePath": "resource\\ui\\hudrocketpack.res"
-			}
+			"resource\\ui\\huditemeffectmeter_cleaver.res",
+			"resource\\ui\\huditemeffectmeter_heavy.res",
+			"resource\\ui\\huditemeffectmeter_particlecannon.res",
+			"resource\\ui\\huditemeffectmeter_pomson.res",
+			"resource\\ui\\huditemeffectmeter_pyro.res",
+			"resource\\ui\\huditemeffectmeter_raygun.res",
+			"resource\\ui\\huditemeffectmeter_sapper.res",
+			"resource\\ui\\huditemeffectmeter_scout.res",
+			"resource\\ui\\huditemeffectmeter_sniperfocus.res",
+			"resource\\ui\\huditemeffectmeter_sodapopper.res",
+			"resource\\ui\\huditemeffectmeter_spyknife.res",
+			"resource\\ui\\hudrocketpack.res"
 		]
 	},
 	{
 		"Name": "Freeze Cam",
-		"Main": {
-			"FilePath": "resource\\ui\\freezepanel_basic.res",
+		"Main": "resource\\ui\\freezepanel_basic.res",
+		"Dependencies": {
 			"HUDLayout": [
-				"FreezePanel"
+				"FreezePanel",
+				"FreezePanelCallout"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\freezepanelcallout.res",
-				"HUDLayout": [
-					"FreezePanelCallout"
-				]
-			},
-			{
-				"FilePath": "resource\\ui\\freezepanelkillerhealth.res"
-			}
+			"resource\\ui\\freezepanelcallout.res",
+			"resource\\ui\\freezepanelkillerhealth.res"
 		]
 	},
 	{
 		"Name": "Killfeed",
-		"Main": {
-			"FilePath": "scripts\\hudlayout.res",
+		"Main": "scripts\\hudlayout.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudDeathNotice"
 			]
@@ -533,287 +283,139 @@
 	},
 	{
 		"Name": "Main Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\mainmenuoverride.res"
-		},
+		"Main": "resource\\ui\\mainmenuoverride.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\pvpcasualrankpanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\pvpcomprankpanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\pvprankpanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\steamfriendpanel.res"
-			},
-			{
-				"FilePath": "resource\\gamemenu.res"
-			}
+			"resource\\ui\\pvpcasualrankpanel.res",
+			"resource\\ui\\pvpcomprankpanel.res",
+			"resource\\ui\\pvprankpanel.res",
+			"resource\\ui\\steamfriendpanel.res",
+			"resource\\gamemenu.res"
 		]
 	},
 	{
 		"Name": "Mann Co. Catalogue",
-		"Main": {
-			"FilePath": "resource\\ui\\charinfoarmorysubpanel.res"
-		}
+		"Main": "resource\\ui\\charinfoarmorysubpanel.res"
 	},
 	{
 		"Name": "Mann Co. Store",
-		"Main": {
-			"FilePath": "resource\\ui\\econ\\store\\v2\\storepage.res"
-		},
+		"Main": "resource\\ui\\econ\\store\\v2\\storepage.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storehome.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storehome_freetrial.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storehome_winter1.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storehome_winter2.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storehome_winter3.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storeitemcontrols.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_bundles.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_cgtrading.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_drgrordbort.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_halloween.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_maps.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_new.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_popular.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_previewable.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepage_summer.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepreviewitempanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storepreviewitempanel_maps.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storeprice.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storeprice_bundles.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storeprice_jumbo.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storeprice_new.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storeprice_popular.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storestatusdialog.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v1\\storeviewcartpanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storehome_base.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storehome_freetrial.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storehome_premium.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storeitemcontrols.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storemapstampsinfodialog.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storepage.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storepage_bundles.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storepage_items.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storepage_maps.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storepanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storepreviewitempanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storepreviewitempanel_fullscreen.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storepreviewitempanel_maps.res"
-			},
-			{
-				"FilePath": "resource\\ui\\econ\\store\\v2\\storeviewcartpanel.res"
-			}
+			"resource\\ui\\econ\\store\\v1\\storehome.res",
+			"resource\\ui\\econ\\store\\v1\\storehome_freetrial.res",
+			"resource\\ui\\econ\\store\\v1\\storehome_winter1.res",
+			"resource\\ui\\econ\\store\\v1\\storehome_winter2.res",
+			"resource\\ui\\econ\\store\\v1\\storehome_winter3.res",
+			"resource\\ui\\econ\\store\\v1\\storeitemcontrols.res",
+			"resource\\ui\\econ\\store\\v1\\storepage.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_bundles.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_cgtrading.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_drgrordbort.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_halloween.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_maps.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_new.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_popular.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_previewable.res",
+			"resource\\ui\\econ\\store\\v1\\storepage_summer.res",
+			"resource\\ui\\econ\\store\\v1\\storepanel.res",
+			"resource\\ui\\econ\\store\\v1\\storepreviewitempanel.res",
+			"resource\\ui\\econ\\store\\v1\\storepreviewitempanel_maps.res",
+			"resource\\ui\\econ\\store\\v1\\storeprice.res",
+			"resource\\ui\\econ\\store\\v1\\storeprice_bundles.res",
+			"resource\\ui\\econ\\store\\v1\\storeprice_jumbo.res",
+			"resource\\ui\\econ\\store\\v1\\storeprice_new.res",
+			"resource\\ui\\econ\\store\\v1\\storeprice_popular.res",
+			"resource\\ui\\econ\\store\\v1\\storestatusdialog.res",
+			"resource\\ui\\econ\\store\\v1\\storeviewcartpanel.res",
+			"resource\\ui\\econ\\store\\v2\\storehome_base.res",
+			"resource\\ui\\econ\\store\\v2\\storehome_freetrial.res",
+			"resource\\ui\\econ\\store\\v2\\storehome_premium.res",
+			"resource\\ui\\econ\\store\\v2\\storeitemcontrols.res",
+			"resource\\ui\\econ\\store\\v2\\storemapstampsinfodialog.res",
+			"resource\\ui\\econ\\store\\v2\\storepage.res",
+			"resource\\ui\\econ\\store\\v2\\storepage_bundles.res",
+			"resource\\ui\\econ\\store\\v2\\storepage_items.res",
+			"resource\\ui\\econ\\store\\v2\\storepage_maps.res",
+			"resource\\ui\\econ\\store\\v2\\storepanel.res",
+			"resource\\ui\\econ\\store\\v2\\storepreviewitempanel.res",
+			"resource\\ui\\econ\\store\\v2\\storepreviewitempanel_fullscreen.res",
+			"resource\\ui\\econ\\store\\v2\\storepreviewitempanel_maps.res",
+			"resource\\ui\\econ\\store\\v2\\storeviewcartpanel.res"
 		]
 	},
 	{
 		"Name": "Map Loading",
-		"Main": {
-			"FilePath": "resource\\ui\\statsummary.res"
-		}
+		"Main": "resource\\ui\\statsummary.res"
 	},
 	{
 		"Name": "MvM Upgrade Station",
-		"Main": {
-			"FilePath": "resource\\ui\\hudupgradepanel.res",
+		"Main": "resource\\ui\\hudupgradepanel.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudUpgradePanel"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\upgradebuypanel.res"
-			}
+			"resource\\ui\\upgradebuypanel.res"
 		]
 	},
 	{
 		"Name": "Scoreboard",
-		"Main": {
-			"FilePath": "resource\\ui\\scoreboard.res"
-		},
+		"Main": "resource\\ui\\scoreboard.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\mvmcreditspendpanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\mvmcreditsubpanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\mvmscoreboard.res"
-			}
+			"resource\\ui\\mvmcreditspendpanel.res",
+			"resource\\ui\\mvmcreditsubpanel.res",
+			"resource\\ui\\mvmscoreboard.res"
 		]
 	},
 	{
 		"Name": "Source Scheme",
-		"Main": {
-			"FilePath": "resource\\sourcescheme.res"
-		}
+		"Main": "resource\\sourcescheme.res"
 	},
 	{
 		"Name": "Source Scheme Net Graph",
+		"Main": "resource\\sourcescheme.res",
 		"RequiredKeyValue": {
 			"FilePath": "resource\\sourcescheme.res",
-			"KeyPath": "Scheme.Fonts.DefaultFixedOutline"
-		},
-		"Scheme": {
-			"SourceScheme": {
-				"Fonts": [
-					"DefaultFixedOutline"
-				]
-			}
+			"KeyPath": [
+				"Scheme",
+				"Fonts",
+				"DefaultFixedOutline"
+			]
 		}
 	},
 	{
 		"Name": "Spy Disguise Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\disguise_menu\\hudmenuspydisguise.res",
+		"Main": "resource\\ui\\disguise_menu\\hudmenuspydisguise.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudMenuSpyDisguise"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\demoman_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\demoman_red.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\engineer_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\engineer_red.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\heavy_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\heavy_red.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\medic_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\medic_red.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\pyro_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\pyro_red.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\scout_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\scout_red.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\sniper_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\sniper_red.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\soldier_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\soldier_red.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\spy_blue.res"
-			},
-			{
-				"FilePath": "resource\\ui\\disguise_menu\\spy_red.res"
-			}
+			"resource\\ui\\disguise_menu\\demoman_blue.res",
+			"resource\\ui\\disguise_menu\\demoman_red.res",
+			"resource\\ui\\disguise_menu\\engineer_blue.res",
+			"resource\\ui\\disguise_menu\\engineer_red.res",
+			"resource\\ui\\disguise_menu\\heavy_blue.res",
+			"resource\\ui\\disguise_menu\\heavy_red.res",
+			"resource\\ui\\disguise_menu\\medic_blue.res",
+			"resource\\ui\\disguise_menu\\medic_red.res",
+			"resource\\ui\\disguise_menu\\pyro_blue.res",
+			"resource\\ui\\disguise_menu\\pyro_red.res",
+			"resource\\ui\\disguise_menu\\scout_blue.res",
+			"resource\\ui\\disguise_menu\\scout_red.res",
+			"resource\\ui\\disguise_menu\\sniper_blue.res",
+			"resource\\ui\\disguise_menu\\sniper_red.res",
+			"resource\\ui\\disguise_menu\\soldier_blue.res",
+			"resource\\ui\\disguise_menu\\soldier_red.res",
+			"resource\\ui\\disguise_menu\\spy_blue.res",
+			"resource\\ui\\disguise_menu\\spy_red.res"
 		]
 	},
 	{
 		"Name": "Spy Disguise Status",
-		"Main": {
-			"FilePath": "resource\\ui\\disguisestatuspanel.res",
+		"Main": "resource\\ui\\disguisestatuspanel.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"DisguiseStatus"
 			]
@@ -821,8 +423,8 @@
 	},
 	{
 		"Name": "Spy HUD Sapper Status",
-		"Main": {
-			"FilePath": "resource\\ui\\hud_obj_sapper.res",
+		"Main": "resource\\ui\\hud_obj_sapper.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"BuildingStatus_Spy"
 			]
@@ -830,73 +432,49 @@
 	},
 	{
 		"Name": "Target ID",
-		"Main": {
-			"FilePath": "resource\\ui\\targetid.res",
+		"Main": "resource\\ui\\targetid.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"CMainTargetID",
-				"CSpectatorTargetID",
-				"CSecondaryTargetID"
+				"CSecondaryTargetID",
+				"CSpectatorTargetID"
 			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\healthiconpanel.res"
-			},
-			{
-				"FilePath": "resource\\ui\\spectatorguihealth.res"
-			}
+			"resource\\ui\\healthiconpanel.res",
+			"resource\\ui\\spectatorguihealth.res"
 		]
 	},
 	{
 		"Name": "Team Selection Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\teammenu.res"
-		},
+		"Main": "resource\\ui\\teammenu.res",
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\hudarenateammenu.res"
-			}
+			"resource\\ui\\hudarenateammenu.res"
 		]
 	},
 	{
 		"Name": "Time Panel And Team Status",
-		"Main": {
-			"FilePath": "resource\\ui\\hudobjectivetimepanel.res"
+		"Main": "resource\\ui\\hudobjectivetimepanel.res",
+		"Dependencies": {
+			"HUDLayout": [
+				"HudKothTimeStatus",
+				"HudMatchStatus",
+				"HudStopWatch",
+				"MatchSummary"
+			]
 		},
 		"Files": [
-			{
-				"FilePath": "resource\\ui\\hudobjectivekothtimepanel.res",
-				"HUDLayout": [
-					"HudKothTimeStatus"
-				]
-			},
-			{
-				"FilePath": "resource\\ui\\hudmatchstatus.res",
-				"HUDLayout": [
-					"HudMatchStatus"
-				]
-			},
-			{
-				"FilePath": "resource\\ui\\hudroundcounter.res"
-			},
-			{
-				"FilePath": "resource\\ui\\hudmatchsummary.res",
-				"HUDLayout": [
-					"MatchSummary"
-				]
-			},
-			{
-				"FilePath": "resource\\ui\\hudstopwatch.res",
-				"HUDLayout": [
-					"HudStopWatch"
-				]
-			}
+			"resource\\ui\\hudobjectivekothtimepanel.res",
+			"resource\\ui\\hudmatchstatus.res",
+			"resource\\ui\\hudroundcounter.res",
+			"resource\\ui\\hudmatchsummary.res",
+			"resource\\ui\\hudstopwatch.res"
 		]
 	},
 	{
 		"Name": "Taunt Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\hudmenutauntselection.res",
+		"Main": "resource\\ui\\hudmenutauntselection.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudMenuTauntSelection"
 			]
@@ -904,8 +482,8 @@
 	},
 	{
 		"Name": "UberCharge Label And Meter",
-		"Main": {
-			"FilePath": "resource\\ui\\hudmediccharge.res",
+		"Main": "resource\\ui\\hudmediccharge.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"HudMedicCharge"
 			]
@@ -913,8 +491,8 @@
 	},
 	{
 		"Name": "Vote Menu",
-		"Main": {
-			"FilePath": "resource\\ui\\votehud.res",
+		"Main": "resource\\ui\\votehud.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"CHudVote"
 			]
@@ -922,8 +500,8 @@
 	},
 	{
 		"Name": "Win Panel",
-		"Main": {
-			"FilePath": "resource\\ui\\winpanel.res",
+		"Main": "resource\\ui\\winpanel.res",
+		"Dependencies": {
 			"HUDLayout": [
 				"WinPanel"
 			]

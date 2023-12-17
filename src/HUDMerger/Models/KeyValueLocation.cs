@@ -10,10 +10,10 @@ public class KeyValueLocation
 	/// <summary>
 	/// Relative path to .res file
 	/// </summary>
-	public string FilePath { get; init; }
+	public required string FilePath { get; init; }
 
 	/// <summary>
-	/// Path to Key/Value seperated by '.'
+	/// Path to Key/Value
 	/// </summary>
-	public string KeyPath { get; init; }
+	public required string[] KeyPath { get; init; }
 }
