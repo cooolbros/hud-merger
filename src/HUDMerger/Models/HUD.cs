@@ -2,71 +2,106 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HUDMergerVDF;
-using HUDMergerVDF.Models;
+using System.Text.Json;
+using HUDMerger.Extensions;
+using VDF;
+using VDF.Models;
 
 namespace HUDMerger.Models;
 
 /// <summary>
 /// Represents a custom HUD
 /// </summary>
-public class HUD
+/// <remarks>
+/// Create HUD
+/// </remarks>
+/// <param name="folderPath">Absolute path to HUD folder</param>
+public class HUD(string folderPath)
 {
 	/// <summary>
 	/// HUD Name (name of HUD folder)
 	/// </summary>
-	public string Name { get; }
+	public string Name { get; } = new DirectoryInfo(folderPath).Name;
 
 	/// <summary>
 	/// Absolute path to HUD Folder
 	/// </summary>
-	public string FolderPath { get; }
+	public string FolderPath { get; } = folderPath;
 
-	/// <summary>
-	/// Create HUD
-	/// </summary>
-	/// <param name="folderPath">Absolute path to HUD folder</param>
-	public HUD(string folderPath)
-	{
-		Name = new DirectoryInfo(folderPath).Name;
-		FolderPath = folderPath;
-	}
-
-	/// <summary>
-	/// Returns whether the provided HUDPanel is 'in' this HUD
-	/// </summary>
-	/// <param name="panel">Panel</param>
-	/// <returns></returns>
-	public bool TestPanel(HUDPanel panel)
-	{
-		if (panel.RequiredKeyValue != null)
+	public HUDPanel[] Panels { get; } = JsonSerializer
+		.Deserialize<HUDPanel[]>(File.OpenRead("Resources\\Panels.json"))!
+		.Where((panel) =>
 		{
-			try
+			if (panel.RequiredKeyValue != null)
 			{
-				Dictionary<string, dynamic> obj = VDF.Parse(File.ReadAllText(Path.Join(FolderPath, panel.RequiredKeyValue.FilePath)));
-				Dictionary<string, dynamic> objectRef = obj;
-				string[] objectPath = panel.RequiredKeyValue.KeyPath.Split('.');
-				foreach (string elementName in objectPath)
+				try
 				{
-					if (objectRef.ContainsKey(elementName))
+					FilesHashSet seen = [];
+
+					bool TestFile(FileInfo file)
 					{
-						objectRef = objectRef[elementName];
-					}
-					else
-					{
+						if (seen.Contains(file.FullName))
+						{
+							return false;
+						}
+
+						seen.Add(file.FullName);
+
+						if (!file.Exists)
+						{
+							return false;
+						}
+
+						KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(file.FullName));
+
+						bool result = TestKeyValues(keyValues);
+						if (result)
+						{
+							return result;
+						}
+
+						foreach (string baseFile in keyValues.BaseFiles())
+						{
+							result = TestFile(new FileInfo(Path.Join(file.DirectoryName, baseFile)));
+							if (result)
+							{
+								return result;
+							}
+						}
+
 						return false;
 					}
+
+					bool TestKeyValues(KeyValues keyValues)
+					{
+						KeyValues obj = keyValues;
+
+						foreach (string key in panel.RequiredKeyValue.KeyPath)
+						{
+							dynamic value = obj.FirstOrDefault((keyValue) => keyValue.Key.Equals(key, StringComparison.OrdinalIgnoreCase)).Value;
+							if (value != null)
+							{
+								obj = value;
+							}
+							else
+							{
+								return false;
+							}
+						}
+
+						return true;
+					}
+
+					return TestFile(new FileInfo(Path.Join(folderPath, panel.RequiredKeyValue.FilePath)));
 				}
-				return true;
+				catch
+				{
+					return false;
+				}
 			}
-			catch (Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine(e.Message);
-				return false;
-			}
-		}
-		return Utilities.TestPath($"{FolderPath}\\{panel.Main.FilePath}");
-	}
+			return Utilities.TestPath($"{folderPath}\\{panel.Main}");
+		})
+		.ToArray();
 
 	/// <summary>
 	/// Merges an array of HUDPanels from another HUD into this HUD
