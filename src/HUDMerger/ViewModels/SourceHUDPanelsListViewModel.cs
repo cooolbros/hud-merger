@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace HUDMerger.ViewModels;
 
-public class SourceHUDPanelsListViewModel(IEnumerable<HUDPanelViewModel> hudPanelViewModels) : ViewModelBase
+public class SourceHUDPanelsListViewModel : ViewModelBase
 {
-	public IEnumerable<HUDPanelViewModel> HUDPanels { get; } = hudPanelViewModels;
+	public ICollectionView HUDPanelsCollectionView { get; }
 
 	private string _searchText = "";
 	public string SearchText
@@ -15,15 +17,21 @@ public class SourceHUDPanelsListViewModel(IEnumerable<HUDPanelViewModel> hudPane
 		{
 			_searchText = value;
 			OnPropertyChanged();
-			UpdateHUDPanelsVisibility();
+			HUDPanelsCollectionView.Refresh();
 		}
 	}
 
-	private void UpdateHUDPanelsVisibility()
+	public SourceHUDPanelsListViewModel(IEnumerable<HUDPanelViewModel> hudPanelViewModels)
 	{
-		foreach (HUDPanelViewModel hudPanelViewModel in HUDPanels)
+		HUDPanelsCollectionView = new CollectionViewSource { Source = hudPanelViewModels }.View;
+		HUDPanelsCollectionView.Filter = (object obj) =>
 		{
-			hudPanelViewModel.Visible = hudPanelViewModel.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-		}
+			if (obj is HUDPanelViewModel hudPanelViewModel)
+			{
+				return hudPanelViewModel.HUDPanel.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+					|| hudPanelViewModel.HUDPanel.Main.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+			}
+			return false;
+		};
 	}
 }

@@ -11,17 +11,6 @@ public class HUDPanelViewModel : ViewModelBase
 
 	public string Name => HUDPanel.Name;
 
-	private bool _visible;
-	public bool Visible
-	{
-		get => _visible;
-		set
-		{
-			_visible = value;
-			OnPropertyChanged();
-		}
-	}
-
 	private bool _selected;
 	public bool Selected
 	{
@@ -38,7 +27,6 @@ public class HUDPanelViewModel : ViewModelBase
 	public HUDPanelViewModel(HUDPanel hudPanel)
 	{
 		HUDPanel = hudPanel;
-		Visible = true;
 		ToggleSelectedCommand = new RelayCommand(() => Selected = !Selected);
 	}
 }

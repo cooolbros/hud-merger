@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using HUDMerger.Commands;
@@ -91,10 +91,21 @@ public class MainWindowViewModel : ViewModelBase
 			SourceHUDInfoViewModel.HUD = SourceHUD;
 
 			HUDPanelViewModels.Clear();
-			HUDPanelViewModels.AddRange(SourceHUD.Panels.Select((panel) => new HUDPanelViewModel(panel)));
+
+			foreach (HUDPanel hudPanel in SourceHUD.Panels)
+			{
+				HUDPanelViewModel hudPanelViewModel = new(hudPanel);
+				hudPanelViewModel.PropertyChanged += HudPanelViewModel_PropertyChanged;
+				HUDPanelViewModels.Add(hudPanelViewModel);
+			}
 
 			SourceHUDPanelsListViewModel?.Dispose();
 			SourceHUDPanelsListViewModel = new SourceHUDPanelsListViewModel(HUDPanelViewModels);
+
+			if (TargetHUDPanelsListViewModel is TargetHUDPanelsListViewModel targetHUDPanelsListViewModel)
+			{
+				targetHUDPanelsListViewModel.HUDPanelsCollectionView.Refresh();
+			}
 		}
 	}
 
@@ -107,6 +118,14 @@ public class MainWindowViewModel : ViewModelBase
 
 			TargetHUDPanelsListViewModel?.Dispose();
 			TargetHUDPanelsListViewModel = new TargetHUDPanelsListViewModel(HUDPanelViewModels);
+		}
+	}
+
+	private void HudPanelViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName == nameof(HUDPanelViewModel.Selected) && TargetHUDPanelsListViewModel is TargetHUDPanelsListViewModel targetHUDPanelsListViewModel)
+		{
+			targetHUDPanelsListViewModel.HUDPanelsCollectionView.Refresh();
 		}
 	}
 }
