@@ -29,10 +29,13 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
             <ScrollViewer Grid.ColumnSpan="2">
-                <ItemsControl ItemsSource="{Binding HUDPanels}" Margin="3">
+                <ItemsControl ItemsSource="{Binding HUDPanelsCollectionView}" Margin="3">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <local:HUDPanelView Visibility="{Binding Visible, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter=Visible, TargetNullValue=Collapsed}" ToggleSelected="{Binding ToggleSelectedCommand}" Margin="0 0 0 3" />
+                            <local:HUDPanelView
+                                ToggleSelected="{Binding ToggleSelectedCommand}"
+                                Margin="0 0 0 3"
+                            />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

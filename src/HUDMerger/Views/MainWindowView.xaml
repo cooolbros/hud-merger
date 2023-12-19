@@ -30,8 +30,8 @@
         </Grid.Resources>
         <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="1">
             <MenuItem Header="_File">
-                <MenuItem Header="Load Source HUD" Command="{Binding NewSourceHUDCommand}" />
-                <MenuItem Header="Load Target HUD" Command="{Binding NewTargetHUDCommand}" />
+                <MenuItem Header="Load Source HUD" Command="{Binding LoadSourceHUDCommand}" />
+                <MenuItem Header="Load Target HUD" Command="{Binding LoadTargetHUDCommand}" />
                 <Separator />
                 <MenuItem Header="Settings" Command="{Binding ShowSettingsWindowCommand}" />
                 <Separator />

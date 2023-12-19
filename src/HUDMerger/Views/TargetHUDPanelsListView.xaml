@@ -15,10 +15,13 @@
         </Grid.RowDefinitions>
         <Label Content="Files to copy" FontSize="18" />
         <ScrollViewer Grid.Row="1">
-            <ItemsControl ItemsSource="{Binding HUDPanels}" Margin="3">
+            <ItemsControl ItemsSource="{Binding HUDPanelsCollectionView}" Margin="3">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:HUDPanelView ToggleSelected="{Binding ToggleSelectedCommand}" Visibility="{Binding Armed, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter=Visible, TargetNullValue=Collapsed}" Margin="0 0 0 3" />
+                        <local:HUDPanelView
+                            ToggleSelected="{Binding ToggleSelectedCommand}"
+                            Margin="0 0 0 3"
+                        />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
