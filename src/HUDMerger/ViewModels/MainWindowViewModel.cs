@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +15,7 @@ public class MainWindowViewModel : ViewModelBase
 {
 	private static readonly OpenFolderDialog OpenFolderDialog = new()
 	{
-		FolderName = Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom\\")
+		InitialDirectory = Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom\\")
 	};
 
 	// File
