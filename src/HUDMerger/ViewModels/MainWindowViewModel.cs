@@ -29,8 +29,8 @@ public class MainWindowViewModel : ViewModelBase
 
 	private readonly List<HUDPanelViewModel> HUDPanelViewModels = [];
 
-	private HUD? _sourceHUD;
-	private HUD? _targetHUD;
+	public HUD? SourceHUD;
+	public HUD? TargetHUD;
 
 	public HUDInfoViewModel SourceHUDInfoViewModel { get; }
 	public HUDInfoViewModel TargetHUDInfoViewModel { get; }
@@ -68,8 +68,8 @@ public class MainWindowViewModel : ViewModelBase
 
 		ShowAboutWindowCommand = new RelayCommand(() => ShowWindow(new AboutWindow()));
 
-		SourceHUDInfoViewModel = new HUDInfoViewModel("from", _sourceHUD);
-		TargetHUDInfoViewModel = new HUDInfoViewModel("to", _targetHUD);
+		SourceHUDInfoViewModel = new HUDInfoViewModel("from", SourceHUD);
+		TargetHUDInfoViewModel = new HUDInfoViewModel("to", TargetHUD);
 
 		_sourceHUDPanelsListViewModel = new SelectHUDViewModel(LoadSourceHUDCommand);
 		_targetHUDPanelsListViewModel = new SelectHUDViewModel(LoadTargetHUDCommand);
@@ -87,11 +87,11 @@ public class MainWindowViewModel : ViewModelBase
 	{
 		if (OpenFolderDialog.ShowDialog(Application.Current.MainWindow) == true)
 		{
-			_sourceHUD = new HUD(OpenFolderDialog.FolderName);
-			SourceHUDInfoViewModel.HUD = _sourceHUD;
+			SourceHUD = new HUD(OpenFolderDialog.FolderName);
+			SourceHUDInfoViewModel.HUD = SourceHUD;
 
 			HUDPanelViewModels.Clear();
-			HUDPanelViewModels.AddRange(_sourceHUD.Panels.Select((panel) => new HUDPanelViewModel(panel)));
+			HUDPanelViewModels.AddRange(SourceHUD.Panels.Select((panel) => new HUDPanelViewModel(panel)));
 
 			SourceHUDPanelsListViewModel?.Dispose();
 			SourceHUDPanelsListViewModel = new SourceHUDPanelsListViewModel(HUDPanelViewModels);
@@ -102,8 +102,8 @@ public class MainWindowViewModel : ViewModelBase
 	{
 		if (OpenFolderDialog.ShowDialog(Application.Current.MainWindow) == true)
 		{
-			_targetHUD = new HUD(OpenFolderDialog.FolderName);
-			TargetHUDInfoViewModel.HUD = _targetHUD;
+			TargetHUD = new HUD(OpenFolderDialog.FolderName);
+			TargetHUDInfoViewModel.HUD = TargetHUD;
 
 			TargetHUDPanelsListViewModel?.Dispose();
 			TargetHUDPanelsListViewModel = new TargetHUDPanelsListViewModel(HUDPanelViewModels);
