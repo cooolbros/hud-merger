@@ -10,7 +10,9 @@ public class BooleanEvaluateConverter : ConverterBase
 {
 	public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
+#pragma warning disable CS8603
 		return (bool)value ? parameter : null;
+#pragma warning restore CS8603
 	}
 
 	public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
