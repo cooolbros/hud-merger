@@ -5,21 +5,38 @@ namespace HUDMerger.Commands;
 
 public abstract class CommandBase : ICommand, IDisposable
 {
-	public event EventHandler CanExecuteChanged;
+	private bool _disposed;
+	public event EventHandler? CanExecuteChanged;
 
-	public virtual bool CanExecute(object parameter)
+	public virtual bool CanExecute(object? parameter)
 	{
 		return true;
 	}
 
 	public void OnCanExecuteChanged()
 	{
-		CanExecuteChanged?.Invoke(this, new EventArgs());
+		CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 	}
 
-	public abstract void Execute(object parameter);
+	public abstract void Execute(object? parameter);
 
-	public virtual void Dispose()
+	public void Dispose()
 	{
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+		if (_disposed)
+		{
+			return;
+		}
+
+		if (disposing)
+		{
+		}
+
+		_disposed = true;
 	}
 }

@@ -1,17 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows;
-using HUDMerger.Models;
 using HUDMerger.ViewModels;
 
 namespace HUDMerger.Commands;
 
 public class MergeCommand : CommandBase
 {
+	private bool _disposed;
 	private readonly MainWindowViewModel _mainWindowViewModel;
 
 	public MergeCommand(MainWindowViewModel mainWindowViewModel)
@@ -20,7 +18,7 @@ public class MergeCommand : CommandBase
 		_mainWindowViewModel.PropertyChanged += _mainWindowViewModel_PropertyChanged;
 	}
 
-	private void _mainWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	private void _mainWindowViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName == nameof(MainWindowViewModel.SourceHUD) || e.PropertyName == nameof(MainWindowViewModel.TargetHUD))
 		{
@@ -28,16 +26,16 @@ public class MergeCommand : CommandBase
 		}
 	}
 
-	public override bool CanExecute(object parameter)
+	public override bool CanExecute(object? parameter)
 	{
 		return _mainWindowViewModel.SourceHUD != null && _mainWindowViewModel.TargetHUD != null && base.CanExecute(parameter);
 	}
 
-	public override void Execute(object parameter)
+	public override void Execute(object? parameter)
 	{
 		try
 		{
-			if (Utilities.PathContainsPath(Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD.FolderPath) && Process.GetProcessesByName("hl2").Any())
+			if (Utilities.PathContainsPath(Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD!.FolderPath) && Process.GetProcessesByName("hl2").Length != 0)
 			{
 				MessageBox.Show("HL2 process open, cannot merge!", "HL2 Open Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				return;
@@ -48,18 +46,24 @@ public class MergeCommand : CommandBase
 		}
 		catch (Exception e)
 		{
-			List<string> paragraphs = new List<string>
-				{
-					e.Message,
-				};
-
-			MessageBox.Show(String.Join("\r\n\r\n", paragraphs), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 	}
 
-	public override void Dispose()
+	protected override void Dispose(bool disposing)
 	{
-		base.Dispose();
-		_mainWindowViewModel.PropertyChanged -= _mainWindowViewModel_PropertyChanged;
+		base.Dispose(disposing);
+
+		if (_disposed)
+		{
+			return;
+		}
+
+		if (disposing)
+		{
+			_mainWindowViewModel.PropertyChanged -= _mainWindowViewModel_PropertyChanged;
+		}
+
+		_disposed = true;
 	}
 }
