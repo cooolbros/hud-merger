@@ -1,55 +1,36 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Input;
 using HUDMerger.Commands;
 using HUDMerger.Models;
 using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Win32;
 
 namespace HUDMerger.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-	private static FolderBrowserDialog FolderBrowserDialog = new FolderBrowserDialog
+	private static readonly OpenFolderDialog OpenFolderDialog = new()
 	{
-		SelectedPath = Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom\\")
+		FolderName = Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom\\")
 	};
 
-	public ICommand NewSourceHUDCommand { get; }
-	public ICommand NewTargetHUDCommand { get; }
-
+	// File
+	public ICommand LoadSourceHUDCommand { get; }
+	public ICommand LoadTargetHUDCommand { get; }
 	public ICommand ShowSettingsWindowCommand { get; }
-	public ICommand ShowAboutWindowCommand { get; }
-
 	public ICommand QuitCommand { get; }
 
-	public static HUDPanelViewModel[] HUDPanels;
+	// About
+	public ICommand ShowAboutWindowCommand { get; }
 
-	private HUD _sourceHUD;
-	public HUD SourceHUD
-	{
-		get => _sourceHUD;
-		set
-		{
-			_sourceHUD = value;
-			OnPropertyChanged(nameof(SourceHUD));
-		}
-	}
+	private readonly List<HUDPanelViewModel> HUDPanelViewModels = [];
 
-	private HUD _targetHUD;
-	public HUD TargetHUD
-	{
-		get => _targetHUD;
-		set
-		{
-			_targetHUD = value;
-			OnPropertyChanged(nameof(TargetHUD));
-		}
-	}
+	private HUD? _sourceHUD;
+	private HUD? _targetHUD;
 
 	public HUDInfoViewModel SourceHUDInfoViewModel { get; }
 	public HUDInfoViewModel TargetHUDInfoViewModel { get; }
@@ -61,7 +42,7 @@ public class MainWindowViewModel : ViewModelBase
 		set
 		{
 			_sourceHUDPanelsListViewModel = value;
-			OnPropertyChanged(nameof(SourceHUDPanelsListViewModel));
+			OnPropertyChanged();
 		}
 	}
 
@@ -72,7 +53,7 @@ public class MainWindowViewModel : ViewModelBase
 		set
 		{
 			_targetHUDPanelsListViewModel = value;
-			OnPropertyChanged(nameof(TargetHUDPanelsListViewModel));
+			OnPropertyChanged();
 		}
 	}
 
@@ -80,59 +61,52 @@ public class MainWindowViewModel : ViewModelBase
 
 	public MainWindowViewModel()
 	{
-		HUDPanels = JsonSerializer
-		.Deserialize<HUDPanel[]>(File.OpenRead("Resources\\Panels.json"))
-		.Select<HUDPanel, HUDPanelViewModel>(hudPanel => new HUDPanelViewModel(hudPanel))
-		.ToArray();
-
-		NewSourceHUDCommand = new RelayCommand(NewSourceHUD);
-		NewTargetHUDCommand = new RelayCommand(NewTargetHUD);
+		LoadSourceHUDCommand = new RelayCommand(LoadSourceHUD);
+		LoadTargetHUDCommand = new RelayCommand(LoadTargetHUD);
 		ShowSettingsWindowCommand = new RelayCommand(() => ShowWindow(new SettingsWindow()));
+		QuitCommand = new RelayCommand(Application.Current.Shutdown);
+
 		ShowAboutWindowCommand = new RelayCommand(() => ShowWindow(new AboutWindow()));
-		QuitCommand = new RelayCommand(System.Windows.Application.Current.Shutdown);
 
-		SourceHUDInfoViewModel = new HUDInfoViewModel("from", SourceHUD);
-		TargetHUDInfoViewModel = new HUDInfoViewModel("to", TargetHUD);
+		SourceHUDInfoViewModel = new HUDInfoViewModel("from", _sourceHUD);
+		TargetHUDInfoViewModel = new HUDInfoViewModel("to", _targetHUD);
 
-		SourceHUDPanelsListViewModel = new SelectHUDViewModel(NewSourceHUDCommand);
-		TargetHUDPanelsListViewModel = new SelectHUDViewModel(NewTargetHUDCommand);
+		_sourceHUDPanelsListViewModel = new SelectHUDViewModel(LoadSourceHUDCommand);
+		_targetHUDPanelsListViewModel = new SelectHUDViewModel(LoadTargetHUDCommand);
 
 		MergeCommand = new MergeCommand(this);
 	}
 
-	private void ShowWindow(Window window)
+	private static void ShowWindow(Window window)
 	{
-		window.Owner ??= System.Windows.Application.Current.MainWindow;
+		window.Owner ??= Application.Current.MainWindow;
 		window.Show();
 	}
 
-	private void NewSourceHUD()
+	private void LoadSourceHUD()
 	{
-		DialogResult result = FolderBrowserDialog.ShowDialog();
-		if (result == DialogResult.OK)
+		if (OpenFolderDialog.ShowDialog(Application.Current.MainWindow) == true)
 		{
-			foreach (HUDPanelViewModel hudPanelViewModel in HUDPanels)
-			{
-				hudPanelViewModel.Armed = false;
-			}
-			SourceHUD = new HUD(FolderBrowserDialog.SelectedPath);
-			SourceHUDInfoViewModel.HUD = SourceHUD;
+			_sourceHUD = new HUD(OpenFolderDialog.FolderName);
+			SourceHUDInfoViewModel.HUD = _sourceHUD;
+
+			HUDPanelViewModels.Clear();
+			HUDPanelViewModels.AddRange(_sourceHUD.Panels.Select((panel) => new HUDPanelViewModel(panel)));
 
 			SourceHUDPanelsListViewModel?.Dispose();
-			SourceHUDPanelsListViewModel = new SourceHUDPanelsListViewModel(HUDPanels.Where(hudPanel => hudPanel.TestPanel(SourceHUD)));
+			SourceHUDPanelsListViewModel = new SourceHUDPanelsListViewModel(HUDPanelViewModels);
 		}
 	}
 
-	private void NewTargetHUD()
+	private void LoadTargetHUD()
 	{
-		DialogResult result = FolderBrowserDialog.ShowDialog();
-		if (result == DialogResult.OK)
+		if (OpenFolderDialog.ShowDialog(Application.Current.MainWindow) == true)
 		{
-			TargetHUD = new HUD(FolderBrowserDialog.SelectedPath);
-			TargetHUDInfoViewModel.HUD = TargetHUD;
+			_targetHUD = new HUD(OpenFolderDialog.FolderName);
+			TargetHUDInfoViewModel.HUD = _targetHUD;
 
 			TargetHUDPanelsListViewModel?.Dispose();
-			TargetHUDPanelsListViewModel = new TargetHUDPanelsListViewModel(HUDPanels);
+			TargetHUDPanelsListViewModel = new TargetHUDPanelsListViewModel(HUDPanelViewModels);
 		}
 	}
 }

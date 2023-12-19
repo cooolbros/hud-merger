@@ -3,25 +3,20 @@ using System.Collections.Generic;
 
 namespace HUDMerger.ViewModels;
 
-public class SourceHUDPanelsListViewModel : ViewModelBase
+public class SourceHUDPanelsListViewModel(IEnumerable<HUDPanelViewModel> hudPanelViewModels) : ViewModelBase
 {
-	private string _searchText;
+	public IEnumerable<HUDPanelViewModel> HUDPanels { get; } = hudPanelViewModels;
+
+	private string _searchText = "";
 	public string SearchText
 	{
 		get => _searchText;
 		set
 		{
 			_searchText = value;
-			OnPropertyChanged(nameof(SearchText));
+			OnPropertyChanged();
 			UpdateHUDPanelsVisibility();
 		}
-	}
-
-	public IEnumerable<HUDPanelViewModel> HUDPanels { get; }
-
-	public SourceHUDPanelsListViewModel(IEnumerable<HUDPanelViewModel> hudPanelViewModels)
-	{
-		HUDPanels = hudPanelViewModels;
 	}
 
 	private void UpdateHUDPanelsVisibility()

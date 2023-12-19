@@ -4,7 +4,6 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>HUDMerger</RootNamespace>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Resources\favicon.ico</ApplicationIcon>
     <Authors>Peter Wobcke</Authors>
     <Version>1.2.6</Version>

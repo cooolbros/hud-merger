@@ -3,12 +3,7 @@ using System.Windows.Input;
 
 namespace HUDMerger.ViewModels;
 
-public class SelectHUDViewModel : ViewModelBase
+public class SelectHUDViewModel(ICommand selectHUDCommand) : ViewModelBase
 {
-	public ICommand SelectHUDCommand { get; }
-
-	public SelectHUDViewModel(ICommand selectHUDCommand)
-	{
-		SelectHUDCommand = selectHUDCommand;
-	}
+	public ICommand SelectHUDCommand { get; } = selectHUDCommand;
 }

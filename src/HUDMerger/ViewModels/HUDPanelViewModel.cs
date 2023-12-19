@@ -18,18 +18,18 @@ public class HUDPanelViewModel : ViewModelBase
 		set
 		{
 			_visible = value;
-			OnPropertyChanged(nameof(Visible));
+			OnPropertyChanged();
 		}
 	}
 
-	private bool _armed;
-	public bool Armed
+	private bool _selected;
+	public bool Selected
 	{
-		get => _armed;
+		get => _selected;
 		set
 		{
-			_armed = value;
-			OnPropertyChanged(nameof(Armed));
+			_selected = value;
+			OnPropertyChanged();
 		}
 	}
 
@@ -39,11 +39,6 @@ public class HUDPanelViewModel : ViewModelBase
 	{
 		HUDPanel = hudPanel;
 		Visible = true;
-		ToggleSelectedCommand = new RelayCommand(() => Armed = !Armed);
-	}
-
-	public bool TestPanel(HUD hud)
-	{
-		return hud.TestPanel(HUDPanel);
+		ToggleSelectedCommand = new RelayCommand(() => Selected = !Selected);
 	}
 }

@@ -3,12 +3,12 @@ using HUDMerger.Models;
 
 namespace HUDMerger.ViewModels;
 
-public class HUDInfoViewModel : ViewModelBase
+public class HUDInfoViewModel(string locationType, HUD? hud) : ViewModelBase
 {
-	private readonly string _locationType;
+	private readonly string _locationType = locationType;
 
-	private HUD _hud;
-	public HUD HUD
+	private HUD? _hud = hud;
+	public HUD? HUD
 	{
 		get => _hud;
 		set
@@ -19,12 +19,6 @@ public class HUDInfoViewModel : ViewModelBase
 		}
 	}
 
-	public string Name => _hud?.Name.Replace("_", "__");
-	public string FolderPath => _hud?.FolderPath ?? $"HUD to copy files {_locationType}";
-
-	public HUDInfoViewModel(string locationType, HUD hud)
-	{
-		_locationType = locationType;
-		HUD = hud;
-	}
+	public string? Name => _hud?.Name.Replace("_", "__");
+	public string? FolderPath => _hud?.FolderPath ?? $"HUD to copy files {_locationType}";
 }

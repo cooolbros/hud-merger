@@ -61,12 +61,12 @@
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
         <Style TargetType="Border" x:Key="PanelBorder">
-            <Setter Property="Background" Value="{Binding Armed, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=Transparent}" />
+            <Setter Property="Background" Value="{Binding Selected, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=Transparent}" />
             <Setter Property="CornerRadius" Value="2" />
             <Setter Property="Margin" Value="0 0 0 0" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{Binding Armed, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=#E6E6E6}" />
+                    <Setter Property="Background" Value="{Binding Selected, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=#E6E6E6}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
