@@ -27,10 +27,29 @@ public class MainWindowViewModel : ViewModelBase
 	// About
 	public ICommand ShowAboutWindowCommand { get; }
 
-	private readonly List<HUDPanelViewModel> HUDPanelViewModels = [];
+	public readonly List<HUDPanelViewModel> HUDPanelViewModels = [];
 
-	public HUD? SourceHUD;
-	public HUD? TargetHUD;
+	private HUD? _sourceHUD;
+	public HUD? SourceHUD
+	{
+		get => _sourceHUD;
+		set
+		{
+			_sourceHUD = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private HUD? _targetHUD;
+	public HUD? TargetHUD
+	{
+		get => _targetHUD;
+		set
+		{
+			_targetHUD = value;
+			OnPropertyChanged();
+		}
+	}
 
 	public HUDInfoViewModel SourceHUDInfoViewModel { get; }
 	public HUDInfoViewModel TargetHUDInfoViewModel { get; }
