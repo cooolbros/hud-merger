@@ -14,14 +14,14 @@ public class Dependencies
 {
 	private static readonly Dependencies PropertyNames = JsonSerializer.Deserialize<Dependencies>(File.ReadAllText("Resources\\Dependencies.json"))!;
 
-	public SchemeDependencies ClientScheme { get; } = new();
-	public SchemeDependencies SourceScheme { get; } = new();
-	public HashSet<string> HUDLayout { get; } = new(StringComparer.OrdinalIgnoreCase);
-	public HashSet<string> Events { get; } = new(StringComparer.OrdinalIgnoreCase);
-	public HashSet<string> LanguageTokens { get; } = new(StringComparer.OrdinalIgnoreCase);
-	public FilesHashSet Images { get; } = [];
-	public FilesHashSet Audio { get; } = [];
-	public FilesHashSet Files { get; } = [];
+	public SchemeDependencies ClientScheme { get; init; } = new();
+	public SchemeDependencies SourceScheme { get; init; } = new();
+	public HashSet<string> HUDLayout { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+	public HashSet<string> Events { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+	public HashSet<string> LanguageTokens { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+	public FilesHashSet Images { get; init; } = [];
+	public FilesHashSet Audio { get; init; } = [];
+	public FilesHashSet Files { get; init; } = [];
 
 	public Dependencies()
 	{
@@ -131,7 +131,7 @@ public class Dependencies
 			{
 				if (keyValue.Key.Contains(audioProperty, StringComparison.OrdinalIgnoreCase))
 				{
-					Images.Add($"sound\\{keyValue.Value}");
+					Audio.Add($"sound\\{keyValue.Value}");
 				}
 			}
 		});
