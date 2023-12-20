@@ -57,7 +57,7 @@ public class HUDLayout
 			if (entry.Value is KeyValues values)
 			{
 				entries.TryAdd(entry, []);
-				foreach (KeyValue keyValue in values.ToHashSet())
+				foreach (KeyValue keyValue in new HashSet<KeyValue>(values, KeyValueComparer.KeyComparer))
 				{
 					int index = entries[entry].FindIndex((kv) => KeyValueComparer.KeyComparer.Equals(keyValue, kv));
 					if (index != -1)
