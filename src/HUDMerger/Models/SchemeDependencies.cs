@@ -15,4 +15,9 @@ public class SchemeDependencies
 		Borders.UnionWith(other.Borders);
 		Fonts.UnionWith(other.Fonts);
 	}
+
+	public bool Any()
+	{
+		return Colours.Count != 0 || Borders.Count != 0 || Fonts.Count != 0;
+	}
 }
