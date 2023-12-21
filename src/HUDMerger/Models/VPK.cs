@@ -7,6 +7,9 @@ using HUDMerger.Extensions;
 
 namespace HUDMerger.Models;
 
+/// <summary>
+/// https://developer.valvesoftware.com/wiki/VPK_(file_format)
+/// </summary>
 public partial class VPK
 {
 	[GeneratedRegex(@"_dir\.vpk$")]
