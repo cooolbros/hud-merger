@@ -32,6 +32,13 @@
 	{
 		"Name": "Character Info Menu",
 		"Main": "resource\\ui\\charinfoloadoutsubpanel.res",
+		"Dependencies": {
+			"Events": [
+				"NotificationsPresentBlink",
+				"NotificationsPresentBlinkLoop",
+				"NotificationsPresentBlinkStop"
+			]
+		},
 		"Files": [
 			"resource\\ui\\charinfopanel.res"
 		]
@@ -284,6 +291,20 @@
 	{
 		"Name": "Main Menu",
 		"Main": "resource\\ui\\mainmenuoverride.res",
+		"Dependencies": {
+			"Events": [
+				"HasMOTDBlink",
+				"HasMOTDBlinkLoop",
+				"HasMOTDBlinkStop",
+				"HasNotificationsBlink",
+				"HasNotificationsBlinkLoop",
+				"HasNotificationsBlinkStop",
+				"MMenu_PlayList_Collapse_Immediate",
+				"MMenu_PlayList_Collapse",
+				"MMenu_PlayList_Expand",
+				"MMenu_SafeMode_Blink"
+			]
+		},
 		"Files": [
 			"resource\\ui\\pvpcasualrankpanel.res",
 			"resource\\ui\\pvpcomprankpanel.res",
@@ -461,6 +482,24 @@
 				"HudMatchStatus",
 				"HudStopWatch",
 				"MatchSummary"
+			],
+			"Events": [
+				"HudMatchStatus_ShowCountdown",
+				"HudMatchStatus_ShowMatchStartDoors",
+				"HudMatchStatus_ShowMatchWinDoors_NoOpen",
+				"HudMatchStatus_ShowMatchWinDoors",
+				"HudMatchStatus_ShowRankMatch",
+				"HudMatchSummary_SlideInPanels",
+				"HudTournament_AnimateTeams_In",
+				"HudTournament_AnimateTeams_Out",
+				"HudTournament_DoorsCleanup",
+				"HudTournament_PlaySignAnim",
+				"HudTournament_ShowRoundSign",
+				"PlayDoorCloseAnim",
+				"PlayDoorOpenAnim",
+				"PlayDoorSlamParticles",
+				"TeamStatus_PlayerAlive",
+				"TeamStatus_PlayerDead"
 			]
 		},
 		"Files": [
@@ -486,6 +525,11 @@
 		"Dependencies": {
 			"HUDLayout": [
 				"HudMedicCharge"
+			],
+			"Events": [
+				"HudMedicCharged",
+				"HudMedicChargedLoop",
+				"HudMedicChargedStop"
 			]
 		}
 	},
