@@ -16,6 +16,9 @@
     <ProjectReference Include="..\VDF\VDF.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HUDAnimations\HUDAnimations.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="Resources\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
