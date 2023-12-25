@@ -4,13 +4,11 @@ namespace HUDMerger.Models.Scheme;
 
 public class ClientScheme : SchemeBase
 {
-	public override string Type => "client";
-
-	public ClientScheme()
+	public ClientScheme() : base()
 	{
 	}
 
-	public ClientScheme(string folderPath) : base(folderPath)
+	public ClientScheme(string filePath) : base(filePath)
 	{
 	}
 }

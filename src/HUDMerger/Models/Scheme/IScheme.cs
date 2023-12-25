@@ -6,7 +6,12 @@ namespace HUDMerger.Models.Scheme;
 
 public interface IScheme
 {
-	public IEnumerable<KeyValue> GetColour(string colourName);
-	public IEnumerable<KeyValue> GetBorder(string borderName);
-	public IEnumerable<KeyValue> GetFont(string fontName);
+	public IEnumerable<KeyValuePair<KeyValue, string>> GetColour(string colourName);
+	public void SetColour(IEnumerable<KeyValuePair<KeyValue, string>> colourValue);
+
+	public IEnumerable<KeyValuePair<KeyValue, dynamic>> GetBorder(string borderName);
+	public void SetBorder(IEnumerable<KeyValuePair<KeyValue, dynamic>> borderValue);
+
+	public IEnumerable<KeyValuePair<KeyValue, HashSet<KeyValue>>> GetFont(string fontName);
+	public void SetFont(IEnumerable<KeyValuePair<KeyValue, HashSet<KeyValue>>> fontValue);
 }

@@ -10,8 +10,6 @@ namespace HUDMerger.Models.Scheme;
 
 public abstract class SchemeBase : IScheme
 {
-	public abstract string Type { get; }
-
 	private readonly Dictionary<KeyValue, string?> Colours = new(KeyValueComparer.KeyComparer);
 	private readonly Dictionary<KeyValue, dynamic> Borders = new(KeyValueComparer.KeyComparer);
 	private readonly Dictionary<KeyValue, HashSet<KeyValue>?> Fonts = new(KeyValueComparer.KeyComparer);
@@ -30,7 +28,7 @@ public abstract class SchemeBase : IScheme
 	{
 	}
 
-	public SchemeBase(string folderPath)
+	public SchemeBase(string filePath)
 	{
 		static SchemeFile? ReadBaseFile(FileInfo file)
 		{
@@ -98,9 +96,9 @@ public abstract class SchemeBase : IScheme
 			IEnumerable<KeyValue> customFontFiles = header
 				.Where((kv) => StringComparer.OrdinalIgnoreCase.Equals(kv.Key, "CustomFontFiles") && kv.Value is KeyValues)
 				.SelectMany((kv) => (KeyValues)kv.Value);
-			foreach (KeyValue font in fonts)
+			foreach (KeyValue customFontFile in customFontFiles)
 			{
-				scheme.CustomFontFiles.Add(font);
+				scheme.CustomFontFiles.Add(customFontFile);
 			}
 
 			foreach (string baseFile in keyValues.BaseFiles())
@@ -155,9 +153,7 @@ public abstract class SchemeBase : IScheme
 		static KeyValues GetValueOrDefault(KeyValues keyValues, string key) =>
 			keyValues.FirstOrDefault((kv) => StringComparer.OrdinalIgnoreCase.Equals(kv.Key, key)).Value is KeyValues v ? v : [];
 
-		string schemePath = Path.Join(folderPath, $"resource/{Type}scheme.res");
-
-		KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(File.Exists(schemePath) ? schemePath : $"Resources\\HUD\\resource\\{Type}scheme.res"));
+		KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(filePath));
 
 		KeyValues header = keyValues.Header();
 
@@ -191,7 +187,7 @@ public abstract class SchemeBase : IScheme
 
 		foreach (string baseFile in keyValues.BaseFiles())
 		{
-			SchemeFile? baseScheme = ReadBaseFile(new FileInfo(Path.Join(Path.GetDirectoryName(schemePath), baseFile)));
+			SchemeFile? baseScheme = ReadBaseFile(new FileInfo(Path.Join(Path.GetDirectoryName(filePath), baseFile)));
 			if (baseScheme == null) continue;
 
 			foreach (KeyValuePair<KeyValue, string?> colour in baseScheme.Colours)
@@ -236,39 +232,101 @@ public abstract class SchemeBase : IScheme
 		}
 	}
 
-	public IEnumerable<KeyValue> GetColour(string colourName)
+	public IEnumerable<KeyValuePair<KeyValue, string>> GetColour(string colourName)
 	{
+#pragma warning disable CS8619
 		return Colours
-			.Where((colour) => StringComparer.OrdinalIgnoreCase.Equals(colour.Key.Key, colourName) && colour.Value != null)
-			.Select((colour) => new KeyValue
-			{
-				Key = colour.Key.Key,
-				Value = colour.Value!,
-				Conditional = colour.Key.Conditional
-			});
+			.Where((colour) => colour.Key.Key.Equals(colourName, StringComparison.OrdinalIgnoreCase) && colour.Value is not null);
+#pragma warning restore CS8619
 	}
 
-	public IEnumerable<KeyValue> GetBorder(string borderName)
+	public void SetColour(IEnumerable<KeyValuePair<KeyValue, string>> colourValue)
+	{
+		foreach (KeyValuePair<KeyValue, string> colour in colourValue)
+		{
+			Colours[colour.Key] = colour.Value;
+		}
+	}
+
+	public IEnumerable<KeyValuePair<KeyValue, dynamic>> GetBorder(string borderName)
 	{
 		return Borders
-			.Where((border) => StringComparer.OrdinalIgnoreCase.Equals(border.Key.Key, borderName) && border.Value != null)
-			.Select((border) => new KeyValue
-			{
-				Key = border.Key.Key,
-				Value = border.Value!,
-				Conditional = border.Key.Conditional
-			});
+			.Where((border) => border.Key.Key.Equals(borderName, StringComparison.OrdinalIgnoreCase));
 	}
 
-	public IEnumerable<KeyValue> GetFont(string fontName)
+	public void SetBorder(IEnumerable<KeyValuePair<KeyValue, dynamic>> borderValue)
 	{
+		foreach (KeyValuePair<KeyValue, dynamic> border in borderValue)
+		{
+			Borders[border.Key] = border.Value;
+		}
+	}
+
+	public IEnumerable<KeyValuePair<KeyValue, HashSet<KeyValue>>> GetFont(string fontName)
+	{
+#pragma warning disable CS8619
 		return Fonts
-			.Where((font) => StringComparer.OrdinalIgnoreCase.Equals(font.Key.Key, fontName) && font.Value != null)
-			.Select((font) => new KeyValue
+			.Where((font) => font.Key.Key.Equals(fontName, StringComparison.OrdinalIgnoreCase) && font.Value is not null);
+#pragma warning restore CS8619
+	}
+
+	public void SetFont(IEnumerable<KeyValuePair<KeyValue, HashSet<KeyValue>>> fontValue)
+	{
+		foreach (KeyValuePair<KeyValue, HashSet<KeyValue>> font in fontValue)
+		{
+			Fonts[font.Key] = font.Value;
+		}
+	}
+
+	public KeyValues ToKeyValues()
+	{
+		static KeyValues ConvertSchemeToKeyValues<T>(Dictionary<KeyValue, T> dictionary)
+		{
+			return new(
+				dictionary
+					.Where((kv) => kv.Value is not null)
+					.Select((kv) => new KeyValue { Key = kv.Key.Key, Value = kv.Value!, Conditional = kv.Key.Conditional })
+			);
+		}
+
+		KeyValues keyValues = [];
+
+		if (Colours.Count != 0)
+		{
+			keyValues.Add(new KeyValue
 			{
-				Key = font.Key.Key,
-				Value = font.Value!,
-				Conditional = font.Key.Conditional
+				Key = "Colors",
+				Value = ConvertSchemeToKeyValues(Colours),
+				Conditional = null
 			});
+		}
+
+		if (Borders.Count != 0)
+		{
+			keyValues.Add(new KeyValue
+			{
+				Key = "Borders",
+				Value = ConvertSchemeToKeyValues(Borders),
+				Conditional = null
+			});
+		}
+
+		if (Fonts.Count != 0)
+		{
+			keyValues.Add(new KeyValue
+			{
+				Key = "Fonts",
+				Value = ConvertSchemeToKeyValues(Fonts),
+				Conditional = null
+			});
+		}
+
+		return new KeyValues([
+			new KeyValue {
+				Key = "Scheme",
+				Value = keyValues,
+				Conditional = null
+			}
+		]);
 	}
 }
