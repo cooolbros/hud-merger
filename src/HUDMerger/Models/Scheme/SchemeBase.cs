@@ -28,7 +28,11 @@ public abstract class SchemeBase : IScheme
 	{
 	}
 
-	public SchemeBase(string filePath)
+	public SchemeBase(string filePath) : this(filePath, VDFSerializer.Deserialize(File.ReadAllText(filePath)))
+	{
+	}
+
+	public SchemeBase(string filePath, KeyValues keyValues)
 	{
 		static SchemeFile? ReadBaseFile(FileInfo file)
 		{
@@ -152,8 +156,6 @@ public abstract class SchemeBase : IScheme
 
 		static KeyValues GetValueOrDefault(KeyValues keyValues, string key) =>
 			keyValues.FirstOrDefault((kv) => StringComparer.OrdinalIgnoreCase.Equals(kv.Key, key)).Value is KeyValues v ? v : [];
-
-		KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(filePath));
 
 		KeyValues header = keyValues.Header();
 
