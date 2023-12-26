@@ -4,7 +4,7 @@ namespace HUDMerger.Models.Scheme;
 
 public class SourceScheme : SchemeBase
 {
-	public SourceScheme()
+	public SourceScheme() : base()
 	{
 	}
 
