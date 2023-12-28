@@ -110,7 +110,7 @@ public class Dependencies
 			// Language
 			foreach (string languageProperty in PropertyNames.LanguageTokens)
 			{
-				if (keyValue.Key.Contains(languageProperty, StringComparison.OrdinalIgnoreCase))
+				if (keyValue.Key.StartsWith('#') && keyValue.Key.Contains(languageProperty, StringComparison.OrdinalIgnoreCase))
 				{
 					LanguageTokens.Add(keyValue.Value);
 				}
