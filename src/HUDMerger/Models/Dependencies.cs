@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Windows.Input;
 using HUDMerger.Extensions;
 using VDF;
 using VDF.Models;
@@ -75,7 +74,7 @@ public class Dependencies
 		}
 	}
 
-	public void Add(KeyValues keyValues)
+	public void Add(IEnumerable<KeyValue> keyValues)
 	{
 		keyValues.ForAll((KeyValue keyValue) =>
 		{
