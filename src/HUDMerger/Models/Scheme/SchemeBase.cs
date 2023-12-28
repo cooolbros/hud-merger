@@ -68,7 +68,7 @@ public abstract class SchemeBase : IScheme
 					scheme.Borders[border] = border.Value switch
 					{
 						string borderReference => borderReference,
-						KeyValues borderValues => borderValues.ToHashSet(),
+						KeyValues borderValues => borderValues.ToHashSetRecursive(),
 						_ => throw new NotSupportedException()
 					};
 				}
@@ -90,7 +90,7 @@ public abstract class SchemeBase : IScheme
 				{
 					scheme.Fonts[font] = font.Value switch
 					{
-						KeyValues values => values.ToHashSet(),
+						KeyValues values => values.ToHashSetRecursive(),
 						string => null,
 						_ => throw new NotSupportedException(),
 					};
@@ -171,7 +171,7 @@ public abstract class SchemeBase : IScheme
 				border.Value switch
 				{
 					string borderReference => borderReference,
-					KeyValues borderValues => borderValues.ToHashSet(),
+					KeyValues borderValues => borderValues.ToHashSetRecursive(),
 					_ => throw new NotSupportedException(),
 				}
 			);
@@ -179,7 +179,7 @@ public abstract class SchemeBase : IScheme
 
 		foreach (KeyValue font in GetValueOrDefault(header, "Fonts"))
 		{
-			Fonts.TryAdd(font, font.Value is KeyValues value ? value.ToHashSet() : null);
+			Fonts.TryAdd(font, font.Value is KeyValues value ? value.ToHashSetRecursive() : null);
 		}
 
 		foreach (KeyValue customFontFile in GetValueOrDefault(header, "CustomFontFiles"))

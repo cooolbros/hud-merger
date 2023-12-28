@@ -25,7 +25,7 @@ public static class HashSetExtensions
 					Value = kv.Value switch
 					{
 						string str => str,
-						KeyValues values => values.ToHashSet(),
+						KeyValues values => values.ToHashSetRecursive(),
 						_ => throw new NotSupportedException(),
 					},
 					Conditional = kv.Conditional,

@@ -52,7 +52,7 @@ public static class KeyValuesExtensions
 		}
 	}
 
-	public static HashSet<KeyValue> ToHashSet(this KeyValues source)
+	public static HashSet<KeyValue> ToHashSetRecursive(this KeyValues source)
 	{
 		return source
 			.Select((kv) => new KeyValue
@@ -61,7 +61,7 @@ public static class KeyValuesExtensions
 				Value = kv.Value switch
 				{
 					string str => str,
-					KeyValues keyValues => keyValues.ToHashSet(),
+					KeyValues keyValues => keyValues.ToHashSetRecursive(),
 					_ => throw new NotSupportedException()
 				},
 				Conditional = kv.Conditional

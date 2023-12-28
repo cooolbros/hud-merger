@@ -80,7 +80,7 @@ public class HUDLayout
 
 		Entries = entries.ToDictionary(
 			(kv) => kv.Key,
-			(kv) => kv.Value.ToHashSet(),
+			(kv) => kv.Value.ToHashSetRecursive(),
 			KeyValueComparer.KeyComparer
 		);
 
