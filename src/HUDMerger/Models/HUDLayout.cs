@@ -25,7 +25,7 @@ public class HUDLayout
 			KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(file.FullName));
 			Dictionary<KeyValue, HashSet<KeyValue>> entries = new(KeyValueComparer.KeyComparer);
 
-			foreach (KeyValue entry in keyValues.Header(strict: true))
+			foreach (KeyValue entry in keyValues.Header())
 			{
 				if (entry.Value is KeyValues values)
 				{
@@ -52,7 +52,7 @@ public class HUDLayout
 
 		Dictionary<KeyValue, KeyValues> entries = new(KeyValueComparer.KeyComparer);
 
-		foreach (KeyValue entry in keyValues.Header(strict: true))
+		foreach (KeyValue entry in keyValues.Header())
 		{
 			if (entry.Value is KeyValues values)
 			{

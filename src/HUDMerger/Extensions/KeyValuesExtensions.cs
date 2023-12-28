@@ -16,18 +16,26 @@ public static class KeyValuesExtensions
 			.OfType<string>();
 	}
 
-	public static KeyValues Header(this KeyValues source, bool strict, string? name = null)
+	public static KeyValues Header(this KeyValues source, string? name = null)
 	{
 		// File header does not respect conditional
-		dynamic? value = source.FirstOrDefault((kv) => !StringComparer.OrdinalIgnoreCase.Equals(kv.Key, "#base")).Value;
+		KeyValue? keyValue = source.FirstOrDefault((kv) => !StringComparer.OrdinalIgnoreCase.Equals(kv.Key, "#base"));
 
-		switch (value)
+		switch (keyValue.Value.Value)
 		{
 			case KeyValues existing:
 				return existing;
-			case string str when strict:
-				// case when TF2 would fail the file parse if file contained string header (hudlayout.res or hudanimations_manifest.txt)
-				throw new NotSupportedException();
+			case string str:
+				// TF2 fails the file parse if file contained string header (hudlayout.res or hudanimations_manifest.txt)
+				// Since header should not be a string just replace it with a new one
+				KeyValues keyValues = [];
+				source[source.IndexOf(keyValue.Value)] = new KeyValue
+				{
+					Key = keyValue.Value.Key,
+					Value = keyValues,
+					Conditional = keyValue.Value.Conditional // Preserve conditional even though it's ignored
+				};
+				return keyValues;
 			case null when name is not null:
 				// If the default header name is provided, create the header and append it to the root node
 				KeyValue header = new() { Key = name, Value = new KeyValues(), Conditional = null };
