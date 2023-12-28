@@ -39,7 +39,7 @@ public abstract class SchemeBase : IScheme
 			if (!file.Exists) return null;
 
 			KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(file.FullName));
-			KeyValues header = keyValues.Header();
+			KeyValues header = keyValues.Header(strict: false);
 
 			SchemeFile scheme = new();
 
@@ -157,7 +157,7 @@ public abstract class SchemeBase : IScheme
 		static KeyValues GetValueOrDefault(KeyValues keyValues, string key) =>
 			keyValues.FirstOrDefault((kv) => StringComparer.OrdinalIgnoreCase.Equals(kv.Key, key)).Value is KeyValues v ? v : [];
 
-		KeyValues header = keyValues.Header();
+		KeyValues header = keyValues.Header(strict: false);
 
 		foreach (KeyValue colour in GetValueOrDefault(header, "Colors"))
 		{

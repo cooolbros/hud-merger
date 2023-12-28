@@ -16,17 +16,28 @@ public static class KeyValuesExtensions
 			.OfType<string>();
 	}
 
-	public static KeyValues Header(this KeyValues source, bool strict = false)
+	public static KeyValues Header(this KeyValues source, bool strict, string? name = null)
 	{
 		// File header does not respect conditional
 		dynamic? value = source.FirstOrDefault((kv) => !StringComparer.OrdinalIgnoreCase.Equals(kv.Key, "#base")).Value;
 
-		return value switch
+		switch (value)
 		{
-			KeyValues header => header,
-			string str when strict => throw new NotSupportedException(),
-			_ => [],
-		};
+			case KeyValues existing:
+				return existing;
+			case string str when strict:
+				// case when TF2 would not start if file contained string header (hudlayout.res)
+				throw new NotSupportedException();
+			case null when name is not null:
+				// If the default header name is provided, create the header and append it to the root node
+				KeyValue header = new() { Key = name, Value = new KeyValues(), Conditional = null };
+				source.Add(header);
+				return header.Value;
+			default:
+				// Entry file only contains #base files or is empty
+				// If name is not provided the value cannot be set in the root
+				return [];
+		}
 	}
 
 	public static void ForAll(this KeyValues source, Action<KeyValue> action)
