@@ -216,7 +216,7 @@ public abstract class SchemeBase : IScheme
 			{
 				if (Fonts.TryGetValue(font.Key, out HashSet<KeyValue>? value))
 				{
-					if (value is HashSet<KeyValue> existingFont && font.Value is IEnumerable<KeyValue> baseFont)
+					if (value is HashSet<KeyValue> existingFont && font.Value is HashSet<KeyValue> baseFont)
 					{
 						existingFont.UnionWithRecursive(baseFont);
 					}

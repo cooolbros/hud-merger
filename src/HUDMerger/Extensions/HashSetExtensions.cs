@@ -26,6 +26,7 @@ public static class HashSetExtensions
 					{
 						string str => str,
 						KeyValues values => values.ToHashSetRecursive(),
+						HashSet<KeyValue> set => set, // Assume set was created with KeyValues.ToHashSetRecursive()
 						_ => throw new NotSupportedException(),
 					},
 					Conditional = kv.Conditional,
