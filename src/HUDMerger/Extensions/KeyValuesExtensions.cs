@@ -40,11 +40,11 @@ public static class KeyValuesExtensions
 		}
 	}
 
-	public static void ForAll(this KeyValues source, Action<KeyValue> action)
+	public static void ForAll(this IEnumerable<KeyValue> source, Action<KeyValue> action)
 	{
 		foreach (KeyValue keyValue in source)
 		{
-			if (keyValue.Value is KeyValues keyValues)
+			if (keyValue.Value is IEnumerable<KeyValue> keyValues)
 			{
 				keyValues.ForAll(action);
 			}
