@@ -26,7 +26,7 @@ public static class KeyValuesExtensions
 			case KeyValues existing:
 				return existing;
 			case string str when strict:
-				// case when TF2 would not start if file contained string header (hudlayout.res)
+				// case when TF2 would fail the file parse if file contained string header (hudlayout.res or hudanimations_manifest.txt)
 				throw new NotSupportedException();
 			case null when name is not null:
 				// If the default header name is provided, create the header and append it to the root node
