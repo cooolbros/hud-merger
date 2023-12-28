@@ -323,6 +323,16 @@ public abstract class SchemeBase : IScheme
 			});
 		}
 
+		if (CustomFontFiles.Count != 0)
+		{
+			keyValues.Add(new KeyValue
+			{
+				Key = "CustomFontFiles",
+				Value = CustomFontFiles,
+				Conditional = null
+			});
+		}
+
 		return new KeyValues([
 			new KeyValue {
 				Key = "Scheme",
