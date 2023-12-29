@@ -74,7 +74,7 @@ public class HUD(string folderPath)
 
 					bool TestKeyValues(KeyValues keyValues)
 					{
-						KeyValues obj = keyValues;
+						KeyValues obj = keyValues.Header();
 
 						foreach (string key in panel.RequiredKeyValue.KeyPath)
 						{

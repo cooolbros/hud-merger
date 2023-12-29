@@ -281,7 +281,13 @@
 	},
 	{
 		"Name": "Killfeed",
-		"Main": "scripts\\hudlayout.res",
+		"Main": "",
+		"RequiredKeyValue": {
+			"FilePath": "scripts\\hudlayout.res",
+			"KeyPath": [
+				"HudDeathNotice"
+			]
+		},
 		"Dependencies": {
 			"HUDLayout": [
 				"HudDeathNotice"
@@ -398,7 +404,6 @@
 		"RequiredKeyValue": {
 			"FilePath": "resource\\sourcescheme.res",
 			"KeyPath": [
-				"Scheme",
 				"Fonts",
 				"DefaultFixedOutline"
 			]
