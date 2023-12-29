@@ -394,7 +394,7 @@
 	},
 	{
 		"Name": "Source Scheme Net Graph",
-		"Main": "resource\\sourcescheme.res",
+		"Main": "",
 		"RequiredKeyValue": {
 			"FilePath": "resource\\sourcescheme.res",
 			"KeyPath": [
@@ -402,6 +402,13 @@
 				"Fonts",
 				"DefaultFixedOutline"
 			]
+		},
+		"Dependencies": {
+			"SourceScheme": {
+				"Fonts": [
+					"DefaultFixedOutline"
+				]
+			}
 		}
 	},
 	{
