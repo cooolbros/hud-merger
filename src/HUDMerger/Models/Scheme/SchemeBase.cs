@@ -14,7 +14,7 @@ public abstract class SchemeBase : IScheme
 	private readonly Dictionary<KeyValue, dynamic> Borders = new(KeyValueComparer.KeyComparer);
 	private readonly Dictionary<KeyValue, HashSet<KeyValue>?> Fonts = new(KeyValueComparer.KeyComparer);
 
-	public List<KeyValue> CustomFontFiles { get; } = [];
+	public HashSet<KeyValue> CustomFontFiles { get; } = [];
 
 	private record class SchemeFile
 	{
@@ -325,10 +325,23 @@ public abstract class SchemeBase : IScheme
 
 		if (CustomFontFiles.Count != 0)
 		{
+			List<KeyValue> customFontFilesList = [..CustomFontFiles];
+			customFontFilesList.Sort((a, b) =>
+			{
+				if (int.TryParse(a.Key, out int first) && int.TryParse(b.Key, out int second))
+				{
+					return first - second;
+				}
+				else
+				{
+					return (b.Conditional?.Length ?? 0) - (a.Conditional?.Length ?? 0);
+				}
+			});
+
 			keyValues.Add(new KeyValue
 			{
 				Key = "CustomFontFiles",
-				Value = CustomFontFiles,
+				Value = customFontFilesList,
 				Conditional = null
 			});
 		}
