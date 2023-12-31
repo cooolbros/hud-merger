@@ -15,9 +15,6 @@ public partial class VPK
 	[GeneratedRegex(@"_dir\.vpk$")]
 	private static partial Regex VPKDirRegex();
 
-	[GeneratedRegex(@"[/\\]+")]
-	private static partial Regex PathSeparatorRegex();
-
 	private readonly string _archivePath;
 
 	public uint Signature { get; }
@@ -124,7 +121,7 @@ public partial class VPK
 
 	public byte[] Read(string filePath)
 	{
-		VPKFile entry = Files[PathSeparatorRegex().Replace(filePath, "/")];
+		VPKFile entry = Files[App.PathSeparatorRegex().Replace(filePath, "/")];
 		string vpkPath = $"{_archivePath}_{(entry.ArchiveIndex == short.MaxValue ? "dir" : entry.ArchiveIndex.ToString().PadLeft(3, '0'))}.vpk";
 		using FileStream stream = File.Open(vpkPath, FileMode.Open);
 		stream.Seek(entry.EntryOffset, SeekOrigin.Begin);
