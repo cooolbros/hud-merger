@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
 
 namespace HUDMerger.Models;
 
@@ -9,9 +8,9 @@ public class FilesHashSet : HashSet<string>
 {
 	private class FilePathComparer : IEqualityComparer<string>
 	{
-		public bool Equals(string x, string y)
+		public bool Equals(string? x, string? y)
 		{
-			return x == Encode(y);
+			return x == (y != null ? Encode(y) : null);
 		}
 
 		public int GetHashCode([DisallowNull] string obj)
@@ -21,7 +20,7 @@ public class FilesHashSet : HashSet<string>
 
 		public static string Encode(string filePath)
 		{
-			return String.Join('\\', Regex.Split(filePath, @"[/\\]+"));
+			return App.PathSeparatorRegex().Replace(filePath, "\\");
 		}
 	}
 
