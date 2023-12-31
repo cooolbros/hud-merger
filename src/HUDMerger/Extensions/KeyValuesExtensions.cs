@@ -12,7 +12,7 @@ public static class KeyValuesExtensions
 	{
 		return source
 			.Where((kv) => StringComparer.OrdinalIgnoreCase.Equals(kv.Key, "#base"))
-			.Select((kv) => kv.Value)
+			.Select((kv) => App.PathSeparatorRegex().Replace(kv.Value, "\\"))
 			.OfType<string>();
 	}
 
