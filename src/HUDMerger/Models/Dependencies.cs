@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using HUDMerger.Extensions;
+using HUDMerger.Services;
 using VDF;
 using VDF.Models;
 
@@ -46,27 +47,33 @@ public class Dependencies
 		Files.UnionWith(other.Files);
 	}
 
-	public void Add(string hudPath)
+	public void Add(HUDFileReaderService reader, HUD hud)
 	{
+		reader.Require(Files.Select((file) => (hud, file, FileType.VDF)));
+
 		foreach (string relativePath in Files)
 		{
-			Add(new FileInfo(Path.Join(hudPath, relativePath)));
+			Add(reader, hud, relativePath);
 		}
 	}
 
-	public void Add(FileInfo file)
+	public void Add(HUDFileReaderService reader, HUD hud, string relativePath)
 	{
-		if (!file.Exists) return;
-
 		try
 		{
-			KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(file.FullName));
-			Add(keyValues);
-
-			foreach (string basePath in keyValues.BaseFiles())
+			KeyValues? keyValues = reader.TryReadKeyValues(hud, relativePath);
+			if (keyValues != null)
 			{
-				FileInfo baseFile = new(Path.Combine(file.DirectoryName!, basePath));
-				Add(baseFile);
+				Add(keyValues);
+
+				foreach (string basePath in keyValues.BaseFiles())
+				{
+					string? directoryName = Path.GetDirectoryName(relativePath);
+					if (directoryName != null)
+					{
+						Add(reader, hud, Path.Join(directoryName, basePath));
+					}
+				}
 			}
 		}
 		catch
@@ -121,7 +128,7 @@ public class Dependencies
 			{
 				if (keyValue.Key.Contains(imageProperty, StringComparison.OrdinalIgnoreCase))
 				{
-					Images.Add($"materials\\vgui\\{keyValue.Value}");
+					Images.Add(Path.GetRelativePath(".", $"materials\\vgui\\{keyValue.Value}"));
 				}
 			}
 
@@ -130,7 +137,7 @@ public class Dependencies
 			{
 				if (keyValue.Key.Contains(audioProperty, StringComparison.OrdinalIgnoreCase))
 				{
-					Audio.Add($"sound\\{keyValue.Value}");
+					Audio.Add(Path.GetRelativePath(".", $"sound\\{keyValue.Value}"));
 				}
 			}
 		});
