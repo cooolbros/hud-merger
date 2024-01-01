@@ -2,7 +2,9 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
+using HUDMerger.Models;
 using HUDMerger.ViewModels;
 
 namespace HUDMerger.Commands;
@@ -41,7 +43,15 @@ public class MergeCommand : CommandBase
 				return;
 			}
 
-			_mainWindowViewModel.TargetHUD.Merge(_mainWindowViewModel.SourceHUD, MainWindowViewModel.HUDPanels.Where(hudPanelViewModel => hudPanelViewModel.Armed).Select(hudPanelViewModel => hudPanelViewModel.HUDPanel).ToArray());
+			HUD.Merge(
+				_mainWindowViewModel.SourceHUD!,
+				_mainWindowViewModel.TargetHUD!,
+				_mainWindowViewModel.HUDPanelViewModels
+					.Where((hudPanelViewModel) => hudPanelViewModel.Selected)
+					.Select((hudPanelViewModel) => hudPanelViewModel.HUDPanel)
+					.ToArray()
+			);
+
 			MessageBox.Show("Done!");
 		}
 		catch (Exception e)
