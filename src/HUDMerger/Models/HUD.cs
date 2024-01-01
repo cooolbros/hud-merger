@@ -99,7 +99,7 @@ public class HUD(string folderPath)
 					return false;
 				}
 			}
-			return Utilities.TestPath($"{folderPath}\\{panel.Main}");
+			return File.Exists(Path.Join(folderPath, panel.Main));
 		})
 		.ToArray();
 
