@@ -22,7 +22,6 @@ public partial class SettingsWindow : Window
 		UpdateStatus.Foreground = Brushes.Black;
 		try
 		{
-			await Task.WhenAll(Updater.Update(true, true));
 			UpdateStatus.Content = $"Last updated on {DateTime.Now}";
 		}
 		catch (Exception error)
