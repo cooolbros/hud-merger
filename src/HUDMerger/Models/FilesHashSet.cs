@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace HUDMerger.Models;
 
@@ -31,5 +32,10 @@ public class FilesHashSet : HashSet<string>
 	public new bool Add(string item)
 	{
 		return base.Add(FilePathComparer.Encode(item));
+	}
+
+	public new void UnionWith(IEnumerable<string> other)
+	{
+		base.UnionWith(other.Select(FilePathComparer.Encode));
 	}
 }
