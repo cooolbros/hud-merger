@@ -1,4 +1,5 @@
 using System;
+using HUDMerger.Services;
 using VDF.Models;
 
 namespace HUDMerger.Models.Scheme;
@@ -9,11 +10,11 @@ public class SourceScheme : SchemeBase
 	{
 	}
 
-	public SourceScheme(string filePath) : base(filePath)
+	public SourceScheme(HUDFileReaderService reader, HUD hud, string relativePath) : base(reader, hud, relativePath)
 	{
 	}
 
-	public SourceScheme(string filePath, KeyValues keyValues) : base(filePath, keyValues)
+	public SourceScheme(HUDFileReaderService reader, HUD hud, string relativePath, KeyValues keyValues) : base(reader, hud, relativePath, keyValues)
 	{
 	}
 }

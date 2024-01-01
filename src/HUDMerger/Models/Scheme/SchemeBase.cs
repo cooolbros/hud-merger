@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HUDMerger.Extensions;
+using HUDMerger.Services;
 using VDF;
 using VDF.Models;
 
@@ -28,17 +29,17 @@ public abstract class SchemeBase : IScheme
 	{
 	}
 
-	public SchemeBase(string filePath) : this(filePath, VDFSerializer.Deserialize(File.ReadAllText(filePath)))
+	public SchemeBase(HUDFileReaderService reader, HUD hud, string relativePath) : this(reader, hud, relativePath, reader.ReadKeyValues(hud, relativePath))
 	{
 	}
 
-	public SchemeBase(string filePath, KeyValues keyValues)
+	public SchemeBase(HUDFileReaderService reader, HUD hud, string relativePath, KeyValues keyValues)
 	{
-		static SchemeFile? ReadBaseFile(FileInfo file)
+		static SchemeFile? ReadBaseFile(HUDFileReaderService reader, HUD hud, string relativePath)
 		{
-			if (!file.Exists) return null;
+			KeyValues? keyValues = reader.TryReadKeyValues(hud, relativePath);
+			if (keyValues == null) return null;
 
-			KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(file.FullName));
 			KeyValues header = keyValues.Header();
 
 			SchemeFile scheme = new();
@@ -107,7 +108,7 @@ public abstract class SchemeBase : IScheme
 
 			foreach (string baseFile in keyValues.BaseFiles())
 			{
-				SchemeFile? baseScheme = ReadBaseFile(new FileInfo(Path.Join(file.DirectoryName, baseFile)));
+				SchemeFile? baseScheme = ReadBaseFile(reader, hud, Path.GetRelativePath(".", Path.Join(Path.GetDirectoryName(relativePath), baseFile)));
 				if (baseScheme == null) continue;
 
 				foreach (KeyValuePair<KeyValue, string?> colour in baseScheme.Colours)
@@ -189,7 +190,7 @@ public abstract class SchemeBase : IScheme
 
 		foreach (string baseFile in keyValues.BaseFiles())
 		{
-			SchemeFile? baseScheme = ReadBaseFile(new FileInfo(Path.Join(Path.GetDirectoryName(filePath), baseFile)));
+			SchemeFile? baseScheme = ReadBaseFile(reader, hud, Path.GetRelativePath(".", Path.Join(Path.GetDirectoryName(relativePath), baseFile)));
 			if (baseScheme == null) continue;
 
 			foreach (KeyValuePair<KeyValue, string?> colour in baseScheme.Colours)
