@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HUDMerger.Extensions;
+using HUDMerger.Services;
 using VDF;
 using VDF.Models;
 
@@ -16,13 +17,13 @@ public class HUDLayout
 	{
 	}
 
-	public HUDLayout(string folderPath)
+	public HUDLayout(HUDFileReaderService reader, HUD hud)
 	{
-		static Dictionary<KeyValue, HashSet<KeyValue>>? ReadBaseFile(FileInfo file)
+		static Dictionary<KeyValue, HashSet<KeyValue>>? ReadBaseFile(HUDFileReaderService reader, HUD hud, string relativePath)
 		{
-			if (!file.Exists) return null;
+			KeyValues? keyValues = reader.TryReadKeyValues(hud, relativePath);
+			if (keyValues == null) return null;
 
-			KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(file.FullName));
 			Dictionary<KeyValue, HashSet<KeyValue>> entries = new(KeyValueComparer.KeyComparer);
 
 			foreach (KeyValue entry in keyValues.Header())
@@ -36,7 +37,7 @@ public class HUDLayout
 
 			foreach (string baseFile in keyValues.BaseFiles())
 			{
-				foreach (KeyValuePair<KeyValue, HashSet<KeyValue>> entry in ReadBaseFile(new FileInfo(Path.Join(file.DirectoryName, baseFile))) ?? [])
+				foreach (KeyValuePair<KeyValue, HashSet<KeyValue>> entry in ReadBaseFile(reader, hud, Path.GetRelativePath(".", Path.Join(Path.GetDirectoryName(relativePath), baseFile))) ?? [])
 				{
 					entries.TryAdd(entry.Key, new(KeyValueComparer.KeyComparer));
 					entries[entry.Key].UnionWithRecursive(entry.Value);
@@ -46,9 +47,7 @@ public class HUDLayout
 			return entries;
 		}
 
-		string hudLayoutPath = Path.Join(folderPath, "scripts\\hudlayout.res");
-
-		KeyValues keyValues = VDFSerializer.Deserialize(File.ReadAllText(File.Exists(hudLayoutPath) ? hudLayoutPath : "Resources\\HUD\\scripts\\hudlayout.res"));
+		KeyValues keyValues = reader.ReadKeyValues(hud, "scripts\\hudlayout.res");
 
 		Dictionary<KeyValue, KeyValues> entries = new(KeyValueComparer.KeyComparer);
 
@@ -86,7 +85,7 @@ public class HUDLayout
 
 		foreach (string baseFile in keyValues.BaseFiles())
 		{
-			foreach (KeyValuePair<KeyValue, HashSet<KeyValue>> entry in ReadBaseFile(new FileInfo(Path.Join(Path.GetDirectoryName(hudLayoutPath), baseFile))) ?? [])
+			foreach (KeyValuePair<KeyValue, HashSet<KeyValue>> entry in ReadBaseFile(reader, hud, Path.GetRelativePath(".", $"scripts\\{baseFile}")) ?? [])
 			{
 				Entries.TryAdd(entry.Key, new(KeyValueComparer.KeyComparer));
 				Entries[entry.Key].UnionWithRecursive(entry.Value);
