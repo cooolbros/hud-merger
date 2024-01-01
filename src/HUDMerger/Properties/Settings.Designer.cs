@@ -25,30 +25,6 @@ namespace HUDMerger.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool Download_latest_HUD_file_definitions_file_on_start_up {
-            get {
-                return ((bool)(this["Download_latest_HUD_file_definitions_file_on_start_up"]));
-            }
-            set {
-                this["Download_latest_HUD_file_definitions_file_on_start_up"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool Extract_required_TF2_HUD_files_on_startup {
-            get {
-                return ((bool)(this["Extract_required_TF2_HUD_files_on_startup"]));
-            }
-            set {
-                this["Extract_required_TF2_HUD_files_on_startup"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Team Fortress 2")]
         public string Team_Fortress_2_Folder {
             get {
