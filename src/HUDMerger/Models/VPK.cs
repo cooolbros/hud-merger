@@ -25,7 +25,13 @@ public partial class VPK
 	public uint OtherMD5SectionSize { get; }
 	public uint SignatureSectionSize { get; }
 
-	public Dictionary<string, VPKFile> Files { get; } = [];
+	/// <summary>
+	/// VPK Files
+	/// </summary>
+	/// <remarks>
+	/// Separated by '/'
+	/// </remarks>
+	private Dictionary<string, VPKFile> Files { get; } = [];
 
 	public record class VPKFile
 	{
@@ -109,7 +115,7 @@ public partial class VPK
 					ushort terminator = reader.ReadUInt16();
 					if (terminator != ushort.MaxValue)
 					{
-						throw new Exception("terminator != 255");
+						throw new Exception("terminator != 65535");
 					}
 
 					string key = $"{(folderPath != " " ? $"{folderPath}/" : "")}{fileName}.{extension}";
@@ -117,6 +123,11 @@ public partial class VPK
 				}
 			}
 		}
+	}
+
+	public bool Exists(string filePath)
+	{
+		return Files.ContainsKey(App.PathSeparatorRegex().Replace(filePath, "/"));
 	}
 
 	public byte[] Read(string filePath)
