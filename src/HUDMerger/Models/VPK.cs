@@ -31,7 +31,7 @@ public partial class VPK
 	/// <remarks>
 	/// Separated by '/'
 	/// </remarks>
-	private Dictionary<string, VPKFile> Files { get; } = [];
+	private Dictionary<string, VPKFile> Files { get; } = new(StringComparer.OrdinalIgnoreCase);
 
 	public record class VPKFile
 	{
