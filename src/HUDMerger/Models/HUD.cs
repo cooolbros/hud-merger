@@ -735,35 +735,45 @@ public class HUD(string folderPath)
 		SourceScheme sourceSourceScheme = new(reader, source, "resource\\sourcescheme.res");
 
 		KeyValues targetSourceSchemeKeyValues = reader.ReadKeyValues(target, "resource\\sourcescheme.res");
+		SourceScheme targetSourceScheme = new(reader, target, "resource\\sourcescheme.res", targetSourceSchemeKeyValues);
 		KeyValues targetSourceSchemeHeader = targetSourceSchemeKeyValues.Header("Scheme");
-		KeyValues targetSourceSchemeFonts;
 
-		// TF2 only loads the first "Fonts" section in the sourcescheme entry file
-		// Assume the first "Fonts" section does not have a conditional
-		switch (targetSourceSchemeHeader.FirstOrDefault((kv) => kv.Key.Equals("Fonts", StringComparison.OrdinalIgnoreCase)))
+		// TF2 only loads the first "Fonts" or "CustomFontFiles" section in the sourcescheme entry file
+		// Assume the first section does not have a conditional
+		static KeyValues GetFirst(KeyValues keyValues, string key)
 		{
-			case { Value: KeyValues } keyValue:
-				targetSourceSchemeFonts = keyValue.Value;
-				break;
-			case { Value: string } keyValue:
-				targetSourceSchemeFonts = [];
-				targetSourceSchemeHeader[targetSourceSchemeHeader.IndexOf(keyValue)] = new KeyValue
-				{
-					Key = keyValue.Key,
-					Value = targetSourceSchemeHeader,
-					Conditional = keyValue.Conditional
-				};
-				break;
-			default:
-				targetSourceSchemeFonts = [];
-				targetSourceSchemeHeader.Add(new KeyValue
-				{
-					Key = "Fonts",
-					Value = targetSourceSchemeFonts,
-					Conditional = null
-				});
-				break;
+			KeyValues result;
+			switch (keyValues.FirstOrDefault((kv) => kv.Key.Equals(key, StringComparison.OrdinalIgnoreCase)))
+			{
+				case { Value: KeyValues } keyValue:
+					result = keyValue.Value;
+					break;
+				case { Value: string } keyValue:
+					result = [];
+					keyValues[keyValues.IndexOf(keyValue)] = new KeyValue
+					{
+						Key = keyValue.Key,
+						Value = result,
+						Conditional = keyValue.Conditional
+					};
+					break;
+				default:
+					result = [];
+					keyValues.Add(new KeyValue
+					{
+						Key = key,
+						Value = result,
+						Conditional = null
+					});
+					break;
+			}
+			return result;
 		}
+
+		KeyValues targetSourceSchemeFonts = GetFirst(targetSourceSchemeHeader, "Fonts");
+		KeyValues targetSourceSchemeCustomFontFiles = GetFirst(targetSourceSchemeHeader, "CustomFontFiles");
+
+		HashSet<string> fontNames = new(StringComparer.OrdinalIgnoreCase);
 
 		foreach (string fontName in dependencies.SourceScheme.Fonts)
 		{
@@ -800,11 +810,87 @@ public class HUD(string folderPath)
 						Conditional = font.Key.Conditional
 					});
 				}
+
+				fontNames.UnionWith(
+					fonts
+						.SelectMany((kvp) => kvp.Value)
+						.Select((kv) => kv.Value)
+						.OfType<IEnumerable<KeyValue>>()
+						.SelectMany((kv) => kv)
+						.Where(kv => kv.Key.Equals("name", StringComparison.OrdinalIgnoreCase))
+						.Select((kv) => kv.Value)
+						.OfType<string>()
+				);
 			}
 
 			foreach (KeyValue e in targetFonts)
 			{
 				targetFonts.Remove(e);
+			}
+		}
+
+		int max = Math.Max(sourceSourceScheme.CustomFontFiles.Count, targetSourceScheme.CustomFontFiles.Count);
+		HashSet<KeyValue> referencedCustomFontFiles = [];
+
+		foreach (KeyValue customFontFile in sourceSourceScheme.CustomFontFiles)
+		{
+			if (int.TryParse(customFontFile.Key, out int i))
+			{
+				max = Math.Max(max, i);
+			}
+
+			List<string> customFontFileFontNames = customFontFile.Value switch
+			{
+				KeyValues keyValues => keyValues
+					.Where((kv) => kv.Key.Equals("name", StringComparison.OrdinalIgnoreCase))
+					.Select((kv) => kv.Value)
+					.OfType<string>()
+					.ToList(),
+				string str => [str],
+				_ => throw new UnreachableException()
+			};
+
+			bool referenced = customFontFileFontNames.Any((customFontFileFontName) =>
+				fontNames.Any((fontName) =>
+					customFontFileFontName.Equals(fontName, StringComparison.OrdinalIgnoreCase)
+				)
+			);
+
+			if (referenced)
+			{
+				referencedCustomFontFiles.Add(customFontFile);
+
+				dependencies.Files.UnionWith(customFontFile.Value switch
+				{
+					KeyValues keyValues => keyValues
+						.Where((kv) => kv.Key.Equals("font", StringComparison.OrdinalIgnoreCase))
+						.Select((kv) => kv.Value)
+						.OfType<string>(),
+					string str => [str],
+					_ => throw new UnreachableException()
+				});
+			}
+		}
+
+		foreach (KeyValue customFontFile in referencedCustomFontFiles)
+		{
+			bool exists = targetSourceScheme.CustomFontFiles.Any((kv) =>
+			{
+				bool conditionalsEqual = (kv.Conditional != null && customFontFile.Conditional != null)
+					? kv.Conditional.Equals(customFontFile.Conditional, StringComparison.OrdinalIgnoreCase)
+					: kv.Conditional == customFontFile.Conditional;
+
+				return kv.Value.Equals(customFontFile.Value) && conditionalsEqual;
+			});
+
+			if (!exists)
+			{
+				targetSourceSchemeCustomFontFiles.Add(new KeyValue
+				{
+					Key = max++.ToString(),
+					Value = customFontFile.Value,
+					Conditional = customFontFile.Conditional
+				});
 			}
 		}
 
