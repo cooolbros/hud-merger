@@ -19,16 +19,47 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.Resources>
+            <ControlTemplate x:Key="ButtonTemplate" TargetType="{x:Type ButtonBase}">
+                <Border x:Name="border" Background="Transparent" BorderThickness="2" BorderBrush="Transparent" SnapsToDevicePixels="True" Cursor="Hand">
+                    <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="Button.IsDefaulted" Value="True">
+                        <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" TargetName="border" Value="Transparent" />
+                        <Setter Property="BorderBrush" TargetName="border" Value="#E6E6E6" />
+                    </Trigger>
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="Background" TargetName="border" Value="Transparent" />
+                        <Setter Property="BorderBrush" TargetName="border" Value="#CCCCCC" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Background" TargetName="border" Value="#FFF4F4F4" />
+                        <Setter Property="BorderBrush" TargetName="border" Value="#FFADB2B5" />
+                        <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#FF838383" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
             <DataTemplate DataType="{x:Type viewmodels:SelectHUDViewModel}">
-                <Button Template="{StaticResource SelectHUDButtonTemplate}" Command="{Binding SelectHUDCommand}">
+                <Button Template="{StaticResource ButtonTemplate}" Command="{Binding SelectHUDCommand}">
                     <StackPanel>
-                        <Label Content="+" Style="{StaticResource SelectHUDButtonPlus}" />
-                        <Label Content="Open Folder" Style="{StaticResource SelectHUDOpenFolder}" />
+                        <Label
+                            Content="+"
+                            FontSize="30"
+                            HorizontalAlignment="Center"
+                        />
+                        <Label
+                            Content="Open Folder"
+                            FontSize="15"
+                            HorizontalAlignment="Center"
+                        />
                     </StackPanel>
                 </Button>
             </DataTemplate>
         </Grid.Resources>
-        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="1">
+        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="1" Background="#FFFFFF">
             <MenuItem Header="_File">
                 <MenuItem Header="Load Source HUD" Command="{Binding LoadSourceHUDCommand}" />
                 <MenuItem Header="Load Target HUD" Command="{Binding LoadTargetHUDCommand}" />
@@ -69,7 +100,14 @@
             <ContentControl Content="{Binding TargetHUDPanelsListViewModel}" />
         </Grid>
         <Grid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="1" Margin="10 5 10 10">
-            <Button Content="Merge" Command="{Binding MergeCommand}"  Style="{StaticResource AccentButton}" />
+            <Button
+                Content="Merge"
+                Command="{Binding MergeCommand}"
+                Style="{StaticResource AccentButton}"
+                HorizontalAlignment="Right"
+                FontSize="15"
+                Padding="50,10"
+            />
         </Grid>
     </Grid>
 </UserControl>

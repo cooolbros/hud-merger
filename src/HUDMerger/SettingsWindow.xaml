@@ -31,9 +31,9 @@
             <Label Content="Team Fortress 2 Folder" FontSize="15" ToolTip="Path to Team Fortress 2 Installation. Used for extracting required HUD files." />
             <TextBox Style="{StaticResource TextBoxStyle1}" HorizontalAlignment="Left" MinWidth="480" Text="{Binding Team_Fortress_2_Folder, Source={x:Static Properties:Settings.Default}, Mode=TwoWay}" />
         </StackPanel>
-        <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="2" Margin="10,5,10,10">
-            <Button Style="{DynamicResource EnabledButton}" Padding="20,5" Margin="0,0,10,0" Click="CancelButton_Click">Cancel</Button>
-            <Button Style="{DynamicResource AccentButton}" Padding="30,10" Click="ApplyButton_Click">Apply</Button>
+        <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="2" Margin="10,5,10,10">
+            <Button Style="{StaticResource EnabledButton}" FontSize="14" Padding="20,8" Click="CancelButton_Click" Margin="0,0,10,0" IsCancel="True">Cancel</Button>
+            <Button Style="{StaticResource AccentButton}" FontSize="14" Padding="20,8" Click="ApplyButton_Click">Apply</Button>
         </WrapPanel>
     </Grid>
 </Window>

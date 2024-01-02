@@ -4,82 +4,10 @@
              xmlns:local="clr-namespace:HUDMerger"
              xmlns:converters="clr-namespace:HUDMerger.Converters">
     <Application.Resources>
-        <converters:BooleanEvaluateConverter x:Key="BooleanEvaluateConverter" />
         <SolidColorBrush x:Key="_Blue" Color="#0073CF" />
         <SolidColorBrush x:Key="_BlueHover" Color="#338FD8" />
-        <SolidColorBrush x:Key="_MergeButtonBackground" Color="#D7D7D7" />
-        <Style TargetType="Menu">
-            <Setter Property="Background" Value="#FFFFFF" />
-        </Style>
-        <Style TargetType="Label" x:Key="StatusTitle">
-            <Setter Property="FontSize" Value="22" />
-        </Style>
-        <Style TargetType="Label" x:Key="StatusInfo">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="FlowDirection" Value="RightToLeft" />
-            <Setter Property="Margin" Value="0,0,0,5" />
-        </Style>
-        <ControlTemplate x:Key="SelectHUDButtonTemplate" TargetType="{x:Type ButtonBase}">
-            <Border x:Name="border" Background="Transparent" BorderThickness="2" BorderBrush="Transparent" SnapsToDevicePixels="True" Cursor="Hand">
-                <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-            </Border>
-            <ControlTemplate.Triggers>
-                <Trigger Property="Button.IsDefaulted" Value="True">
-                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" TargetName="border" Value="Transparent" />
-                    <Setter Property="BorderBrush" TargetName="border" Value="#E6E6E6" />
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" TargetName="border" Value="Transparent" />
-                    <Setter Property="BorderBrush" TargetName="border" Value="#CCCCCC" />
-                </Trigger>
-                <Trigger Property="IsEnabled" Value="false">
-                    <Setter Property="Background" TargetName="border" Value="#FFF4F4F4" />
-                    <Setter Property="BorderBrush" TargetName="border" Value="#FFADB2B5" />
-                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#FF838383" />
-                </Trigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-        <Style TargetType="Label" x:Key="SelectHUDButtonPlus">
-            <Setter Property="FontSize" Value="30" />
-            <!-- <Setter Property="Foreground" Value="#666666" /> -->
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-        <Style TargetType="Label" x:Key="SelectHUDOpenFolder">
-            <Setter Property="FontSize" Value="15" />
-            <!-- <Setter Property="Foreground" Value="#666666" /> -->
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-        <Style TargetType="TextBox" x:Key="SearchBox">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Width" Value="200" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
-        </Style>
-        <Style TargetType="Border" x:Key="PanelBorder">
-            <Setter Property="Background" Value="{Binding Selected, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=Transparent}" />
-            <Setter Property="CornerRadius" Value="2" />
-            <Setter Property="Margin" Value="0 0 0 0" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{Binding Selected, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=#E6E6E6}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style TargetType="Label" x:Key="PanelLabel">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="Foreground" Value="#000000" />
-            <Setter Property="Padding" Value="6" />
-        </Style>
         <Style x:Key="EnabledButton" TargetType="{x:Type ButtonBase}">
-            <Setter Property="FontSize" Value="15" />
             <Setter Property="Foreground" Value="#000000" />
-            <Setter Property="Padding" Value="50,10" />
-            <!-- <Setter Property="HorizontalAlignment" Value="Right" /> -->
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -107,10 +35,7 @@
             </Setter>
         </Style>
         <Style x:Key="AccentButton" TargetType="{x:Type ButtonBase}">
-            <Setter Property="FontSize" Value="15" />
             <Setter Property="Foreground" Value="#FFFFFF" />
-            <Setter Property="Padding" Value="50 10" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>

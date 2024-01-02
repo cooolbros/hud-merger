@@ -8,11 +8,30 @@
              xmlns:converters="clr-namespace:HUDMerger.Converters"
              mc:Ignorable="d"
              d:DesignHeight="31" d:DesignWidth="355" d:DataContext="{d:DesignInstance Type={x:Type viewmodels:HUDPanelViewModel}}">
-    <Border Style="{StaticResource PanelBorder}" MouseLeftButtonUp="Border_MouseLeftButtonUp" Cursor="Hand">
+    <UserControl.Resources>
+        <converters:BooleanEvaluateConverter x:Key="BooleanEvaluateConverter" />
+    </UserControl.Resources>
+    <Border
+        CornerRadius="2"
+        Margin="0,0,0,0"
+        Cursor="Hand"
+        MouseLeftButtonUp="Border_MouseLeftButtonUp"
+    >
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="{Binding Selected, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=Transparent}" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding Selected, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter={StaticResource _Blue}, TargetNullValue=#E6E6E6}" />
+                    </Trigger>
+            </Style.Triggers>
+            </Style>
+        </Border.Style>
         <Label
             Content="{Binding Name}"
-            Style="{StaticResource PanelLabel}"
+            FontSize="15"
             Foreground="{Binding Selected, Converter={StaticResource BooleanEvaluateConverter}, ConverterParameter=#FFFFFF, TargetNullValue=#000000}"
+            Padding="6"
         />
     </Border>
 </UserControl>

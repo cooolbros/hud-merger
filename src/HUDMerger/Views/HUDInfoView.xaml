@@ -13,10 +13,16 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Label Content="{Binding Name, TargetNullValue=No HUD Selected}" Style="{StaticResource StatusTitle}" />
+            <Label Content="{Binding Name, TargetNullValue=No HUD Selected}" FontSize="22" />
         </Grid>
         <Grid Grid.Row="1">
-            <Label Content="{Binding FolderPath}" Style="{StaticResource StatusInfo}" />
+            <Label
+                Content="{Binding FolderPath}"
+                FontSize="15"
+                HorizontalAlignment="Left"
+                FlowDirection="RightToLeft"
+                Margin="0,0,0,5"
+            />
         </Grid>
     </Grid>
 </UserControl>
