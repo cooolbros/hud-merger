@@ -44,7 +44,7 @@ public class MergeCommand : CommandBase
 				return !relativeDirectory.StartsWith("..") && !Path.IsPathRooted(relativeDirectory);
 			}
 
-			if (PathContainsPath(Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD!.FolderPath) && Process.GetProcessesByName("hl2").Length != 0)
+			if (PathContainsPath(Path.Join(Properties.Settings.Default.TeamFortress2Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD!.FolderPath) && Process.GetProcessesByName("hl2").Length != 0)
 			{
 				MessageBox.Show("HL2 process open, cannot merge!", "HL2 Open Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				return;

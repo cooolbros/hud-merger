@@ -26,12 +26,12 @@ namespace HUDMerger.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Team Fortress 2")]
-        public string Team_Fortress_2_Folder {
+        public string TeamFortress2Folder {
             get {
-                return ((string)(this["Team_Fortress_2_Folder"]));
+                return ((string)(this["TeamFortress2Folder"]));
             }
             set {
-                this["Team_Fortress_2_Folder"] = value;
+                this["TeamFortress2Folder"] = value;
             }
         }
     }

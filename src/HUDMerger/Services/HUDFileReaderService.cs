@@ -22,8 +22,8 @@ public enum FileType : byte
 
 public partial class HUDFileReaderService
 {
-	private readonly Lazy<VPK> TF2MiscDirVPK = new(() => new(Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf\\tf2_misc_dir.vpk")));
-	private readonly Lazy<VPK> PlatformMiscDirVPK = new(() => new(Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "platform\\platform_misc_dir.vpk")));
+	private readonly Lazy<VPK> TF2MiscDirVPK = new(() => new(Path.Join(Properties.Settings.Default.TeamFortress2Folder, "tf\\tf2_misc_dir.vpk")));
+	private readonly Lazy<VPK> PlatformMiscDirVPK = new(() => new(Path.Join(Properties.Settings.Default.TeamFortress2Folder, "platform\\platform_misc_dir.vpk")));
 
 	private readonly Dictionary<string, dynamic?> Files = [];
 
@@ -64,13 +64,13 @@ public partial class HUDFileReaderService
 						return Encoding.UTF8.GetString(PlatformMiscDirVPK.Value.Read(relativePath));
 					}
 
-					string tfPath = Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "tf", relativePath);
+					string tfPath = Path.Join(Properties.Settings.Default.TeamFortress2Folder, "tf", relativePath);
 					if (File.Exists(tfPath))
 					{
 						return File.ReadAllText(tfPath);
 					}
 
-					string hl2Path = Path.Join(Properties.Settings.Default.Team_Fortress_2_Folder, "hl2", relativePath);
+					string hl2Path = Path.Join(Properties.Settings.Default.TeamFortress2Folder, "hl2", relativePath);
 					if (File.Exists(hl2Path))
 					{
 						return File.ReadAllText(hl2Path);

@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HUDMerger.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="Team_Fortress_2_Folder" Type="System.String" Scope="User">
+    <Setting Name="TeamFortress2Folder" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Program Files (x86)\Steam\steamapps\common\Team Fortress 2</Value>
     </Setting>
   </Settings>
