@@ -849,7 +849,7 @@ public class HUD(string folderPath)
 			}
 		}
 
-		RemoveBaseSchemeValues(Path.Join(target.FolderPath, "resource"), targetSourceSchemeKeyValues.BaseFiles());
+		RemoveBaseSchemeValues("resource", targetSourceSchemeKeyValues.BaseFiles());
 
 #if DEBUG
 		if (dependencies.Files.Contains("resource\\sourcescheme.res"))
