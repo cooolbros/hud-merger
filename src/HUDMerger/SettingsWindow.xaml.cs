@@ -16,21 +16,6 @@ public partial class SettingsWindow : Window
 		InitializeComponent();
 	}
 
-	private async void UpdateFilesNowButton_Click(object sender, RoutedEventArgs e)
-	{
-		UpdateStatus.Content = "";
-		UpdateStatus.Foreground = Brushes.Black;
-		try
-		{
-			UpdateStatus.Content = $"Last updated on {DateTime.Now}";
-		}
-		catch (Exception error)
-		{
-			UpdateStatus.Content = error.Message;
-			UpdateStatus.Foreground = Brushes.Red;
-		}
-	}
-
 	private void CancelButton_Click(object sender, RoutedEventArgs e)
 	{
 		Properties.Settings.Default.Reload();
