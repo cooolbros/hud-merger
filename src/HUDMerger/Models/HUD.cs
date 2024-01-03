@@ -122,9 +122,9 @@ public class HUD(string folderPath)
 		Dependencies dependencies = new(panels.Select((panel) => panel.Dependencies).OfType<Dependencies>());
 		dependencies.Files.UnionWith(panels.Select((panel) => panel.Main).Where((main) => !string.IsNullOrEmpty(main)));
 
-		HUDFileReaderService reader = new();
+		IHUDFileReaderService reader = new HUDFileReaderService();
 
-		Func<HUDFileReaderService, HUD, HUD, Dependencies, Action<HUDFileWriterService>?>[] actions =
+		Func<IHUDFileReaderService, HUD, HUD, Dependencies, Action<IHUDFileWriterService>?>[] actions =
 		[
 			AddDependencies,
 			MergeHUDLayout,
@@ -138,14 +138,14 @@ public class HUD(string folderPath)
 			CopyFiles
 		];
 
-		List<Action<HUDFileWriterService>> commitActions = [];
+		List<Action<IHUDFileWriterService>> commitActions = [];
 		List<Exception> exceptions = [];
 
-		foreach (Func<HUDFileReaderService, HUD, HUD, Dependencies, Action<HUDFileWriterService>?> action in actions)
+		foreach (Func<IHUDFileReaderService, HUD, HUD, Dependencies, Action<IHUDFileWriterService>?> action in actions)
 		{
 			try
 			{
-				Action<HUDFileWriterService>? result = action(reader, source, target, dependencies);
+				Action<IHUDFileWriterService>? result = action(reader, source, target, dependencies);
 				if (result != null)
 				{
 					commitActions.Add(result);
@@ -170,21 +170,21 @@ public class HUD(string folderPath)
 			]));
 		}
 
-		HUDFileWriterService writer = new(target.FolderPath);
+		IHUDFileWriterService writer = new HUDFileWriterService(target.FolderPath);
 
-		foreach (Action<HUDFileWriterService> action in commitActions)
+		foreach (Action<IHUDFileWriterService> action in commitActions)
 		{
 			action(writer);
 		}
 	}
 
-	private static Action<HUDFileWriterService>? AddDependencies(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? AddDependencies(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		dependencies.Add(reader, source);
 		return null;
 	}
 
-	private static Action<HUDFileWriterService>? MergeHUDLayout(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeHUDLayout(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		if (dependencies.HUDLayout.Count == 0)
 		{
@@ -369,7 +369,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<HUDFileWriterService>? MergeHUDAnimations(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeHUDAnimations(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		if (dependencies.Events.Count == 0)
 		{
@@ -492,7 +492,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<HUDFileWriterService>? MergeClientScheme(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeClientScheme(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		if (!dependencies.ClientScheme.Any())
 		{
@@ -721,7 +721,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<HUDFileWriterService>? MergeSourceScheme(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeSourceScheme(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		if (!dependencies.SourceScheme.Any())
 		{
@@ -955,7 +955,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<HUDFileWriterService>? MergeLanguageTokens(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeLanguageTokens(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		if (dependencies.LanguageTokens.Count == 0)
 		{
@@ -982,7 +982,7 @@ public class HUD(string folderPath)
 
 		reader.Require(required);
 
-		static (KeyValues Root, KeyValues Tokens) LoadLanguageFile(HUDFileReaderService reader, HUD hud, string language)
+		static (KeyValues Root, KeyValues Tokens) LoadLanguageFile(IHUDFileReaderService reader, HUD hud, string language)
 		{
 			KeyValues keyValues = reader.ReadKeyValues(hud, $"resource\\chat_{language}.txt");
 			KeyValues languageFileHeader = keyValues.Header("lang");
@@ -1078,7 +1078,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<HUDFileWriterService>? MergeImages(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeImages(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		reader.Require([
 			..dependencies.Images.Select((image) => (source, $"{image}.vmt", FileType.VDF)  ),
@@ -1105,13 +1105,13 @@ public class HUD(string folderPath)
 		return null;
 	}
 
-	private static Action<HUDFileWriterService>? MergeAudio(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeAudio(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		dependencies.Files.UnionWith(dependencies.Audio);
 		return null;
 	}
 
-	private static Action<HUDFileWriterService>? MergeInfoVDF(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeInfoVDF(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		reader.Require([
 			(target, "info.vdf", FileType.VDF)
@@ -1140,7 +1140,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<HUDFileWriterService>? CopyFiles(HUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? CopyFiles(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
 		return (writer) =>
 		{

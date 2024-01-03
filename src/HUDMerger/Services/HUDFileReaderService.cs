@@ -21,7 +21,7 @@ public enum FileType : byte
 	HUDAnimations = 1
 }
 
-public partial class HUDFileReaderService
+public partial class HUDFileReaderService : IHUDFileReaderService
 {
 	private readonly Lazy<VPK> TF2MiscDirVPK = new(() => new(Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf\\tf2_misc_dir.vpk")));
 	private readonly Lazy<VPK> PlatformMiscDirVPK = new(() => new(Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "platform\\platform_misc_dir.vpk")));

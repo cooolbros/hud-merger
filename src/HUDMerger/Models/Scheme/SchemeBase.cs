@@ -29,13 +29,13 @@ public abstract class SchemeBase : IScheme
 	{
 	}
 
-	public SchemeBase(HUDFileReaderService reader, HUD hud, string relativePath) : this(reader, hud, relativePath, reader.ReadKeyValues(hud, relativePath))
+	public SchemeBase(IHUDFileReaderService reader, HUD hud, string relativePath) : this(reader, hud, relativePath, reader.ReadKeyValues(hud, relativePath))
 	{
 	}
 
-	public SchemeBase(HUDFileReaderService reader, HUD hud, string relativePath, KeyValues keyValues)
+	public SchemeBase(IHUDFileReaderService reader, HUD hud, string relativePath, KeyValues keyValues)
 	{
-		static SchemeFile? ReadBaseFile(HUDFileReaderService reader, HUD hud, string relativePath)
+		static SchemeFile? ReadBaseFile(IHUDFileReaderService reader, HUD hud, string relativePath)
 		{
 			KeyValues? keyValues = reader.TryReadKeyValues(hud, relativePath);
 			if (keyValues == null) return null;

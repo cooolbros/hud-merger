@@ -47,7 +47,7 @@ public class Dependencies
 		Files.UnionWith(other.Files);
 	}
 
-	public void Add(HUDFileReaderService reader, HUD hud)
+	public void Add(IHUDFileReaderService reader, HUD hud)
 	{
 		reader.Require(Files.Select((file) => (hud, file, FileType.VDF)));
 
@@ -57,7 +57,7 @@ public class Dependencies
 		}
 	}
 
-	public void Add(HUDFileReaderService reader, HUD hud, string relativePath)
+	public void Add(IHUDFileReaderService reader, HUD hud, string relativePath)
 	{
 		try
 		{

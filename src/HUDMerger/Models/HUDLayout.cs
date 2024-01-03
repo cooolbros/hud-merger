@@ -17,9 +17,9 @@ public class HUDLayout
 	{
 	}
 
-	public HUDLayout(HUDFileReaderService reader, HUD hud)
+	public HUDLayout(IHUDFileReaderService reader, HUD hud)
 	{
-		static Dictionary<KeyValue, HashSet<KeyValue>>? ReadBaseFile(HUDFileReaderService reader, HUD hud, string relativePath)
+		static Dictionary<KeyValue, HashSet<KeyValue>>? ReadBaseFile(IHUDFileReaderService reader, HUD hud, string relativePath)
 		{
 			KeyValues? keyValues = reader.TryReadKeyValues(hud, relativePath);
 			if (keyValues == null) return null;

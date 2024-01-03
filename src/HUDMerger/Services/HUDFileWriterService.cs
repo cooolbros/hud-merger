@@ -9,7 +9,7 @@ using VDF.Models;
 
 namespace HUDMerger.Services;
 
-public class HUDFileWriterService(string folderPath)
+public class HUDFileWriterService(string folderPath) : IHUDFileWriterService
 {
 	private void Write(string relativePath, string text, Encoding? encoding)
 	{
