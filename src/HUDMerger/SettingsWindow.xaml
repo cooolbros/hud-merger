@@ -9,8 +9,8 @@
         Title="Settings"
         Width="600"
         MinWidth="600"
-        Height="225"
-        MinHeight="225"
+        Height="300"
+        MinHeight="300"
         Icon="Resources\favicon.ico"
         WindowStartupLocation="CenterScreen">
     <Grid>

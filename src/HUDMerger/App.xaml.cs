@@ -23,13 +23,18 @@ public partial class App : Application
 	public Lazy<Settings> Settings = new(() =>
 	{
 		string? teamFortress2Folder = null;
-		string? language = null;
-
 		if (!string.IsNullOrEmpty(HUDMerger.Properties.Settings.Default.TeamFortress2Folder))
 		{
 			teamFortress2Folder = HUDMerger.Properties.Settings.Default.TeamFortress2Folder;
 		}
-		else
+
+		string? language = null;
+		if (!string.IsNullOrEmpty(HUDMerger.Properties.Settings.Default.Language))
+		{
+			language = HUDMerger.Properties.Settings.Default.Language;
+		}
+
+		if (teamFortress2Folder == null || language == null)
 		{
 			try
 			{
@@ -40,55 +45,56 @@ public partial class App : Application
 						: null
 				) ?? throw new Exception();
 
-				try
+				if (teamFortress2Folder == null)
 				{
-					KeyValues libraryFolder = VDFSerializer
-						.Deserialize(File.ReadAllText(Path.Join(installPath, "steamapps\\libraryfolders.vdf")))
-						.Header("libraryfolders")
-						.First((keyValue) =>
-							keyValue.Value is KeyValues indexValues && indexValues.Any((kv) => kv.Key.Equals("apps") && kv.Value is KeyValues appsKeyValues && appsKeyValues.Any((kv) => kv.Key == "440"))
-						)
-						.Value;
-
-					string libraryFolderPath = libraryFolder.First((kv) => kv.Key.Equals("path", StringComparison.OrdinalIgnoreCase) && kv.Value is string str).Value;
-
-					string libraryFolderTeamFortress2Path = $"{libraryFolderPath.Replace("\\\\", "\\")}\\steamapps\\common\\Team Fortress 2";
-					if (Directory.Exists(libraryFolderTeamFortress2Path))
+					try
 					{
-						teamFortress2Folder = libraryFolderTeamFortress2Path;
+						KeyValues libraryFolder = VDFSerializer
+							.Deserialize(File.ReadAllText(Path.Join(installPath, "steamapps\\libraryfolders.vdf")))
+							.Header("libraryfolders")
+							.First((keyValue) =>
+								keyValue.Value is KeyValues indexValues && indexValues.Any((kv) => kv.Key.Equals("apps") && kv.Value is KeyValues appsKeyValues && appsKeyValues.Any((kv) => kv.Key == "440"))
+							)
+							.Value;
+
+						string libraryFolderPath = libraryFolder.First((kv) => kv.Key.Equals("path", StringComparison.OrdinalIgnoreCase) && kv.Value is string str).Value;
+
+						string libraryFolderTeamFortress2Path = $"{libraryFolderPath.Replace("\\\\", "\\")}\\steamapps\\common\\Team Fortress 2";
+						if (Directory.Exists(libraryFolderTeamFortress2Path))
+						{
+							teamFortress2Folder = libraryFolderTeamFortress2Path;
+						}
+					}
+					catch (Exception)
+					{
 					}
 				}
-				catch (Exception)
+
+				if (language == null)
 				{
-					teamFortress2Folder = null;
-				}
+					try
+					{
+						string appManifestPath = Path.Join(installPath, "steamapps\\appmanifest_440.acf");
 
-				try
-				{
-					string appManifestPath = Path.Join(installPath, "steamapps\\appmanifest_440.acf");
+						KeyValues userConfig = VDFSerializer
+							.Deserialize(File.ReadAllText(Path.Join(installPath, "steamapps\\appmanifest_440.acf")))
+							.Header("AppState")
+							.First((kv) => kv.Key.Equals("UserConfig", StringComparison.OrdinalIgnoreCase) && kv.Value is KeyValues)
+							.Value;
 
-					KeyValues userConfig = VDFSerializer
-						.Deserialize(File.ReadAllText(Path.Join(installPath, "steamapps\\appmanifest_440.acf")))
-						.Header("AppState")
-						.First((kv) => kv.Key.Equals("UserConfig", StringComparison.OrdinalIgnoreCase) && kv.Value is KeyValues)
-						.Value;
+						string userConfigLanguage = userConfig
+							.First((kv) => kv.Key.Equals("language", StringComparison.OrdinalIgnoreCase) && kv.Value is string)
+							.Value;
 
-					string userConfigLanguage = userConfig
-						.First((kv) => kv.Key.Equals("language", StringComparison.OrdinalIgnoreCase) && kv.Value is string)
-						.Value;
-
-					language = userConfigLanguage;
-				}
-				catch (Exception)
-				{
-					language = null;
+						language = userConfigLanguage;
+					}
+					catch (Exception)
+					{
+					}
 				}
 			}
 			catch (Exception)
 			{
-				// Registry Exception
-				teamFortress2Folder ??= null;
-				language ??= null;
 			}
 		}
 
