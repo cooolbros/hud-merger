@@ -52,7 +52,7 @@ public partial class App : Application
 
 					string libraryFolderPath = libraryFolder.First((kv) => kv.Key.Equals("path", StringComparison.OrdinalIgnoreCase) && kv.Value is string str).Value;
 
-					string libraryFolderTeamFortress2Path = $"{libraryFolderPath}\\steamapps\\common\\Team Fortress 2";
+					string libraryFolderTeamFortress2Path = $"{libraryFolderPath.Replace("\\\\", "\\")}\\steamapps\\common\\Team Fortress 2";
 					if (Directory.Exists(libraryFolderTeamFortress2Path))
 					{
 						teamFortress2Folder = libraryFolderTeamFortress2Path;
