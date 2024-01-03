@@ -15,7 +15,7 @@ public class MainWindowViewModel : ViewModelBase
 {
 	private static readonly OpenFolderDialog OpenFolderDialog = new()
 	{
-		InitialDirectory = Path.Join(Properties.Settings.Default.TeamFortress2Folder, "tf\\custom\\")
+		InitialDirectory = Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf\\custom\\")
 	};
 
 	// File
