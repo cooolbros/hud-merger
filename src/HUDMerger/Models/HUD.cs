@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Windows;
 using HUDAnimations.Models;
 using HUDAnimations.Models.Animations;
 using HUDMerger.Exceptions;
@@ -961,14 +962,29 @@ public class HUD(string folderPath)
 			return null;
 		}
 
-		reader.Require([
+		List<(HUD hud, string relativePath, FileType type)> required = [
 			(source, "resource\\chat_english.txt", FileType.VDF),
-			(target, "resource\\chat_english.txt", FileType.VDF)
-		]);
+			(target, "resource\\chat_english.txt", FileType.VDF),
+		];
 
-		static (KeyValues Root, KeyValues Tokens) LoadLanguageFile(HUDFileReaderService reader, HUD hud)
+		List<string> languages = ["english"];
+
+		string settingsLanguage = ((App)Application.Current).Settings.Value.Language;
+
+		if (settingsLanguage != "english")
 		{
-			KeyValues keyValues = reader.ReadKeyValues(hud, "resource\\chat_english.txt");
+			required.AddRange([
+				(source, $"resource\\chat_{settingsLanguage}.txt", FileType.VDF),
+				(target, $"resource\\chat_{settingsLanguage}.txt", FileType.VDF),
+			]);
+			languages.Add(settingsLanguage);
+		}
+
+		reader.Require(required);
+
+		static (KeyValues Root, KeyValues Tokens) LoadLanguageFile(HUDFileReaderService reader, HUD hud, string language)
+		{
+			KeyValues keyValues = reader.ReadKeyValues(hud, $"resource\\chat_{language}.txt");
 			KeyValues languageFileHeader = keyValues.Header("lang");
 			KeyValues languageTokens;
 
@@ -1000,55 +1016,65 @@ public class HUD(string folderPath)
 			return (keyValues, languageTokens);
 		}
 
-		KeyValues sourceLanguageTokens = LoadLanguageFile(reader, source).Tokens;
-		(KeyValues targetKeyValues, KeyValues targetLanguageTokens) = LoadLanguageFile(reader, target);
+		List<(string Language, KeyValues KeyValues)> languageFiles = [];
 
-		foreach (string token in dependencies.LanguageTokens)
+		foreach (string language in languages)
 		{
-			// Remove '#' from token
-			string key = token[1..];
+			KeyValues sourceLanguageTokens = LoadLanguageFile(reader, source, language).Tokens;
+			(KeyValues targetKeyValues, KeyValues targetLanguageTokens) = LoadLanguageFile(reader, target, language);
 
-			List<KeyValue> targetTokens = targetLanguageTokens
-				.Where((token) => token.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
-				.ToList();
-
-			foreach (KeyValue keyValue in sourceLanguageTokens.Where((kv) => kv.Key.Equals(key, StringComparison.OrdinalIgnoreCase)))
+			foreach (string token in dependencies.LanguageTokens)
 			{
-				KeyValue targetToken = targetTokens.FirstOrDefault((kv) => KeyValueComparer.KeyComparer.Equals(kv, keyValue));
+				// Remove '#' from token
+				string key = token[1..];
 
-				int tokenIndex = targetLanguageTokens.IndexOf(targetToken);
+				List<KeyValue> targetTokens = targetLanguageTokens
+					.Where((token) => token.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
+					.ToList();
 
-				if (tokenIndex != -1)
+				foreach (KeyValue keyValue in sourceLanguageTokens.Where((kv) => kv.Key.Equals(key, StringComparison.OrdinalIgnoreCase)))
 				{
-					targetTokens.Remove(targetToken);
-					int index = tokenIndex;
+					KeyValue targetToken = targetTokens.FirstOrDefault((kv) => KeyValueComparer.KeyComparer.Equals(kv, keyValue));
 
-					targetLanguageTokens[index] = new KeyValue
+					int tokenIndex = targetLanguageTokens.IndexOf(targetToken);
+
+					if (tokenIndex != -1)
 					{
-						Key = targetLanguageTokens[index].Key,
-						Value = keyValue.Value,
-						Conditional = targetLanguageTokens[index].Conditional,
-					};
+						targetTokens.Remove(targetToken);
+						int index = tokenIndex;
+
+						targetLanguageTokens[index] = new KeyValue
+						{
+							Key = targetLanguageTokens[index].Key,
+							Value = keyValue.Value,
+							Conditional = targetLanguageTokens[index].Conditional,
+						};
+					}
+					else
+					{
+						targetLanguageTokens.Add(keyValue);
+					}
 				}
-				else
+
+				foreach (KeyValue t in targetTokens)
 				{
-					targetLanguageTokens.Add(keyValue);
+					targetLanguageTokens.Remove(t);
 				}
 			}
 
-			foreach (KeyValue t in targetTokens)
-			{
-				targetLanguageTokens.Remove(t);
-			}
+			languageFiles.Add((language, targetKeyValues));
 		}
 
 		return (writer) =>
 		{
-			writer.Write(
-				"resource\\chat_english.txt",
-				targetKeyValues,
-				new UnicodeEncoding(false, true) // LE BOM
-			);
+			foreach ((string Language, KeyValues KeyValues) in languageFiles)
+			{
+				writer.Write(
+					$"resource\\chat_{Language}.txt",
+					KeyValues,
+					new UnicodeEncoding(false, true) // LE BOM
+				);
+			}
 		};
 	}
 
