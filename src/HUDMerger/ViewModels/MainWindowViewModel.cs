@@ -82,7 +82,7 @@ public class MainWindowViewModel : ViewModelBase
 	{
 		LoadSourceHUDCommand = new RelayCommand(LoadSourceHUD);
 		LoadTargetHUDCommand = new RelayCommand(LoadTargetHUD);
-		ShowSettingsWindowCommand = new RelayCommand(() => ShowWindow(new SettingsWindow()));
+		ShowSettingsWindowCommand = new RelayCommand(ShowSettingsWindow);
 		QuitCommand = new RelayCommand(Application.Current.Shutdown);
 
 		ShowAboutWindowCommand = new RelayCommand(() => ShowWindow(new AboutWindow()));
@@ -94,6 +94,27 @@ public class MainWindowViewModel : ViewModelBase
 		_targetHUDPanelsListViewModel = new SelectHUDViewModel(LoadTargetHUDCommand);
 
 		MergeCommand = new MergeCommand(this);
+	}
+
+	private void ShowSettingsWindow()
+	{
+		using SettingsWindowViewModel settingsWindowViewModel = new();
+
+		SettingsWindow settingsWindow = new()
+		{
+			DataContext = settingsWindowViewModel,
+			Owner = Application.Current.MainWindow
+		};
+
+		void OnClose(object? sender, EventArgs args)
+		{
+			settingsWindowViewModel.Close -= OnClose;
+			settingsWindow.Close();
+		}
+
+		settingsWindowViewModel.Close += OnClose;
+
+		settingsWindow.Show();
 	}
 
 	private static void ShowWindow(Window window)
