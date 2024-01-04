@@ -386,6 +386,50 @@
 		]
 	},
 	{
+		"Name": "Payload Progress Status",
+		"Main": "resource\\ui\\objectivestatusescort.res",
+		"Dependencies": {
+			"HUDLayout": [
+				"HudObjectiveStatus"
+			],
+			"Images": [
+				"materials\\hud\\cart_alert",
+				"materials\\hud\\cart_arrow_left",
+				"materials\\hud\\cart_arrow_right",
+				"materials\\hud\\cart_blocked",
+				"materials\\hud\\cart_blue_bottom",
+				"materials\\hud\\cart_blue",
+				"materials\\hud\\cart_home_blue_opaque",
+				"materials\\hud\\cart_home_blue_square",
+				"materials\\hud\\cart_home_blue",
+				"materials\\hud\\cart_home_red_opaque",
+				"materials\\hud\\cart_home_red_square",
+				"materials\\hud\\cart_home_red",
+				"materials\\hud\\cart_icon",
+				"materials\\hud\\cart_neutral_bottom",
+				"materials\\hud\\cart_neutral",
+				"materials\\hud\\cart_point_blue_opaque",
+				"materials\\hud\\cart_point_blue",
+				"materials\\hud\\cart_point_neutral_opaque",
+				"materials\\hud\\cart_point_neutral",
+				"materials\\hud\\cart_point_red_opaque",
+				"materials\\hud\\cart_point_red",
+				"materials\\hud\\cart_red_bottom",
+				"materials\\hud\\cart_red",
+				"materials\\hud\\cart_track_arrow",
+				"materials\\hud\\cart_track_blue_opaque",
+				"materials\\hud\\cart_track_blue",
+				"materials\\hud\\cart_track_neutral_opaque",
+				"materials\\hud\\cart_track_red_opaque",
+				"materials\\hud\\cart_track_red",
+				"materials\\hud\\cart_track"
+			]
+		},
+		"Files": [
+			"resource\\ui\\objectivestatusmultipleescort.res"
+		]
+	},
+	{
 		"Name": "Scoreboard",
 		"Main": "resource\\ui\\scoreboard.res",
 		"Files": [
