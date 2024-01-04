@@ -21,7 +21,7 @@ public class HUDFileWriterService(string folderPath) : IHUDFileWriterService
 			Directory.CreateDirectory(directoryName);
 		}
 
-		encoding ??= Encoding.UTF8;
+		encoding ??= new UTF8Encoding(false); // No BOM
 		File.WriteAllText(absolutePath, text, encoding);
 	}
 
