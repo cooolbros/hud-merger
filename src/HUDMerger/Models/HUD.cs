@@ -122,6 +122,12 @@ public class HUD(string folderPath)
 	{
 		Dependencies dependencies = new(panels.Select((panel) => panel.Dependencies).OfType<Dependencies>());
 		dependencies.Files.UnionWith(panels.Select((panel) => panel.Main).Where((main) => !string.IsNullOrEmpty(main)));
+		dependencies.Files.UnionWith(
+			panels
+				.Select((panel) => panel.Files)
+				.OfType<HashSet<string>>()
+				.SelectMany((files) => files)
+		);
 
 		IHUDFileReaderService reader = new HUDFileReaderService();
 
