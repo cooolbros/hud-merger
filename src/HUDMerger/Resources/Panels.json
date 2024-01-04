@@ -18,16 +18,11 @@
 		"Main": "resource\\ui\\econ\\backpackpanel.res"
 	},
 	{
-		"Name": "Class Loadout Menu",
-		"Main": "resource\\ui\\classloadoutpanel.res",
+		"Name": "Capture The Flag Status",
+		"Main": "resource\\ui\\hudobjectiveflagpanel.res",
 		"Files": [
-			"resource\\ui\\itemselectionpanel.res",
-			"resource\\ui\\loadoutpresetpanel.res"
+			"resource\\ui\\flagstatus.res"
 		]
-	},
-	{
-		"Name": "Class Selection Menu",
-		"Main": "resource\\ui\\classselection.res"
 	},
 	{
 		"Name": "Character Info Menu",
@@ -44,18 +39,23 @@
 		]
 	},
 	{
+		"Name": "Class Loadout Menu",
+		"Main": "resource\\ui\\classloadoutpanel.res",
+		"Files": [
+			"resource\\ui\\itemselectionpanel.res",
+			"resource\\ui\\loadoutpresetpanel.res"
+		]
+	},
+	{
+		"Name": "Class Selection Menu",
+		"Main": "resource\\ui\\classselection.res"
+	},
+	{
 		"Name": "Crafting Menu",
 		"Main": "resource\\ui\\craftingpanel.res",
 		"Files": [
 			"resource\\ui\\craftingstatusdialog.res",
 			"resource\\ui\\dynamicrecipepanel.res"
-		]
-	},
-	{
-		"Name": "Capture The Flag Status",
-		"Main": "resource\\ui\\hudobjectiveflagpanel.res",
-		"Files": [
-			"resource\\ui\\flagstatus.res"
 		]
 	},
 	{
@@ -207,6 +207,20 @@
 		}
 	},
 	{
+		"Name": "Freeze Cam",
+		"Main": "resource\\ui\\freezepanel_basic.res",
+		"Dependencies": {
+			"HUDLayout": [
+				"FreezePanel",
+				"FreezePanelCallout"
+			]
+		},
+		"Files": [
+			"resource\\ui\\freezepanelcallout.res",
+			"resource\\ui\\freezepanelkillerhealth.res"
+		]
+	},
+	{
 		"Name": "Health",
 		"Main": "resource\\ui\\hudplayerhealth.res",
 		"Dependencies": {
@@ -263,20 +277,6 @@
 			"resource\\ui\\huditemeffectmeter_sodapopper.res",
 			"resource\\ui\\huditemeffectmeter_spyknife.res",
 			"resource\\ui\\hudrocketpack.res"
-		]
-	},
-	{
-		"Name": "Freeze Cam",
-		"Main": "resource\\ui\\freezepanel_basic.res",
-		"Dependencies": {
-			"HUDLayout": [
-				"FreezePanel",
-				"FreezePanelCallout"
-			]
-		},
-		"Files": [
-			"resource\\ui\\freezepanelcallout.res",
-			"resource\\ui\\freezepanelkillerhealth.res"
 		]
 	},
 	{
@@ -479,6 +479,15 @@
 		]
 	},
 	{
+		"Name": "Taunt Menu",
+		"Main": "resource\\ui\\hudmenutauntselection.res",
+		"Dependencies": {
+			"HUDLayout": [
+				"HudMenuTauntSelection"
+			]
+		}
+	},
+	{
 		"Name": "Team Selection Menu",
 		"Main": "resource\\ui\\teammenu.res",
 		"Files": [
@@ -521,15 +530,6 @@
 			"resource\\ui\\hudmatchsummary.res",
 			"resource\\ui\\hudstopwatch.res"
 		]
-	},
-	{
-		"Name": "Taunt Menu",
-		"Main": "resource\\ui\\hudmenutauntselection.res",
-		"Dependencies": {
-			"HUDLayout": [
-				"HudMenuTauntSelection"
-			]
-		}
 	},
 	{
 		"Name": "UberCharge Label And Meter",
