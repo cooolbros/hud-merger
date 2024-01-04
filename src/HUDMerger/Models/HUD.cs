@@ -38,6 +38,7 @@ public class HUD(string folderPath)
 
 	public HUDPanel[] Panels { get; } = JsonSerializer
 		.Deserialize<HUDPanel[]>(File.OpenRead("Resources\\Panels.json"))!
+		.OrderBy((panel) => panel.Name)
 		.Where((panel) =>
 		{
 			if (panel.RequiredKeyValue != null)
