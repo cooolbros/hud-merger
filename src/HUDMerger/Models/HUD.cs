@@ -688,7 +688,7 @@ public class HUD(string folderPath)
 			{
 				targetMergeClientScheme.CustomFontFiles.Add(new KeyValue
 				{
-					Key = max++.ToString(),
+					Key = (++max).ToString(),
 					Value = customFontFile.Value,
 					Conditional = customFontFile.Conditional
 				});
