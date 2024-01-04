@@ -1030,16 +1030,22 @@ public class HUD(string folderPath)
 			KeyValues sourceLanguageTokens = LoadLanguageFile(reader, source, language).Tokens;
 			(KeyValues targetKeyValues, KeyValues targetLanguageTokens) = LoadLanguageFile(reader, target, language);
 
+			bool languageTokensMerged = false;
+
 			foreach (string token in dependencies.LanguageTokens)
 			{
 				// Remove '#' from token
 				string key = token[1..];
 
+				List<KeyValue> sourceTokens = sourceLanguageTokens
+					.Where((kv) => kv.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
+					.ToList();
+
 				List<KeyValue> targetTokens = targetLanguageTokens
 					.Where((token) => token.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
 					.ToList();
 
-				foreach (KeyValue keyValue in sourceLanguageTokens.Where((kv) => kv.Key.Equals(key, StringComparison.OrdinalIgnoreCase)))
+				foreach (KeyValue keyValue in sourceTokens)
 				{
 					KeyValue targetToken = targetTokens.FirstOrDefault((kv) => KeyValueComparer.KeyComparer.Equals(kv, keyValue));
 
@@ -1067,9 +1073,17 @@ public class HUD(string folderPath)
 				{
 					targetLanguageTokens.Remove(t);
 				}
+
+				if (!languageTokensMerged)
+				{
+					languageTokensMerged = sourceTokens.Count != 0;
+				}
 			}
 
-			languageFiles.Add((language, targetKeyValues));
+			if (languageTokensMerged)
+			{
+				languageFiles.Add((language, targetKeyValues));
+			}
 		}
 
 		return (writer) =>
