@@ -51,7 +51,7 @@ public class Dependencies
 	{
 		reader.Require(Files.Select((file) => (hud, file, FileType.VDF)));
 
-		foreach (string relativePath in Files)
+		foreach (string relativePath in Files.ToArray())
 		{
 			Add(reader, hud, relativePath);
 		}
@@ -71,7 +71,9 @@ public class Dependencies
 					string? directoryName = Path.GetDirectoryName(relativePath);
 					if (directoryName != null)
 					{
-						Add(reader, hud, Path.Join(directoryName, basePath));
+						string relativeBaseFilePath = Path.GetRelativePath(".", Path.Join(directoryName, basePath));
+						Files.Add(relativeBaseFilePath);
+						Add(reader, hud, relativeBaseFilePath);
 					}
 				}
 			}
