@@ -1116,7 +1116,7 @@ public class HUD(string folderPath)
 			dependencies.Files.UnionWith(
 				vmt
 					.Header()
-					.Where((kv) => kv.Key.Equals("$baseTexture", StringComparison.OrdinalIgnoreCase))
+					.Where((kv) => kv.Key.Equals("$baseTexture", StringComparison.OrdinalIgnoreCase) || kv.Key.Equals("$detail", StringComparison.OrdinalIgnoreCase))
 					.Select((kv) => kv.Value)
 					.OfType<string>()
 					.Select((value) => $"materials\\{value}{(value.EndsWith(".vtf") ? "" : ".vtf")}")
