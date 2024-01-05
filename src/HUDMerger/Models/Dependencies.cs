@@ -20,6 +20,7 @@ public class Dependencies
 	public HashSet<string> Events { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 	public HashSet<string> LanguageTokens { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 	public FilesHashSet Images { get; init; } = [];
+	public FilesHashSet PreloadImages { get; init; } = [];
 	public FilesHashSet Audio { get; init; } = [];
 	public FilesHashSet Files { get; init; } = [];
 
@@ -43,6 +44,7 @@ public class Dependencies
 		Events.UnionWith(other.Events);
 		LanguageTokens.UnionWith(other.LanguageTokens);
 		Images.UnionWith(other.Images);
+		PreloadImages.UnionWith(other.PreloadImages);
 		Audio.UnionWith(other.Audio);
 		Files.UnionWith(other.Files);
 	}

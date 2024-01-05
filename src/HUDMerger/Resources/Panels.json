@@ -57,7 +57,7 @@
 			"HUDLayout": [
 				"HudControlPointIcons"
 			],
-			"Images": [
+			"PreloadImages": [
 				"materials\\sprites\\obj_icons\\icon_base_blu",
 				"materials\\sprites\\obj_icons\\icon_base_red",
 				"materials\\sprites\\obj_icons\\icon_obj_1_blu_locked",
@@ -476,7 +476,7 @@
 			"HUDLayout": [
 				"HudObjectiveStatus"
 			],
-			"Images": [
+			"PreloadImages": [
 				"materials\\hud\\cart_alert",
 				"materials\\hud\\cart_arrow_left",
 				"materials\\hud\\cart_arrow_right",

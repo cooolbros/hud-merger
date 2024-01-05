@@ -140,6 +140,7 @@ public class HUD(string folderPath)
 			MergeSourceScheme,
 			MergeLanguageTokens,
 			MergeImages,
+			MergePreloadImages,
 			MergeAudio,
 			MergeInfoVDF,
 			CopyFiles
@@ -1101,11 +1102,13 @@ public class HUD(string folderPath)
 
 	private static Action<IHUDFileWriterService>? MergeImages(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
+		IEnumerable<string> images = [..dependencies.PreloadImages, ..dependencies.Images];
+
 		reader.Require([
-			..dependencies.Images.Select((image) => (source, $"{image}.vmt", FileType.VDF)  ),
+			..images.Select((image) => (source, $"{image}.vmt", FileType.VDF)  ),
 		]);
 
-		foreach (string image in dependencies.Images)
+		foreach (string image in images)
 		{
 			dependencies.Files.Add($"{image}.vmt");
 			dependencies.Files.Add($"{image}.vtf");
@@ -1124,6 +1127,72 @@ public class HUD(string folderPath)
 		}
 
 		return null;
+	}
+
+	private static Action<IHUDFileWriterService>? MergePreloadImages(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	{
+		if (dependencies.PreloadImages.Count == 0)
+		{
+			return null;
+		}
+
+		reader.Require([
+			(target, "resource\\ui\\mainmenuoverride.res", FileType.VDF),
+			(target, "resource\\ui\\mainmenuoverride_preload.res", FileType.VDF)
+		]);
+
+		KeyValues mainmenuKeyValues = reader.ReadKeyValues(target, "resource\\ui\\mainmenuoverride.res");
+
+		KeyValues preloadKeyValues = reader.TryReadKeyValues(target, "resource\\ui\\mainmenuoverride_preload.res") ?? [];
+		KeyValues preloadKeyValuesHeader = preloadKeyValues.Header("Resource/UI/MainMenuOverride_Preload.res");
+
+		bool preloadImagesMerged = false;
+
+		foreach (string image in dependencies.PreloadImages)
+		{
+			string name = Path.GetFileNameWithoutExtension(image);
+			KeyValue keyValue = new()
+			{
+				Key = name,
+				Value = new KeyValues([
+					new KeyValue { Key = "ControlName", Value = "ImagePanel", Conditional = null },
+					new KeyValue { Key = "fieldName", Value = name, Conditional = null },
+					new KeyValue { Key = "visible", Value = 0.ToString(), Conditional = null },
+					new KeyValue { Key = "enabled", Value = 0.ToString(), Conditional = null },
+					new KeyValue { Key = "image", Value = App.PathSeparatorRegex().Replace(Path.GetRelativePath("materials\\vgui", image), "/"), Conditional = null },
+				]),
+				Conditional = null
+			};
+
+			if (!preloadKeyValuesHeader.Any((kv) => kv.Equals(keyValue)))
+			{
+				preloadKeyValuesHeader.Add(keyValue);
+				preloadImagesMerged = true;
+			}
+		}
+
+		if (preloadImagesMerged)
+		{
+			int index = mainmenuKeyValues.FindLastIndex((kv) => kv.Key.Equals("#base", StringComparison.OrdinalIgnoreCase) && kv.Value is string);
+			mainmenuKeyValues.Insert(
+				index != -1 ? (index + 1) : 0,
+				new KeyValue
+				{
+					Key = "#base",
+					Value = $"mainmenuoverride_preload.res",
+					Conditional = null
+				}
+			);
+		}
+
+		return (writer) =>
+		{
+			if (preloadImagesMerged)
+			{
+				writer.Write("resource\\ui\\mainmenuoverride.res", mainmenuKeyValues);
+				writer.Write("resource\\ui\\mainmenuoverride_preload.res", preloadKeyValues);
+			}
+		};
 	}
 
 	private static Action<IHUDFileWriterService>? MergeAudio(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
