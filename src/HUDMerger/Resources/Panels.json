@@ -310,6 +310,14 @@
 		]
 	},
 	{
+		"Name": "Intro Menu",
+		"Main": "resource\\ui\\textwindow.res",
+		"Files": [
+			"resource\\ui\\intromenu.res",
+			"resource\\ui\\mapinfomenu.res"
+		]
+	},
+	{
 		"Name": "Item Charge Counters",
 		"Main": "resource\\ui\\huditemeffectmeter_killstreak.res",
 		"Files": [
@@ -452,6 +460,13 @@
 		},
 		"Files": [
 			"resource\\ui\\upgradebuypanel.res"
+		]
+	},
+	{
+		"Name": "MvM Wave Status",
+		"Main": "resource\\ui\\wavestatuspanel.res",
+		"Files": [
+			"resource\\ui\\enemycountpanel.res"
 		]
 	},
 	{
