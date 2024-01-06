@@ -43,7 +43,7 @@
             </StackPanel.Resources>
             <Image Source="/Resources/favicon.ico" Width="64" Height="64" Margin="0,0,0,10" />
             <Label FontSize="28">HUD Merger</Label>
-            <Label FontSize="15">Version 1.2.6</Label>
+            <Label FontSize="15">Version 2.0.0</Label>
             <Label FontSize="15">Revan</Label>
             <WrapPanel HorizontalAlignment="Center" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="Fant">
                 <Button Style="{StaticResource ImageButton}" Command="{Binding OpenGithubCommand}">
