@@ -1171,7 +1171,7 @@ public class HUD(string folderPath)
 			}
 		}
 
-		if (preloadImagesMerged)
+		if (preloadImagesMerged && !mainmenuKeyValues.BaseFiles().ToArray().Contains($"mainmenuoverride_preload.res", StringComparer.OrdinalIgnoreCase))
 		{
 			int index = mainmenuKeyValues.FindLastIndex((kv) => kv.Key.Equals("#base", StringComparison.OrdinalIgnoreCase) && kv.Value is string);
 			mainmenuKeyValues.Insert(
