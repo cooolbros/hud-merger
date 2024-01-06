@@ -6,12 +6,12 @@
     <Application.Resources>
         <SolidColorBrush x:Key="_Blue" Color="#0073CF" />
         <SolidColorBrush x:Key="_BlueHover" Color="#338FD8" />
-        <Style x:Key="EnabledButton" TargetType="{x:Type ButtonBase}">
+        <Style x:Key="EnabledButton" TargetType="{x:Type Button}">
             <Setter Property="Foreground" Value="#000000" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <ControlTemplate TargetType="{x:Type Button}">
                         <Border x:Name="buttonBorder" Background="#CCCCCC" BorderThickness="0" BorderBrush="Transparent" SnapsToDevicePixels="True" CornerRadius="2">
                             <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
@@ -34,12 +34,12 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="AccentButton" TargetType="{x:Type ButtonBase}">
+        <Style x:Key="AccentButton" TargetType="{x:Type Button}">
             <Setter Property="Foreground" Value="#FFFFFF" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <ControlTemplate TargetType="{x:Type Button}">
                         <Border x:Name="buttonBorder" Background="{StaticResource _Blue}" BorderThickness="0" BorderBrush="Transparent" SnapsToDevicePixels="True" CornerRadius="2">
                             <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
