@@ -1102,10 +1102,10 @@ public class HUD(string folderPath)
 
 	private static Action<IHUDFileWriterService>? MergeImages(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
-		IEnumerable<string> images = [..dependencies.PreloadImages, ..dependencies.Images];
+		IEnumerable<string> images = dependencies.Images.Concat(dependencies.PreloadImages);
 
 		reader.Require([
-			..images.Select((image) => (source, $"{image}.vmt", FileType.VDF)  ),
+			..images.Select((image) => (source, $"{image}.vmt", FileType.VDF)),
 		]);
 
 		foreach (string image in images)
