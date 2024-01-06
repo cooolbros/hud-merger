@@ -109,6 +109,8 @@ public partial class App : Application
 	{
 		base.OnStartup(e);
 
+		HUDMerger.Properties.Settings.Default.Upgrade();
+
 		MainWindow = new MainWindow
 		{
 			DataContext = new MainWindowViewModel()
