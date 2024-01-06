@@ -110,6 +110,7 @@ public partial class App : Application
 		base.OnStartup(e);
 
 		HUDMerger.Properties.Settings.Default.Upgrade();
+		HUDMerger.Properties.Settings.Default.Save();
 
 		MainWindow = new MainWindow
 		{

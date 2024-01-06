@@ -11,8 +11,5 @@ public partial class MainWindow : Window
 	public MainWindow()
 	{
 		InitializeComponent();
-
-		Properties.Settings.Default.Upgrade();
-		Properties.Settings.Default.Save();
 	}
 }
