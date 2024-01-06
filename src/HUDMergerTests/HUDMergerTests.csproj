@@ -18,31 +18,4 @@
     <ProjectReference Include="..\HUDMerger\HUDMerger.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Models\HUDAnimationsTests\ParseTest\hudanimations_tf.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\HUDLayoutTests\HUDLayoutTest1\scripts\hudlayout.res">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\HUDLayoutTests\HUDLayoutTest2\scripts\file1.res">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\HUDLayoutTests\HUDLayoutTest2\scripts\file2.res">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\HUDLayoutTests\HUDLayoutTest2\scripts\hudlayout.res">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\HUDLayoutTests\HUDLayoutTest3\scripts\file1.res">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\HUDLayoutTests\HUDLayoutTest3\scripts\file2.res">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\HUDLayoutTests\HUDLayoutTest3\scripts\hudlayout.res">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
