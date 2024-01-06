@@ -85,7 +85,7 @@ public class MainWindowViewModel : ViewModelBase
 		ShowSettingsWindowCommand = new RelayCommand(ShowSettingsWindow);
 		QuitCommand = new RelayCommand(Application.Current.Shutdown);
 
-		ShowAboutWindowCommand = new RelayCommand(() => ShowWindow(new AboutWindow()));
+		ShowAboutWindowCommand = new RelayCommand(ShowAboutWindow);
 
 		SourceHUDInfoViewModel = new HUDInfoViewModel("from", SourceHUD);
 		TargetHUDInfoViewModel = new HUDInfoViewModel("to", TargetHUD);
@@ -117,10 +117,17 @@ public class MainWindowViewModel : ViewModelBase
 		settingsWindow.Show();
 	}
 
-	private static void ShowWindow(Window window)
+	private void ShowAboutWindow()
 	{
-		window.Owner ??= Application.Current.MainWindow;
-		window.Show();
+		using AboutWindowViewModel aboutWindowViewModel = new();
+
+		AboutWindow aboutWindow = new()
+		{
+			DataContext = aboutWindowViewModel,
+			Owner = Application.Current.MainWindow
+		};
+
+		aboutWindow.Show();
 	}
 
 	private void LoadSourceHUD()
