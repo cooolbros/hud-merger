@@ -731,7 +731,7 @@ public class HUD(string folderPath)
 
 	private static Action<IHUDFileWriterService>? MergeSourceScheme(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
 	{
-		if (!dependencies.SourceScheme.Any())
+		if (!dependencies.SourceScheme.Any() || dependencies.Files.Contains("resource\\sourcescheme.res"))
 		{
 			return null;
 		}
