@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Discord;
 using HUDMerger.Commands;
 using HUDMerger.Models;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -17,6 +21,8 @@ public class MainWindowViewModel : ViewModelBase
 	{
 		InitialDirectory = Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf\\custom\\")
 	};
+
+	private static readonly Channel<(string? sourceName, string? targetName)> DiscordChannel = Channel.CreateBounded<(string? sourceName, string? targetName)>(new BoundedChannelOptions(1) { FullMode = BoundedChannelFullMode.DropOldest });
 
 	// File
 	public ICommand LoadSourceHUDCommand { get; }
@@ -37,6 +43,7 @@ public class MainWindowViewModel : ViewModelBase
 		{
 			_sourceHUD = value;
 			OnPropertyChanged();
+			DiscordChannel.Writer.TryWrite((SourceHUD?.Name, TargetHUD?.Name));
 		}
 	}
 
@@ -48,6 +55,7 @@ public class MainWindowViewModel : ViewModelBase
 		{
 			_targetHUD = value;
 			OnPropertyChanged();
+			DiscordChannel.Writer.TryWrite((SourceHUD?.Name, TargetHUD?.Name));
 		}
 	}
 
@@ -94,6 +102,9 @@ public class MainWindowViewModel : ViewModelBase
 		_targetHUDPanelsListViewModel = new SelectHUDViewModel(LoadTargetHUDCommand);
 
 		MergeCommand = new MergeCommand(this);
+
+		ChannelReader<(string? sourceName, string? targetName)> reader = DiscordChannel.Reader;
+		Task.Run(async () => await DiscordRichPresence(reader));
 	}
 
 	private void ShowSettingsWindow()
@@ -173,6 +184,50 @@ public class MainWindowViewModel : ViewModelBase
 		if (e.PropertyName == nameof(HUDPanelViewModel.Selected) && TargetHUDPanelsListViewModel is TargetHUDPanelsListViewModel targetHUDPanelsListViewModel)
 		{
 			targetHUDPanelsListViewModel.HUDPanelsCollectionView.Refresh();
+		}
+	}
+
+	private static async Task DiscordRichPresence(ChannelReader<(string? sourceName, string? targetName)> reader)
+	{
+		Discord.Discord discord = new(1188809773664190524, (ulong)CreateFlags.Default);
+
+		try
+		{
+			Activity activity = new()
+			{
+				Type = ActivityType.Streaming,
+				Details = "Merging HUDs",
+				Timestamps = new ActivityTimestamps
+				{
+					Start = DateTimeOffset.Now.ToUnixTimeSeconds()
+				},
+				Assets = new()
+				{
+					LargeImage = "hud-merger"
+				},
+			};
+
+			while (true)
+			{
+				if (reader.TryRead(out var item))
+				{
+					activity.Details = item switch
+					{
+						(null, null) => "Merging HUDs",
+						(string sourceName, null) => $"Merging from {sourceName}",
+						(null, string targetName) => $"Merging into {targetName}",
+						(string sourceName, string targetName) => $"Merging from {sourceName} into {targetName}"
+					};
+				}
+
+				discord.GetActivityManager().UpdateActivity(activity, (result) => Console.WriteLine(result));
+				discord.RunCallbacks();
+				await Task.Delay(1000 / 60);
+			}
+		}
+		finally
+		{
+			discord.Dispose();
 		}
 	}
 }
