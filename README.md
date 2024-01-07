@@ -4,7 +4,7 @@ A C#/WPF application for merging custom HUDs in Team Fortress 2
 
 ## Installation
 
- - Download and install the [.NET 5.0 Runtime](https://dotnet.microsoft.com/download/dotnet/5.0/runtime) for desktop apps
+ - Download and install the [.NET 8.0 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0/runtime) for desktop apps
  - Download the [latest release](https://github.com/cooolbros/hud-merger/releases/latest) of HUD Merger
 
 ---
