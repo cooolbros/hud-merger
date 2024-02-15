@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 using HUDAnimations.Models;
 using HUDAnimations.Models.Animations;
 using HUDAnimations.Models.Interpolators;
@@ -119,26 +119,43 @@ public static class HUDAnimationsSerializer
 
 			float ReadNumber()
 			{
+				string value = ReadString();
+
 				// Support floats with multiple decimals e.g. "0.1.5"
-				string value = "";
+				string result = "";
+
 				bool seen = false;
-				foreach (char c in ReadString())
+
+				foreach (char c in value)
 				{
 					if (c == '.')
 					{
 						if (!seen)
 						{
-							value += c;
+							result += c;
 							seen = true;
 						}
 					}
 					else
 					{
-						value += c;
+						result += c;
 					}
 				}
 
-				return float.Parse(value);
+				try
+				{
+					return float.Parse(result, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+				}
+				catch (FormatException)
+				{
+					throw new VDFSyntaxException(
+						new VDFToken { Type = VDFTokenType.String, Value = value },
+						["number"],
+						tokeniser.Index,
+						tokeniser.Line,
+						tokeniser.Character
+					);
+				}
 			}
 
 			bool ReadBool()
