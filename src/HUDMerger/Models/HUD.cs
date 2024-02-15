@@ -168,7 +168,7 @@ public class HUD(string folderPath)
 		if (exceptions.Count != 0)
 		{
 			throw new Exception(string.Join("\r\n", [
-				$"{exceptions.Count} error{(exceptions.Count != 1 ? "s" : "")} were encountered while trying to merge:",
+				$"{exceptions.Count} error{(exceptions.Count != 1 ? "s" : "")} {(exceptions.Count != 1 ? "were" : "was")} encountered while trying to merge:",
 				"",
 				..exceptions
 					.OrderBy((e) => e is FileException fileException ? (fileException.HUD == source ? 0 : 1) : 0)
