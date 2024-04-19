@@ -44,9 +44,26 @@ public class MergeCommand : CommandBase
 				return !relativeDirectory.StartsWith("..") && !Path.IsPathRooted(relativeDirectory);
 			}
 
-			if (PathContainsPath(Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD!.FolderPath) && Process.GetProcessesByName("hl2").Length != 0)
+			bool teamFortress2FolderContainsTarget = PathContainsPath(Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD!.FolderPath);
+
+			Process[] processes;
+
+			if (teamFortress2FolderContainsTarget)
 			{
-				MessageBox.Show("HL2 process open, cannot merge!", "HL2 Open Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				processes = [
+					..Process.GetProcessesByName("hl2"),
+					..Process.GetProcessesByName("tf"),
+					..Process.GetProcessesByName("tf_win64"),
+				];
+			}
+			else
+			{
+				processes = [];
+			}
+
+			if (teamFortress2FolderContainsTarget && processes.Length != 0)
+			{
+				MessageBox.Show("TF2 process open, cannot merge!", "TF2 Open Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				return;
 			}
 #endif
