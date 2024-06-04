@@ -6,5 +6,5 @@ public class FlickerInterpolator : InterpolatorBase
 {
 	public required float Randomness { get; init; }
 
-	public override string ToString() => $"Flicker {Randomness}";
+	public override string ToString() => $"Flicker {Print(Randomness)}";
 }

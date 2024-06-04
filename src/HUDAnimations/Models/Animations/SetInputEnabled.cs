@@ -11,6 +11,6 @@ public class SetInputEnabled : HUDAnimationBase
 
 	public override string ToString()
 	{
-		return $"{Type} {Print(Element)} {Convert.ToByte(Enabled)} {Delay}" + PrintConditional();
+		return $"{Type} {Print(Element)} {Convert.ToByte(Enabled)} {Print(Delay)}" + PrintConditional();
 	}
 }

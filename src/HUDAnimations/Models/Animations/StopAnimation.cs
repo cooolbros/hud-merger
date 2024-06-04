@@ -11,6 +11,6 @@ public class StopAnimation : HUDAnimationBase
 
 	public override string ToString()
 	{
-		return $"{Type} {Print(Element)} {Print(Property)} {Delay}" + PrintConditional();
+		return $"{Type} {Print(Element)} {Print(Property)} {Print(Delay)}" + PrintConditional();
 	}
 }

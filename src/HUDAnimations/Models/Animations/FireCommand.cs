@@ -10,6 +10,6 @@ public class FireCommand : HUDAnimationBase
 
 	public override string ToString()
 	{
-		return $"{Type} {Delay} {Print(Command)}" + PrintConditional();
+		return $"{Type} {Print(Delay)} {Print(Command)}" + PrintConditional();
 	}
 }

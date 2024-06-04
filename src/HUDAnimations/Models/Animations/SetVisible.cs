@@ -11,6 +11,6 @@ public class SetVisible : HUDAnimationBase
 
 	public override string ToString()
 	{
-		return $"{Type} {Print(Element)} {Convert.ToByte(Visible)} {Delay}" + PrintConditional();
+		return $"{Type} {Print(Element)} {Convert.ToByte(Visible)} {Print(Delay)}" + PrintConditional();
 	}
 }

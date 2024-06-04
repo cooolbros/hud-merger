@@ -11,6 +11,6 @@ public class RunEventChild : HUDAnimationBase
 
 	public override string ToString()
 	{
-		return $"{Type} {Print(Element)} {Print(Event)} {Delay}" + PrintConditional();
+		return $"{Type} {Print(Element)} {Print(Event)} {Print(Delay)}" + PrintConditional();
 	}
 }

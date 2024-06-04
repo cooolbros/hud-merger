@@ -10,6 +10,6 @@ public class StopPanelAnimations : HUDAnimationBase
 
 	public override string ToString()
 	{
-		return $"{Type} {Print(Element)} {Delay}" + PrintConditional();
+		return $"{Type} {Print(Element)} {Print(Delay)}" + PrintConditional();
 	}
 }

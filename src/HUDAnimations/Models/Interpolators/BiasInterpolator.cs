@@ -6,5 +6,5 @@ public class BiasInterpolator : InterpolatorBase
 {
 	public required float Bias { get; init; }
 
-	public override string ToString() => $"Bias {Bias}";
+	public override string ToString() => $"Bias {Print(Bias)}";
 }

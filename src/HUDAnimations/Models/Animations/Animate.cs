@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace HUDAnimations.Models.Animations;
 
@@ -14,6 +15,6 @@ public class Animate : HUDAnimationBase
 
 	public override string ToString()
 	{
-		return $"{Type} {Print(Element)} {Print(Property)} {Print(Value)} {Interpolator} {Delay} {Duration}" + PrintConditional();
+		return $"{Type} {Print(Element)} {Print(Property)} {Print(Value)} {Interpolator} {Print(Delay)} {Print(Duration)}" + PrintConditional();
 	}
 }

@@ -10,6 +10,6 @@ public class PlaySound : HUDAnimationBase
 
 	public override string ToString()
 	{
-		return $"{Type} {Delay} {Print(Sound)}" + PrintConditional();
+		return $"{Type} {Print(Delay)} {Print(Sound)}" + PrintConditional();
 	}
 }
