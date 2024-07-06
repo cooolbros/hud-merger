@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using HUDMerger.Models;
-using HUDMerger.ViewModels;
+using HUDMerger.Core.Models;
+using HUDMerger.Core.ViewModels;
 
 namespace HUDMerger.Core.Commands;
 
