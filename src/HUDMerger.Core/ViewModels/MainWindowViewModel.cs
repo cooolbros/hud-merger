@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Discord;
-using HUDMerger.Commands;
-using HUDMerger.Models;
+using HUDMerger.Core.Commands;
+using HUDMerger.Core.Models;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Win32;
 

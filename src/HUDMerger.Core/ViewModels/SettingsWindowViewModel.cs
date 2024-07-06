@@ -1,7 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-using HUDMerger.Models;
+using HUDMerger.Core.Models;
 using Microsoft.Toolkit.Mvvm.Input;
 
 namespace HUDMerger.Core.ViewModels;
