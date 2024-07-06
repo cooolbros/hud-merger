@@ -10,17 +10,14 @@ using System.Windows.Input;
 using Discord;
 using HUDMerger.Core.Commands;
 using HUDMerger.Core.Models;
+using HUDMerger.Core.Services;
 using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Win32;
 
 namespace HUDMerger.Core.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-	private static readonly OpenFolderDialog OpenFolderDialog = new()
-	{
-		InitialDirectory = Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf\\custom\\")
-	};
+	private readonly IFolderPickerService FolderPickerService;
 
 	private static readonly Channel<(string? sourceName, string? targetName)> DiscordChannel = Channel.CreateBounded<(string? sourceName, string? targetName)>(new BoundedChannelOptions(1) { FullMode = BoundedChannelFullMode.DropOldest });
 
@@ -86,10 +83,12 @@ public class MainWindowViewModel : ViewModelBase
 
 	public MergeCommand MergeCommand { get; }
 
-	public MainWindowViewModel()
+	public MainWindowViewModel(IFolderPickerService folderPickerService)
 	{
-		LoadSourceHUDCommand = new RelayCommand(LoadSourceHUD);
-		LoadTargetHUDCommand = new RelayCommand(LoadTargetHUD);
+		FolderPickerService = folderPickerService;
+
+		LoadSourceHUDCommand = new AsyncRelayCommand(LoadSourceHUD);
+		LoadTargetHUDCommand = new AsyncRelayCommand(LoadTargetHUD);
 		ShowSettingsWindowCommand = new RelayCommand(ShowSettingsWindow);
 		QuitCommand = new RelayCommand(Application.Current.Shutdown);
 
@@ -141,42 +140,48 @@ public class MainWindowViewModel : ViewModelBase
 		aboutWindow.Show();
 	}
 
-	private void LoadSourceHUD()
+	private async Task LoadSourceHUD()
 	{
-		if (OpenFolderDialog.ShowDialog(Application.Current.MainWindow) == true)
+		string? folderName = await FolderPickerService.PickFolderAsync();
+		if (folderName == null)
 		{
-			SourceHUD = new HUD(OpenFolderDialog.FolderName);
-			SourceHUDInfoViewModel.HUD = SourceHUD;
+			return;
+		}
 
-			HUDPanelViewModels.Clear();
+		SourceHUD = new HUD(folderName);
+		SourceHUDInfoViewModel.HUD = SourceHUD;
 
-			foreach (HUDPanel hudPanel in SourceHUD.Panels)
-			{
-				HUDPanelViewModel hudPanelViewModel = new(hudPanel);
-				hudPanelViewModel.PropertyChanged += HudPanelViewModel_PropertyChanged;
-				HUDPanelViewModels.Add(hudPanelViewModel);
-			}
+		HUDPanelViewModels.Clear();
 
-			SourceHUDPanelsListViewModel?.Dispose();
-			SourceHUDPanelsListViewModel = new SourceHUDPanelsListViewModel(HUDPanelViewModels);
+		foreach (HUDPanel hudPanel in SourceHUD.Panels)
+		{
+			HUDPanelViewModel hudPanelViewModel = new(hudPanel);
+			hudPanelViewModel.PropertyChanged += HudPanelViewModel_PropertyChanged;
+			HUDPanelViewModels.Add(hudPanelViewModel);
+		}
 
-			if (TargetHUDPanelsListViewModel is TargetHUDPanelsListViewModel targetHUDPanelsListViewModel)
-			{
-				targetHUDPanelsListViewModel.HUDPanelsCollectionView.Refresh();
-			}
+		SourceHUDPanelsListViewModel?.Dispose();
+		SourceHUDPanelsListViewModel = new SourceHUDPanelsListViewModel(HUDPanelViewModels);
+
+		if (TargetHUDPanelsListViewModel is TargetHUDPanelsListViewModel targetHUDPanelsListViewModel)
+		{
+			targetHUDPanelsListViewModel.HUDPanelsCollectionView.Refresh();
 		}
 	}
 
-	private void LoadTargetHUD()
+	private async Task LoadTargetHUD()
 	{
-		if (OpenFolderDialog.ShowDialog(Application.Current.MainWindow) == true)
+		string? folderName = await FolderPickerService.PickFolderAsync();
+		if (folderName == null)
 		{
-			TargetHUD = new HUD(OpenFolderDialog.FolderName);
-			TargetHUDInfoViewModel.HUD = TargetHUD;
-
-			TargetHUDPanelsListViewModel?.Dispose();
-			TargetHUDPanelsListViewModel = new TargetHUDPanelsListViewModel(HUDPanelViewModels);
+			return;
 		}
+
+		TargetHUD = new HUD(folderName);
+		TargetHUDInfoViewModel.HUD = TargetHUD;
+
+		TargetHUDPanelsListViewModel?.Dispose();
+		TargetHUDPanelsListViewModel = new TargetHUDPanelsListViewModel(HUDPanelViewModels);
 	}
 
 	private void HudPanelViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

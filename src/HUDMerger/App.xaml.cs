@@ -6,6 +6,7 @@ using System.Windows;
 using HUDMerger.Core.Extensions;
 using HUDMerger.Core.Models;
 using HUDMerger.Core.ViewModels;
+using HUDMerger.Services;
 using Microsoft.Win32;
 using VDF;
 using VDF.Models;
@@ -111,7 +112,7 @@ public partial class App : Application
 
 		MainWindow = new MainWindow
 		{
-			DataContext = new MainWindowViewModel()
+			DataContext = new MainWindowViewModel(new FolderPickerService(HUDMerger.Properties.Settings.Default.TeamFortress2Folder))
 		};
 
 		MainWindow.Show();
