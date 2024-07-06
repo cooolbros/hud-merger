@@ -13,9 +13,8 @@
     <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HUDMerger.Core\HUDMerger.Core.csproj" />
     <ProjectReference Include="..\VDF\VDF.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\HUDAnimations\HUDAnimations.csproj" />
   </ItemGroup>
   <ItemGroup>

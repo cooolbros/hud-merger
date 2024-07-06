@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:HUDMerger.Views"
-             xmlns:viewmodels="clr-namespace:HUDMerger.ViewModels"
+             xmlns:viewmodels="clr-namespace:HUDMerger.Core.ViewModels"
              xmlns:converters="clr-namespace:HUDMerger.Converters"
              mc:Ignorable="d"
              d:DesignHeight="240" d:DesignWidth="377" d:DataContext="{d:DesignInstance Type={x:Type viewmodels:TargetHUDPanelsListViewModel}}">
