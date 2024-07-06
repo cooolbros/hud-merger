@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace HUDMerger.ViewModels;
+namespace HUDMerger.Core.ViewModels;
 
 public class SelectHUDViewModel(ICommand selectHUDCommand) : ViewModelBase
 {

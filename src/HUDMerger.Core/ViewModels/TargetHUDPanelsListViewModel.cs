@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Data;
 
-namespace HUDMerger.ViewModels;
+namespace HUDMerger.Core.ViewModels;
 
 public class TargetHUDPanelsListViewModel : ViewModelBase
 {

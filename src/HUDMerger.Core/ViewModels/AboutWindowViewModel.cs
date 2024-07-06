@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Windows.Input;
 using Microsoft.Toolkit.Mvvm.Input;
 
-namespace HUDMerger.ViewModels;
+namespace HUDMerger.Core.ViewModels;
 
 public class AboutWindowViewModel : ViewModelBase
 {

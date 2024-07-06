@@ -13,7 +13,7 @@ using HUDMerger.Models;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Win32;
 
-namespace HUDMerger.ViewModels;
+namespace HUDMerger.Core.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {

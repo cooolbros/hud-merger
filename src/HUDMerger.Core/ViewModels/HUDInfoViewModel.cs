@@ -1,7 +1,7 @@
 using System;
 using HUDMerger.Models;
 
-namespace HUDMerger.ViewModels;
+namespace HUDMerger.Core.ViewModels;
 
 public class HUDInfoViewModel(string locationType, HUD? hud) : ViewModelBase
 {

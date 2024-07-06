@@ -4,7 +4,7 @@ using System.Windows.Input;
 using HUDMerger.Models;
 using Microsoft.Toolkit.Mvvm.Input;
 
-namespace HUDMerger.ViewModels;
+namespace HUDMerger.Core.ViewModels;
 
 public class SettingsWindowViewModel : ViewModelBase
 {
