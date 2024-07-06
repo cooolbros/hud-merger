@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using HUDAnimations;
 using HUDAnimations.Models;
-using HUDMerger.Models;
+using HUDMerger.Core.Models;
 using VDF;
 using VDF.Models;
 

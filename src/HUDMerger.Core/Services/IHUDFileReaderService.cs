@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using HUDAnimations.Models;
-using HUDMerger.Models;
+using HUDMerger.Core.Models;
 using VDF.Models;
 
 namespace HUDMerger.Core.Services;
