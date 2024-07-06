@@ -4,7 +4,7 @@ using System.Linq;
 using VDF;
 using VDF.Models;
 
-namespace HUDMerger.Extensions;
+namespace HUDMerger.Core.Extensions;
 
 public static class KeyValuesExtensions
 {

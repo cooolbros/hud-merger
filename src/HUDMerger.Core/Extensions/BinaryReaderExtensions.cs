@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace HUDMerger.Extensions;
+namespace HUDMerger.Core.Extensions;
 
 public static class BinaryReaderExtensions
 {

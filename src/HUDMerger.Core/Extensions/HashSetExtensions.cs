@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using VDF.Models;
 
-namespace HUDMerger.Extensions;
+namespace HUDMerger.Core.Extensions;
 
 public static class HashSetExtensions
 {
