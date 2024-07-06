@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Input;
 
-namespace HUDMerger.Commands;
+namespace HUDMerger.Core.Commands;
 
 public abstract class CommandBase : ICommand, IDisposable
 {

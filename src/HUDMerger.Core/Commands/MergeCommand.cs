@@ -7,7 +7,7 @@ using System.Windows;
 using HUDMerger.Models;
 using HUDMerger.ViewModels;
 
-namespace HUDMerger.Commands;
+namespace HUDMerger.Core.Commands;
 
 public class MergeCommand : CommandBase
 {
