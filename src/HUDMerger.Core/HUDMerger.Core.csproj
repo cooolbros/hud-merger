@@ -15,4 +15,10 @@
     <ProjectReference Include="..\VDF\VDF.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
