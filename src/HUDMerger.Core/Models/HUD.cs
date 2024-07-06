@@ -8,10 +8,10 @@ using System.Text.Json;
 using System.Windows;
 using HUDAnimations.Models;
 using HUDAnimations.Models.Animations;
-using HUDMerger.Exceptions;
-using HUDMerger.Extensions;
-using HUDMerger.Models.Scheme;
-using HUDMerger.Services;
+using HUDMerger.Core.Exceptions;
+using HUDMerger.Core.Extensions;
+using HUDMerger.Core.Models.Scheme;
+using HUDMerger.Core.Services;
 using VDF;
 using VDF.Models;
 

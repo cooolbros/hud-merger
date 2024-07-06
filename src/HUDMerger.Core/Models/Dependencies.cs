@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using HUDMerger.Extensions;
-using HUDMerger.Services;
+using HUDMerger.Core.Extensions;
+using HUDMerger.Core.Services;
 using VDF;
 using VDF.Models;
 

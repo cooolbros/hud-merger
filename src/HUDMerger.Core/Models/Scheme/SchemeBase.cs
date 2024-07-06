@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HUDMerger.Extensions;
-using HUDMerger.Services;
+using HUDMerger.Core.Extensions;
+using HUDMerger.Core.Services;
 using VDF;
 using VDF.Models;
 
@@ -326,7 +326,7 @@ public abstract class SchemeBase : IScheme
 
 		if (CustomFontFiles.Count != 0)
 		{
-			List<KeyValue> customFontFilesList = [..CustomFontFiles];
+			List<KeyValue> customFontFilesList = [.. CustomFontFiles];
 			customFontFilesList.Sort((a, b) =>
 			{
 				if (int.TryParse(a.Key, out int first) && int.TryParse(b.Key, out int second))

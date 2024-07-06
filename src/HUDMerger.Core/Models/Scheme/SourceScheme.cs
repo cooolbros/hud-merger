@@ -1,5 +1,5 @@
 using System;
-using HUDMerger.Services;
+using HUDMerger.Core.Services;
 using VDF.Models;
 
 namespace HUDMerger.Core.Models.Scheme;

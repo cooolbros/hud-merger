@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HUDMerger.Extensions;
-using HUDMerger.Services;
+using HUDMerger.Core.Extensions;
+using HUDMerger.Core.Services;
 using VDF;
 using VDF.Models;
 
