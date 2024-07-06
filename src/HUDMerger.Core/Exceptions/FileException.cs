@@ -1,5 +1,5 @@
 using System;
-using HUDMerger.Models;
+using HUDMerger.Core.Models;
 using VDF.Exceptions;
 
 namespace HUDMerger.Core.Exceptions;
