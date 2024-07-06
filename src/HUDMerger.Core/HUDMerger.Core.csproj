@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HUDAnimations\HUDAnimations.csproj" />
+    <ProjectReference Include="..\VDF\VDF.csproj" />
+  </ItemGroup>
+
 </Project>

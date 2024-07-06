@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using VDF.Models;
 
-namespace HUDMerger.Models.Scheme;
+namespace HUDMerger.Core.Models.Scheme;
 
 public interface IScheme
 {

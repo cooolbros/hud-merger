@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HUDMerger.Extensions;
 
-namespace HUDMerger.Models;
+namespace HUDMerger.Core.Models;
 
 /// <summary>
 /// https://developer.valvesoftware.com/wiki/VPK_(file_format)

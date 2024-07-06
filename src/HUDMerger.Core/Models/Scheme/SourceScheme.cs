@@ -2,7 +2,7 @@ using System;
 using HUDMerger.Services;
 using VDF.Models;
 
-namespace HUDMerger.Models.Scheme;
+namespace HUDMerger.Core.Models.Scheme;
 
 public class SourceScheme : SchemeBase
 {

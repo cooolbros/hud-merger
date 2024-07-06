@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace HUDMerger.Models;
+namespace HUDMerger.Core.Models;
 
 public class FilesHashSet : HashSet<string>
 {

@@ -7,7 +7,7 @@ using HUDMerger.Services;
 using VDF;
 using VDF.Models;
 
-namespace HUDMerger.Models;
+namespace HUDMerger.Core.Models;
 
 public class HUDLayout
 {

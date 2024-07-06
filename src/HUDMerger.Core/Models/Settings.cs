@@ -1,6 +1,6 @@
 using System;
 
-namespace HUDMerger.Models;
+namespace HUDMerger.Core.Models;
 
 public class Settings
 {

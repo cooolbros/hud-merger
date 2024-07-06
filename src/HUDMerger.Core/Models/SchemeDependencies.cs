@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace HUDMerger.Models;
+namespace HUDMerger.Core.Models;
 
 public class SchemeDependencies
 {

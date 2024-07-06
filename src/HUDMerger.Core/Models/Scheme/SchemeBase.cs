@@ -7,7 +7,7 @@ using HUDMerger.Services;
 using VDF;
 using VDF.Models;
 
-namespace HUDMerger.Models.Scheme;
+namespace HUDMerger.Core.Models.Scheme;
 
 public abstract class SchemeBase : IScheme
 {
