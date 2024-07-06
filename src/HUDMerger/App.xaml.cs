@@ -17,9 +17,6 @@ namespace HUDMerger;
 /// </summary>
 public partial class App : Application
 {
-	[GeneratedRegex(@"[/\\]+")]
-	public static partial Regex PathSeparatorRegex();
-
 	public Lazy<Settings> Settings = new(() =>
 	{
 		string? teamFortress2Folder = null;
