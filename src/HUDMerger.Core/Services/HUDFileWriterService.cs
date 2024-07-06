@@ -7,7 +7,7 @@ using HUDMerger.Models;
 using VDF;
 using VDF.Models;
 
-namespace HUDMerger.Services;
+namespace HUDMerger.Core.Services;
 
 public class HUDFileWriterService(string folderPath) : IHUDFileWriterService
 {

@@ -13,7 +13,7 @@ using VDF;
 using VDF.Exceptions;
 using VDF.Models;
 
-namespace HUDMerger.Services;
+namespace HUDMerger.Core.Services;
 
 public enum FileType : byte
 {

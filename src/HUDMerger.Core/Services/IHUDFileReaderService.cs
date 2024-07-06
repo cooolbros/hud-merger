@@ -4,7 +4,7 @@ using HUDAnimations.Models;
 using HUDMerger.Models;
 using VDF.Models;
 
-namespace HUDMerger.Services;
+namespace HUDMerger.Core.Services;
 
 public interface IHUDFileReaderService
 {
