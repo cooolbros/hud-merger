@@ -18,6 +18,8 @@ namespace HUDMerger.Core.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
 	private readonly IFolderPickerService FolderPickerService;
+	private readonly ISettingsWindowService SettingsWindowService;
+	private readonly IAboutWindowService AboutWindowService;
 
 	private static readonly Channel<(string? sourceName, string? targetName)> DiscordChannel = Channel.CreateBounded<(string? sourceName, string? targetName)>(new BoundedChannelOptions(1) { FullMode = BoundedChannelFullMode.DropOldest });
 
@@ -83,9 +85,11 @@ public class MainWindowViewModel : ViewModelBase
 
 	public MergeCommand MergeCommand { get; }
 
-	public MainWindowViewModel(IFolderPickerService folderPickerService)
+	public MainWindowViewModel(IFolderPickerService folderPickerService, ISettingsWindowService settingsWindowService, IAboutWindowService aboutWindowService)
 	{
 		FolderPickerService = folderPickerService;
+		SettingsWindowService = settingsWindowService;
+		AboutWindowService = aboutWindowService;
 
 		LoadSourceHUDCommand = new AsyncRelayCommand(LoadSourceHUD);
 		LoadTargetHUDCommand = new AsyncRelayCommand(LoadTargetHUD);
@@ -108,36 +112,12 @@ public class MainWindowViewModel : ViewModelBase
 
 	private void ShowSettingsWindow()
 	{
-		using SettingsWindowViewModel settingsWindowViewModel = new();
-
-		SettingsWindow settingsWindow = new()
-		{
-			DataContext = settingsWindowViewModel,
-			Owner = Application.Current.MainWindow
-		};
-
-		void OnClose(object? sender, EventArgs args)
-		{
-			settingsWindowViewModel.Close -= OnClose;
-			settingsWindow.Close();
-		}
-
-		settingsWindowViewModel.Close += OnClose;
-
-		settingsWindow.Show();
+		SettingsWindowService.Show(new SettingsWindowViewModel());
 	}
 
 	private void ShowAboutWindow()
 	{
-		using AboutWindowViewModel aboutWindowViewModel = new();
-
-		AboutWindow aboutWindow = new()
-		{
-			DataContext = aboutWindowViewModel,
-			Owner = Application.Current.MainWindow
-		};
-
-		aboutWindow.Show();
+		AboutWindowService.Show(new AboutWindowViewModel());
 	}
 
 	private async Task LoadSourceHUD()

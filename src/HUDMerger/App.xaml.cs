@@ -112,7 +112,11 @@ public partial class App : Application
 
 		MainWindow = new MainWindow
 		{
-			DataContext = new MainWindowViewModel(new FolderPickerService(HUDMerger.Properties.Settings.Default.TeamFortress2Folder))
+			DataContext = new MainWindowViewModel(
+				new FolderPickerService(HUDMerger.Properties.Settings.Default.TeamFortress2Folder),
+				new SettingsWindowService(),
+				new AboutWindowService()
+			)
 		};
 
 		MainWindow.Show();
