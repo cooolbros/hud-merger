@@ -19,9 +19,9 @@ public class FolderPickerService : IFolderPickerService
 		};
 	}
 
-	public async Task<string?> PickFolderAsync()
+	public Task<string?> PickFolderAsync()
 	{
-		return await Task.Run(() =>
+		return Task.FromResult(
 			OpenFolderDialog.ShowDialog(Application.Current.MainWindow) == true
 				? OpenFolderDialog.FolderName
 				: null
