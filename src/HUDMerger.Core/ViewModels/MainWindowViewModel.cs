@@ -86,7 +86,7 @@ public class MainWindowViewModel : ViewModelBase
 
 	public MergeCommand MergeCommand { get; }
 
-	public MainWindowViewModel(ISettingsService settingsService, IFolderPickerService folderPickerService, ISettingsWindowService settingsWindowService, IAboutWindowService aboutWindowService, IMessageBoxService messageBoxService)
+	public MainWindowViewModel(ISettingsService settingsService, IFolderPickerService folderPickerService, ISettingsWindowService settingsWindowService, IAboutWindowService aboutWindowService, IQuitService quitService, IMessageBoxService messageBoxService)
 	{
 		SettingsService = settingsService;
 		FolderPickerService = folderPickerService;
@@ -96,7 +96,7 @@ public class MainWindowViewModel : ViewModelBase
 		LoadSourceHUDCommand = new AsyncRelayCommand(LoadSourceHUD);
 		LoadTargetHUDCommand = new AsyncRelayCommand(LoadTargetHUD);
 		ShowSettingsWindowCommand = new RelayCommand(ShowSettingsWindow);
-		QuitCommand = new RelayCommand(Application.Current.Shutdown);
+		QuitCommand = new RelayCommand(quitService.Quit);
 
 		ShowAboutWindowCommand = new RelayCommand(ShowAboutWindow);
 

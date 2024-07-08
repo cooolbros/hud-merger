@@ -34,6 +34,7 @@ public partial class App : Application
 				new FolderPickerService(settingsService),
 				new SettingsWindowService(),
 				new AboutWindowService(),
+				new QuitService(),
 				new MessageBoxService()
 			)
 		};
