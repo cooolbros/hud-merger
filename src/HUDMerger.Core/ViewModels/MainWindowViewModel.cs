@@ -147,7 +147,7 @@ public class MainWindowViewModel : ViewModelBase
 
 		if (TargetHUDPanelsListViewModel is TargetHUDPanelsListViewModel targetHUDPanelsListViewModel)
 		{
-			targetHUDPanelsListViewModel.HUDPanelsCollectionView.Refresh();
+			targetHUDPanelsListViewModel.Refresh();
 		}
 	}
 
@@ -170,7 +170,7 @@ public class MainWindowViewModel : ViewModelBase
 	{
 		if (e.PropertyName == nameof(HUDPanelViewModel.Selected) && TargetHUDPanelsListViewModel is TargetHUDPanelsListViewModel targetHUDPanelsListViewModel)
 		{
-			targetHUDPanelsListViewModel.HUDPanelsCollectionView.Refresh();
+			targetHUDPanelsListViewModel.Refresh();
 		}
 	}
 

@@ -1,13 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Data;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace HUDMerger.Core.ViewModels;
 
 public class SourceHUDPanelsListViewModel : ViewModelBase
 {
-	public ICollectionView HUDPanelsCollectionView { get; }
+	private readonly IEnumerable<HUDPanelViewModel> HUDPanelViewModels;
+
+	private ObservableCollection<HUDPanelViewModel> _hudPanelsCollectionView;
+	public ObservableCollection<HUDPanelViewModel> HUDPanelsCollectionView
+	{
+		get => _hudPanelsCollectionView;
+		private set
+		{
+			_hudPanelsCollectionView = value;
+			OnPropertyChanged();
+		}
+	}
 
 	private string _searchText = "";
 	public string SearchText
@@ -17,21 +28,30 @@ public class SourceHUDPanelsListViewModel : ViewModelBase
 		{
 			_searchText = value;
 			OnPropertyChanged();
-			HUDPanelsCollectionView.Refresh();
+			Refresh();
 		}
 	}
 
 	public SourceHUDPanelsListViewModel(IEnumerable<HUDPanelViewModel> hudPanelViewModels)
 	{
-		HUDPanelsCollectionView = new CollectionViewSource { Source = hudPanelViewModels }.View;
-		HUDPanelsCollectionView.Filter = (object obj) =>
-		{
-			if (obj is HUDPanelViewModel hudPanelViewModel)
+		HUDPanelViewModels = hudPanelViewModels;
+		_hudPanelsCollectionView = new ObservableCollection<HUDPanelViewModel>(
+			HUDPanelViewModels.Where((hudPanelViewModel) =>
 			{
 				return hudPanelViewModel.HUDPanel.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
 					|| hudPanelViewModel.HUDPanel.Main.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-			}
-			return false;
-		};
+			})
+		);
+	}
+
+	public void Refresh()
+	{
+		HUDPanelsCollectionView = new ObservableCollection<HUDPanelViewModel>(
+			HUDPanelViewModels.Where((hudPanelViewModel) =>
+			{
+				return hudPanelViewModel.HUDPanel.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+					|| hudPanelViewModel.HUDPanel.Main.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+			})
+		);
 	}
 }
