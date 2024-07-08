@@ -14,12 +14,14 @@ public class MergeCommand : CommandBase
 {
 	private bool _disposed;
 	private readonly MainWindowViewModel _mainWindowViewModel;
+	private readonly ISettingsService SettingsService;
 	private readonly IMessageBoxService MessageBoxService;
 
-	public MergeCommand(MainWindowViewModel mainWindowViewModel, IMessageBoxService messageBoxService)
+	public MergeCommand(MainWindowViewModel mainWindowViewModel, ISettingsService settingsService, IMessageBoxService messageBoxService)
 	{
 		_mainWindowViewModel = mainWindowViewModel;
 		_mainWindowViewModel.PropertyChanged += _mainWindowViewModel_PropertyChanged;
+		SettingsService = settingsService;
 		MessageBoxService = messageBoxService;
 	}
 
@@ -47,7 +49,7 @@ public class MergeCommand : CommandBase
 				return !relativeDirectory.StartsWith("..") && !Path.IsPathRooted(relativeDirectory);
 			}
 
-			bool teamFortress2FolderContainsTarget = PathContainsPath(Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD!.FolderPath);
+			bool teamFortress2FolderContainsTarget = PathContainsPath(Path.Join(SettingsService.Settings.TeamFortress2Folder, "tf\\custom"), _mainWindowViewModel.TargetHUD!.FolderPath);
 
 			Process[] processes;
 
@@ -77,7 +79,8 @@ public class MergeCommand : CommandBase
 				_mainWindowViewModel.HUDPanelViewModels
 					.Where((hudPanelViewModel) => hudPanelViewModel.Selected)
 					.Select((hudPanelViewModel) => hudPanelViewModel.HUDPanel)
-					.ToArray()
+					.ToArray(),
+				SettingsService
 			);
 
 			MessageBoxService.Show("Done!");

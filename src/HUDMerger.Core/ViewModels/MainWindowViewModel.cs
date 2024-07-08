@@ -17,6 +17,7 @@ namespace HUDMerger.Core.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+	private readonly ISettingsService SettingsService;
 	private readonly IFolderPickerService FolderPickerService;
 	private readonly ISettingsWindowService SettingsWindowService;
 	private readonly IAboutWindowService AboutWindowService;
@@ -85,8 +86,9 @@ public class MainWindowViewModel : ViewModelBase
 
 	public MergeCommand MergeCommand { get; }
 
-	public MainWindowViewModel(IFolderPickerService folderPickerService, ISettingsWindowService settingsWindowService, IAboutWindowService aboutWindowService, IMessageBoxService messageBoxService)
+	public MainWindowViewModel(ISettingsService settingsService, IFolderPickerService folderPickerService, ISettingsWindowService settingsWindowService, IAboutWindowService aboutWindowService, IMessageBoxService messageBoxService)
 	{
+		SettingsService = settingsService;
 		FolderPickerService = folderPickerService;
 		SettingsWindowService = settingsWindowService;
 		AboutWindowService = aboutWindowService;
@@ -104,7 +106,7 @@ public class MainWindowViewModel : ViewModelBase
 		_sourceHUDPanelsListViewModel = new SelectHUDViewModel(LoadSourceHUDCommand);
 		_targetHUDPanelsListViewModel = new SelectHUDViewModel(LoadTargetHUDCommand);
 
-		MergeCommand = new MergeCommand(this, messageBoxService);
+		MergeCommand = new MergeCommand(this, SettingsService, messageBoxService);
 
 		ChannelReader<(string? sourceName, string? targetName)> reader = DiscordChannel.Reader;
 		Task.Run(async () => await DiscordRichPresence(reader));
@@ -112,7 +114,7 @@ public class MainWindowViewModel : ViewModelBase
 
 	private void ShowSettingsWindow()
 	{
-		SettingsWindowService.Show(new SettingsWindowViewModel());
+		SettingsWindowService.Show(new SettingsWindowViewModel(SettingsService));
 	}
 
 	private void ShowAboutWindow()

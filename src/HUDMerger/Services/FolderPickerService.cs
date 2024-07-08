@@ -11,11 +11,11 @@ public class FolderPickerService : IFolderPickerService
 {
 	private readonly OpenFolderDialog OpenFolderDialog;
 
-	public FolderPickerService(string teamFortress2Folder)
+	public FolderPickerService(ISettingsService settingsService)
 	{
 		OpenFolderDialog = new OpenFolderDialog
 		{
-			InitialDirectory = Path.Join(teamFortress2Folder, "tf\\custom\\")
+			InitialDirectory = Path.Join(settingsService.Settings.TeamFortress2Folder, "tf\\custom\\")
 		};
 	}
 

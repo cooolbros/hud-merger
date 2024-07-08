@@ -23,10 +23,19 @@ public enum FileType : byte
 
 public partial class HUDFileReaderService : IHUDFileReaderService
 {
-	private readonly Lazy<VPK> TF2MiscDirVPK = new(() => new(Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf\\tf2_misc_dir.vpk")));
-	private readonly Lazy<VPK> PlatformMiscDirVPK = new(() => new(Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "platform\\platform_misc_dir.vpk")));
+	private readonly ISettingsService SettingsService;
+
+	private readonly Lazy<VPK> TF2MiscDirVPK;
+	private readonly Lazy<VPK> PlatformMiscDirVPK;
 
 	private readonly Dictionary<string, dynamic?> Files = [];
+
+	public HUDFileReaderService(ISettingsService settingsService)
+	{
+		SettingsService = settingsService;
+		TF2MiscDirVPK = new Lazy<VPK>(() => new VPK(Path.Join(SettingsService.Settings.TeamFortress2Folder, "tf\\tf2_misc_dir.vpk")));
+		PlatformMiscDirVPK = new Lazy<VPK>(() => new VPK(Path.Join(SettingsService.Settings.TeamFortress2Folder, "platform\\platform_misc_dir.vpk")));
+	}
 
 	public void Require(IEnumerable<(HUD hud, string relativePath, FileType type)> filePaths)
 	{
@@ -65,13 +74,13 @@ public partial class HUDFileReaderService : IHUDFileReaderService
 						return Encoding.UTF8.GetString(PlatformMiscDirVPK.Value.Read(relativePath));
 					}
 
-					string tfPath = Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "tf", relativePath);
+					string tfPath = Path.Join(SettingsService.Settings.TeamFortress2Folder, "tf", relativePath);
 					if (File.Exists(tfPath))
 					{
 						return File.ReadAllText(tfPath);
 					}
 
-					string hl2Path = Path.Join(((App)Application.Current).Settings.Value.TeamFortress2Folder, "hl2", relativePath);
+					string hl2Path = Path.Join(SettingsService.Settings.TeamFortress2Folder, "hl2", relativePath);
 					if (File.Exists(hl2Path))
 					{
 						return File.ReadAllText(hl2Path);

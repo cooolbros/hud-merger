@@ -118,7 +118,7 @@ public class HUD(string folderPath)
 	/// <param name="source">HUD to merge panels from</param>
 	/// <param name="target">HUD to merge panels to</param>
 	/// <param name="panels">Panels</param>
-	public static void Merge(HUD source, HUD target, HUDPanel[] panels)
+	public static void Merge(HUD source, HUD target, HUDPanel[] panels, ISettingsService settingsService)
 	{
 		Dependencies dependencies = new(panels.Select((panel) => panel.Dependencies).OfType<Dependencies>());
 		dependencies.Files.UnionWith(panels.Select((panel) => panel.Main).Where((main) => !string.IsNullOrEmpty(main)));
@@ -129,9 +129,9 @@ public class HUD(string folderPath)
 				.SelectMany((files) => files)
 		);
 
-		IHUDFileReaderService reader = new HUDFileReaderService();
+		IHUDFileReaderService reader = new HUDFileReaderService(settingsService);
 
-		Func<IHUDFileReaderService, HUD, HUD, Dependencies, Action<IHUDFileWriterService>?>[] actions =
+		Func<IHUDFileReaderService, HUD, HUD, Dependencies, ISettingsService, Action<IHUDFileWriterService>?>[] actions =
 		[
 			AddDependencies,
 			MergeHUDLayout,
@@ -149,11 +149,11 @@ public class HUD(string folderPath)
 		List<Action<IHUDFileWriterService>> commitActions = [];
 		List<Exception> exceptions = [];
 
-		foreach (Func<IHUDFileReaderService, HUD, HUD, Dependencies, Action<IHUDFileWriterService>?> action in actions)
+		foreach (Func<IHUDFileReaderService, HUD, HUD, Dependencies, ISettingsService, Action<IHUDFileWriterService>?> action in actions)
 		{
 			try
 			{
-				Action<IHUDFileWriterService>? result = action(reader, source, target, dependencies);
+				Action<IHUDFileWriterService>? result = action(reader, source, target, dependencies, settingsService);
 				if (result != null)
 				{
 					commitActions.Add(result);
@@ -186,13 +186,13 @@ public class HUD(string folderPath)
 		}
 	}
 
-	private static Action<IHUDFileWriterService>? AddDependencies(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? AddDependencies(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		dependencies.Add(reader, source);
 		return null;
 	}
 
-	private static Action<IHUDFileWriterService>? MergeHUDLayout(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeHUDLayout(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		if (dependencies.HUDLayout.Count == 0)
 		{
@@ -377,7 +377,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<IHUDFileWriterService>? MergeHUDAnimations(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeHUDAnimations(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		if (dependencies.Events.Count == 0)
 		{
@@ -500,7 +500,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<IHUDFileWriterService>? MergeClientScheme(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeClientScheme(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		if (!dependencies.ClientScheme.Any())
 		{
@@ -729,7 +729,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<IHUDFileWriterService>? MergeSourceScheme(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeSourceScheme(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		if (!dependencies.SourceScheme.Any() || dependencies.Files.Contains("resource\\sourcescheme.res"))
 		{
@@ -963,7 +963,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<IHUDFileWriterService>? MergeLanguageTokens(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeLanguageTokens(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		if (dependencies.LanguageTokens.Count == 0)
 		{
@@ -977,7 +977,7 @@ public class HUD(string folderPath)
 
 		List<string> languages = ["english"];
 
-		string settingsLanguage = ((App)Application.Current).Settings.Value.Language;
+		string settingsLanguage = settingsService.Settings.Language;
 
 		if (settingsLanguage != "english")
 		{
@@ -1100,7 +1100,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<IHUDFileWriterService>? MergeImages(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeImages(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		IEnumerable<string> images = dependencies.Images.Concat(dependencies.PreloadImages);
 
@@ -1129,7 +1129,7 @@ public class HUD(string folderPath)
 		return null;
 	}
 
-	private static Action<IHUDFileWriterService>? MergePreloadImages(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergePreloadImages(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		if (dependencies.PreloadImages.Count == 0)
 		{
@@ -1195,13 +1195,13 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<IHUDFileWriterService>? MergeAudio(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeAudio(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		dependencies.Files.UnionWith(dependencies.Audio);
 		return null;
 	}
 
-	private static Action<IHUDFileWriterService>? MergeInfoVDF(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? MergeInfoVDF(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		reader.Require([
 			(target, "info.vdf", FileType.VDF)
@@ -1230,7 +1230,7 @@ public class HUD(string folderPath)
 		};
 	}
 
-	private static Action<IHUDFileWriterService>? CopyFiles(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies)
+	private static Action<IHUDFileWriterService>? CopyFiles(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
 	{
 		return (writer) =>
 		{

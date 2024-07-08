@@ -2,12 +2,15 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using HUDMerger.Core.Models;
+using HUDMerger.Core.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 
 namespace HUDMerger.Core.ViewModels;
 
 public class SettingsWindowViewModel : ViewModelBase
 {
+	private readonly ISettingsService SettingsService;
+
 	private string _teamFortress2Folder;
 	public string TeamFortress2Folder
 	{
@@ -35,12 +38,12 @@ public class SettingsWindowViewModel : ViewModelBase
 
 	public event EventHandler? Close;
 
-	public SettingsWindowViewModel()
+	public SettingsWindowViewModel(ISettingsService settingsService)
 	{
-		Settings settings = ((App)Application.Current).Settings.Value;
+		SettingsService = settingsService;
 
-		_teamFortress2Folder = settings.TeamFortress2Folder;
-		_language = settings.Language;
+		_teamFortress2Folder = SettingsService.Settings.TeamFortress2Folder;
+		_language = SettingsService.Settings.Language;
 
 		CancelCommand = new RelayCommand(Cancel);
 		ApplyCommand = new RelayCommand(Apply);
@@ -53,12 +56,9 @@ public class SettingsWindowViewModel : ViewModelBase
 
 	private void Apply()
 	{
-		((App)Application.Current).Settings.Value.TeamFortress2Folder = TeamFortress2Folder;
-		((App)Application.Current).Settings.Value.Language = Language;
-
-		Properties.Settings.Default.TeamFortress2Folder = TeamFortress2Folder;
-		Properties.Settings.Default.Language = Language;
-		Properties.Settings.Default.Save();
+		SettingsService.Settings.TeamFortress2Folder = TeamFortress2Folder;
+		SettingsService.Settings.Language = Language;
+		SettingsService.Save();
 
 		Close?.Invoke(this, new EventArgs());
 	}
