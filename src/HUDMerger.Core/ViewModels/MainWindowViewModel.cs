@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -85,7 +85,7 @@ public class MainWindowViewModel : ViewModelBase
 
 	public MergeCommand MergeCommand { get; }
 
-	public MainWindowViewModel(IFolderPickerService folderPickerService, ISettingsWindowService settingsWindowService, IAboutWindowService aboutWindowService)
+	public MainWindowViewModel(IFolderPickerService folderPickerService, ISettingsWindowService settingsWindowService, IAboutWindowService aboutWindowService, IMessageBoxService messageBoxService)
 	{
 		FolderPickerService = folderPickerService;
 		SettingsWindowService = settingsWindowService;
@@ -104,7 +104,7 @@ public class MainWindowViewModel : ViewModelBase
 		_sourceHUDPanelsListViewModel = new SelectHUDViewModel(LoadSourceHUDCommand);
 		_targetHUDPanelsListViewModel = new SelectHUDViewModel(LoadTargetHUDCommand);
 
-		MergeCommand = new MergeCommand(this);
+		MergeCommand = new MergeCommand(this, messageBoxService);
 
 		ChannelReader<(string? sourceName, string? targetName)> reader = DiscordChannel.Reader;
 		Task.Run(async () => await DiscordRichPresence(reader));

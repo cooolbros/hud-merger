@@ -115,7 +115,8 @@ public partial class App : Application
 			DataContext = new MainWindowViewModel(
 				new FolderPickerService(HUDMerger.Properties.Settings.Default.TeamFortress2Folder),
 				new SettingsWindowService(),
-				new AboutWindowService()
+				new AboutWindowService(),
+				new MessageBoxService()
 			)
 		};
 

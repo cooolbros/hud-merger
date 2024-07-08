@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using HUDMerger.Core.Models;
+using HUDMerger.Core.Services;
 using HUDMerger.Core.ViewModels;
 
 namespace HUDMerger.Core.Commands;
@@ -13,11 +14,13 @@ public class MergeCommand : CommandBase
 {
 	private bool _disposed;
 	private readonly MainWindowViewModel _mainWindowViewModel;
+	private readonly IMessageBoxService MessageBoxService;
 
-	public MergeCommand(MainWindowViewModel mainWindowViewModel)
+	public MergeCommand(MainWindowViewModel mainWindowViewModel, IMessageBoxService messageBoxService)
 	{
 		_mainWindowViewModel = mainWindowViewModel;
 		_mainWindowViewModel.PropertyChanged += _mainWindowViewModel_PropertyChanged;
+		MessageBoxService = messageBoxService;
 	}
 
 	private void _mainWindowViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -63,7 +66,7 @@ public class MergeCommand : CommandBase
 
 			if (teamFortress2FolderContainsTarget && processes.Length != 0)
 			{
-				MessageBox.Show("TF2 process open, cannot merge!", "TF2 Open Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				MessageBoxService.ShowException(new Exception("TF2 process open, cannot merge!"), "TF2 Open Error");
 				return;
 			}
 #endif
@@ -77,11 +80,11 @@ public class MergeCommand : CommandBase
 					.ToArray()
 			);
 
-			MessageBox.Show("Done!");
+			MessageBoxService.Show("Done!");
 		}
 		catch (Exception e)
 		{
-			MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			MessageBoxService.ShowException(e, "Error");
 		}
 	}
 
