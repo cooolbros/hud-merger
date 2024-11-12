@@ -269,6 +269,30 @@ public static class HUDAnimationsSerializer
 					Delay = ReadNumber(),
 					Conditional = ReadConditional()
 				},
+				"setfont" => new SetFont
+				{
+					Element = ReadString(),
+					Property = ReadString(),
+					Font = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional()
+				},
+				"settexture" => new SetTexture
+				{
+					Element = ReadString(),
+					Property = ReadString(),
+					Texture = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional(),
+				},
+				"setstring" => new SetString
+				{
+					Element = ReadString(),
+					Property = ReadString(),
+					String = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional(),
+				},
 				string str => throw new VDFSyntaxException(
 					new VDFToken { Type = VDFTokenType.String, Value = str },
 					["animate"],
