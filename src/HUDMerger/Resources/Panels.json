@@ -137,6 +137,19 @@
 		}
 	},
 	{
+		"Name": "Demoman Pipes Label And Charge Meter",
+		"Main": "resource\\ui\\huddemomanpipes.res",
+		"Dependencies": {
+			"HUDLayout": [
+				"HudDemomanCharge",
+				"HudDemomanPipes"
+			]
+		},
+		"Files": [
+			"resource\\ui\\huddemomancharge.res"
+		]
+	},
+	{
 		"Name": "Engineer Build Menu",
 		"Main": "resource\\ui\\build_menu\\hudmenuengybuild.res",
 		"Dependencies": {
