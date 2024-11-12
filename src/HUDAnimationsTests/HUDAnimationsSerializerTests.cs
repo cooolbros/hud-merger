@@ -10,6 +10,15 @@ namespace HUDAnimations.Tests;
 public class HUDAnimationsSerializerTests
 {
 	[TestMethod()]
+	public void DeserializeTest()
+	{
+		foreach (string path in Directory.EnumerateFiles("HUDAnimationsSerializerTests/scripts"))
+		{
+			HUDAnimationsSerializer.Deserialize(File.ReadAllText(path));
+		}
+	}
+
+	[TestMethod()]
 	public void SerializeTest()
 	{
 		HUDAnimationsFile animations = HUDAnimationsSerializer.Deserialize(File.ReadAllText("HUDAnimationsSerializerTests/scripts/hudanimations_tf.txt"));
