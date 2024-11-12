@@ -295,7 +295,7 @@ public static class HUDAnimationsSerializer
 				},
 				string str => throw new VDFSyntaxException(
 					new VDFToken { Type = VDFTokenType.String, Value = str },
-					["animate"],
+					["Animate", "FireCommand", "PlaySound", "RunEvent", "RunEventChild", "SetFont", "SetInputEnabled", "SetString", "SetTexture", "SetVisible", "StopAnimation", "StopEvent", "StopPanelAnimations"],
 					tokeniser.Index,
 					tokeniser.Line,
 					tokeniser.Character
