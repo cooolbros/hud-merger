@@ -464,6 +464,13 @@
 		"Main": "resource\\ui\\statsummary.res"
 	},
 	{
+		"Name": "MvM Currency",
+		"Main": "resource\\ui\\hudcurrencyaccount.res",
+		"Files": [
+			"resource\\ui\\mvminworldcurrency.res"
+		]
+	},
+	{
 		"Name": "MvM Upgrade Station",
 		"Main": "resource\\ui\\hudupgradepanel.res",
 		"Dependencies": {
