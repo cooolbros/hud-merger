@@ -16,9 +16,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\**">
+    <None Remove="Resources\Dependencies.json" />
+    <None Remove="Resources\Panels.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Dependencies.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="Resources\Panels.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
