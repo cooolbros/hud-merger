@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <RootNamespace>HUDMergerTests</RootNamespace>
+    <RootNamespace>HUDMerger.Core.Tests</RootNamespace>
     <Nullable>Enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HUDMerger\HUDMerger.csproj" />
+    <ProjectReference Include="..\HUDMerger.Core\HUDMerger.Core.csproj" />
   </ItemGroup>
 
 </Project>

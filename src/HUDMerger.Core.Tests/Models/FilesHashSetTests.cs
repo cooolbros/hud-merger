@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using HUDMerger.Core.Models;
 
-namespace HUDMerger.Models.Tests;
+namespace HUDMerger.Core.Tests.Models;
 
 [TestClass()]
 public class FilesHashSetTests

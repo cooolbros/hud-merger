@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using HUDMerger.Core.Extensions;
 using VDF.Models;
 
-namespace HUDMerger.Extensions.Tests;
+namespace HUDMerger.Core.Tests.Extensions;
 
 [TestClass()]
 public class KeyValuesExtensionsTests
