@@ -451,6 +451,9 @@ public class HUD(string folderPath)
 							case RunEventChild runEvent:
 								Add(runEvent.Event);
 								break;
+							case SetFont setFont:
+								dependencies.ClientScheme.Fonts.Add(setFont.Font);
+								break;
 							case PlaySound playSound:
 								dependencies.Audio.Add($"sound\\{playSound.Sound}");
 								break;

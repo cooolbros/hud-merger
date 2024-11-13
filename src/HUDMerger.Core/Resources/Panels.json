@@ -137,6 +137,19 @@
 		}
 	},
 	{
+		"Name": "Demoman Pipes Label And Charge Meter",
+		"Main": "resource\\ui\\huddemomanpipes.res",
+		"Dependencies": {
+			"HUDLayout": [
+				"HudDemomanCharge",
+				"HudDemomanPipes"
+			]
+		},
+		"Files": [
+			"resource\\ui\\huddemomancharge.res"
+		]
+	},
+	{
 		"Name": "Engineer Build Menu",
 		"Main": "resource\\ui\\build_menu\\hudmenuengybuild.res",
 		"Dependencies": {
@@ -449,6 +462,13 @@
 	{
 		"Name": "Map Loading",
 		"Main": "resource\\ui\\statsummary.res"
+	},
+	{
+		"Name": "MvM Currency",
+		"Main": "resource\\ui\\hudcurrencyaccount.res",
+		"Files": [
+			"resource\\ui\\mvminworldcurrency.res"
+		]
 	},
 	{
 		"Name": "MvM Upgrade Station",

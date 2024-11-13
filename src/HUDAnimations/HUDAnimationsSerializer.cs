@@ -211,35 +211,36 @@ public static class HUDAnimationsSerializer
 					Duration = ReadNumber(),
 					Conditional = ReadConditional()
 				},
-				"runevent" => new RunEvent
-				{
-					Event = ReadString(),
-					Delay = ReadNumber(),
-					Conditional = ReadConditional()
-				},
-				"stopevent" => new StopEvent
-				{
-					Event = ReadString(),
-					Delay = ReadNumber(),
-					Conditional = ReadConditional()
-				},
-				"setvisible" => new SetVisible
-				{
-					Element = ReadString(),
-					Visible = ReadBool(),
-					Delay = ReadNumber(),
-					Conditional = ReadConditional()
-				},
 				"firecommand" => new FireCommand
 				{
 					Delay = ReadNumber(),
 					Command = ReadString(),
 					Conditional = ReadConditional()
 				},
+				"playsound" => new PlaySound
+				{
+					Delay = ReadNumber(),
+					Sound = ReadString(),
+					Conditional = ReadConditional()
+				},
+				"runevent" => new RunEvent
+				{
+					Event = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional()
+				},
 				"runeventchild" => new RunEventChild
 				{
 					Element = ReadString(),
 					Event = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional()
+				},
+				"setfont" => new SetFont
+				{
+					Element = ReadString(),
+					Property = ReadString(),
+					Font = ReadString(),
 					Delay = ReadNumber(),
 					Conditional = ReadConditional()
 				},
@@ -250,15 +251,26 @@ public static class HUDAnimationsSerializer
 					Delay = ReadNumber(),
 					Conditional = ReadConditional()
 				},
-				"playsound" => new PlaySound
-				{
-					Delay = ReadNumber(),
-					Sound = ReadString(),
-					Conditional = ReadConditional()
-				},
-				"stoppanelanimations" => new StopPanelAnimations
+				"setstring" => new SetString
 				{
 					Element = ReadString(),
+					Property = ReadString(),
+					String = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional(),
+				},
+				"settexture" => new SetTexture
+				{
+					Element = ReadString(),
+					Property = ReadString(),
+					Texture = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional(),
+				},
+				"setvisible" => new SetVisible
+				{
+					Element = ReadString(),
+					Visible = ReadBool(),
 					Delay = ReadNumber(),
 					Conditional = ReadConditional()
 				},
@@ -269,9 +281,21 @@ public static class HUDAnimationsSerializer
 					Delay = ReadNumber(),
 					Conditional = ReadConditional()
 				},
+				"stopevent" => new StopEvent
+				{
+					Event = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional()
+				},
+				"stoppanelanimations" => new StopPanelAnimations
+				{
+					Element = ReadString(),
+					Delay = ReadNumber(),
+					Conditional = ReadConditional()
+				},
 				string str => throw new VDFSyntaxException(
 					new VDFToken { Type = VDFTokenType.String, Value = str },
-					["animate"],
+					["Animate", "FireCommand", "PlaySound", "RunEvent", "RunEventChild", "SetFont", "SetInputEnabled", "SetString", "SetTexture", "SetVisible", "StopAnimation", "StopEvent", "StopPanelAnimations"],
 					tokeniser.Index,
 					tokeniser.Line,
 					tokeniser.Character
