@@ -8,6 +8,10 @@
     <Authors>Peter Wobcke</Authors>
     <Version>2.0.2</Version>
     <Nullable>Enable</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\HUDMerger.Core\HUDMerger.Core.csproj" />
