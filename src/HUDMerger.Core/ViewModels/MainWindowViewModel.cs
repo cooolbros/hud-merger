@@ -7,11 +7,11 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using Discord;
 using HUDMerger.Core.Commands;
 using HUDMerger.Core.Models;
 using HUDMerger.Core.Services;
-using Microsoft.Toolkit.Mvvm.Input;
 
 namespace HUDMerger.Core.ViewModels;
 
