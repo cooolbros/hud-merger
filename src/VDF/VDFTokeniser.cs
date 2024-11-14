@@ -91,7 +91,7 @@ public class VDFTokeniser(string str)
 					character++;
 					int start = index;
 
-					while (Str[index] != '"')
+					while (true)
 					{
 						if (index >= Str.Length)
 						{
@@ -104,7 +104,11 @@ public class VDFTokeniser(string str)
 							);
 						}
 
-						if (Str[index] == '\\')
+						if (Str[index] == '"')
+						{
+							break;
+						}
+						else if (Str[index] == '\\')
 						{
 							index++;
 							character++;
