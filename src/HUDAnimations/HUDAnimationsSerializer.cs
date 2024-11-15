@@ -181,7 +181,7 @@ public static class HUDAnimationsSerializer
 					: null;
 			}
 
-			return command.ToLower() switch
+			return command.ToLowerInvariant() switch
 			{
 				"animate" => new Animate
 				{

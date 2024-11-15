@@ -14,7 +14,20 @@ public class HUDAnimationsSerializerTests
 	{
 		foreach (string path in Directory.EnumerateFiles("HUDAnimationsSerializerTests/scripts"))
 		{
-			HUDAnimationsSerializer.Deserialize(File.ReadAllText(path));
+			string text = File.ReadAllText(path);
+
+			HUDAnimationsSerializer.Deserialize(text);
+
+			CultureInfo currentCulture = CultureInfo.CurrentCulture;
+
+			foreach (CultureInfo culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
+			{
+				CultureInfo.CurrentCulture = culture;
+
+				HUDAnimationsSerializer.Deserialize(text);
+			}
+
+			CultureInfo.CurrentCulture = currentCulture;
 		}
 	}
 
@@ -29,7 +42,10 @@ public class HUDAnimationsSerializerTests
 		foreach (CultureInfo culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
 		{
 			CultureInfo.CurrentCulture = culture;
-			Assert.AreEqual(text, HUDAnimationsSerializer.Serialize(animations));
+
+			string result = HUDAnimationsSerializer.Serialize(animations);
+			Assert.AreEqual(text, result, CultureInfo.CurrentCulture.Name);
+			HUDAnimationsSerializer.Deserialize(result);
 		}
 
 		CultureInfo.CurrentCulture = currentCulture;
