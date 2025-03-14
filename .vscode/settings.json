@@ -1,3 +1,6 @@
 {
-	"dotnet.defaultSolution": "src/HUDMerger.sln"
+	"dotnet.defaultSolution": "src/HUDMerger.slnx",
+	"files.associations": {
+		"*.slnx": "xml"
+	}
 }

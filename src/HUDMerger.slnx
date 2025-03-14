@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="HUDAnimations.Tests/HUDAnimations.Tests.csproj" />
+  <Project Path="HUDAnimations/HUDAnimations.csproj" />
+  <Project Path="HUDMerger.Core.Tests/HUDMerger.Core.Tests.csproj" />
+  <Project Path="HUDMerger.Core/HUDMerger.Core.csproj" />
+  <Project Path="HUDMerger/HUDMerger.csproj" />
+  <Project Path="VDF/VDF.csproj" />
+</Solution>
