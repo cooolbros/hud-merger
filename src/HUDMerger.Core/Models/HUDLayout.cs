@@ -17,7 +17,7 @@ public class HUDLayout
 	{
 	}
 
-	public HUDLayout(IHUDFileReaderService reader, HUD hud)
+	public HUDLayout(IHUDFileReaderService reader, HUD hud, string path)
 	{
 		static Dictionary<KeyValue, HashSet<KeyValue>>? ReadBaseFile(IHUDFileReaderService reader, HUD hud, string relativePath)
 		{
@@ -47,7 +47,7 @@ public class HUDLayout
 			return entries;
 		}
 
-		KeyValues keyValues = reader.ReadKeyValues(hud, "scripts\\hudlayout.res");
+		KeyValues keyValues = reader.ReadKeyValues(hud, path);
 
 		Dictionary<KeyValue, KeyValues> entries = new(KeyValueComparer.KeyComparer);
 
@@ -85,7 +85,7 @@ public class HUDLayout
 
 		foreach (string baseFile in keyValues.BaseFiles())
 		{
-			foreach (KeyValuePair<KeyValue, HashSet<KeyValue>> entry in ReadBaseFile(reader, hud, Path.GetRelativePath(".", $"scripts\\{baseFile}")) ?? [])
+			foreach (KeyValuePair<KeyValue, HashSet<KeyValue>> entry in ReadBaseFile(reader, hud, Path.GetRelativePath(".", Path.Join(Path.GetDirectoryName(path), baseFile))) ?? [])
 			{
 				Entries.TryAdd(entry.Key, new(KeyValueComparer.KeyComparer));
 				Entries[entry.Key].UnionWithRecursive(entry.Value);

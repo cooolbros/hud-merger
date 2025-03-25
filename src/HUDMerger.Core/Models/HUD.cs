@@ -135,6 +135,7 @@ public class HUD(string folderPath)
 		[
 			AddDependencies,
 			MergeHUDLayout,
+			MergeHUDMannVsMachineStatus,
 			MergeHUDAnimations,
 			MergeClientScheme,
 			MergeSourceScheme,
@@ -192,24 +193,24 @@ public class HUD(string folderPath)
 		return null;
 	}
 
-	private static Action<IHUDFileWriterService>? MergeHUDLayout(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
+	private static Action<IHUDFileWriterService>? MergeLayout(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, HashSet<string> dependenciesSet, string path, string header)
 	{
-		if (dependencies.HUDLayout.Count == 0)
+		if (dependenciesSet.Count == 0)
 		{
 			return null;
 		}
 
 		reader.Require([
-			(source, "scripts\\hudlayout.res", FileType.VDF),
-			(target, "scripts\\hudlayout.res", FileType.VDF)
+			(source, path, FileType.VDF),
+			(target, path, FileType.VDF)
 		]);
 
-		HUDLayout sourceHUDLayout = new(reader, source);
+		HUDLayout sourceHUDLayout = new(reader, source, path);
 
-		KeyValues targetHUDLayout = reader.ReadKeyValues(target, "scripts\\hudlayout.res");
-		KeyValues targetHeader = targetHUDLayout.Header("Resource/HudLayout.res");
+		KeyValues targetHUDLayout = reader.ReadKeyValues(target, path);
+		KeyValues targetHeader = targetHUDLayout.Header(header);
 
-		foreach (string hudLayoutEntry in dependencies.HUDLayout)
+		foreach (string hudLayoutEntry in dependenciesSet)
 		{
 			List<KeyValue> targetEntries = targetHeader
 				.Where((entry) => entry.Key.Equals(hudLayoutEntry, StringComparison.OrdinalIgnoreCase))
@@ -358,23 +359,49 @@ public class HUD(string folderPath)
 			}
 		}
 
-		RemoveBaseHUDLayoutEntries("scripts", targetHUDLayout.BaseFiles());
+		RemoveBaseHUDLayoutEntries(Path.GetDirectoryName(path)!, targetHUDLayout.BaseFiles());
 
 #if DEBUG
-		if (dependencies.Files.Contains("scripts\\hudlayout.res"))
+		if (dependencies.Files.Contains(path))
 		{
-			throw new UnreachableException("dependencies.Files Contains \"scripts\\hudlayout.res\"");
+			throw new UnreachableException($"dependencies.Files Contains \"{path}\"");
 		}
 #endif
 
 		return (writer) =>
 		{
-			writer.Write("scripts\\hudlayout.res", targetHUDLayout);
+			writer.Write(path, targetHUDLayout);
 			foreach (KeyValuePair<string, KeyValues> kvp in baseKeyValues)
 			{
 				writer.Write(kvp.Key, kvp.Value);
 			}
 		};
+	}
+
+	private static Action<IHUDFileWriterService>? MergeHUDLayout(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
+	{
+		return MergeLayout(
+			reader,
+			source,
+			target,
+			dependencies,
+			dependencies.HUDLayout,
+			"scripts\\hudlayout.res",
+			"Resource/HudLayout.res"
+		);
+	}
+
+	private static Action<IHUDFileWriterService>? MergeHUDMannVsMachineStatus(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)
+	{
+		return MergeLayout(
+			reader,
+			source,
+			target,
+			dependencies,
+			dependencies.HUDMannVsMachineStatus,
+			"resource\\ui\\hudmannvsmachinestatus.res",
+			"Resource/UI/HudMannVsMachineStatus.res"
+		);
 	}
 
 	private static Action<IHUDFileWriterService>? MergeHUDAnimations(IHUDFileReaderService reader, HUD source, HUD target, Dependencies dependencies, ISettingsService settingsService)

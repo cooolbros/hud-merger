@@ -17,6 +17,7 @@ public class Dependencies
 	public SchemeDependencies ClientScheme { get; init; } = new();
 	public SchemeDependencies SourceScheme { get; init; } = new();
 	public HashSet<string> HUDLayout { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+	public HashSet<string> HUDMannVsMachineStatus { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 	public HashSet<string> Events { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 	public HashSet<string> LanguageTokens { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 	public FilesHashSet Images { get; init; } = [];
@@ -41,6 +42,7 @@ public class Dependencies
 		ClientScheme.UnionWith(other.ClientScheme);
 		SourceScheme.UnionWith(other.SourceScheme);
 		HUDLayout.UnionWith(other.HUDLayout);
+		HUDMannVsMachineStatus.UnionWith(other.HUDMannVsMachineStatus);
 		Events.UnionWith(other.Events);
 		LanguageTokens.UnionWith(other.LanguageTokens);
 		Images.UnionWith(other.Images);

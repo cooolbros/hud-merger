@@ -466,6 +466,14 @@
 	{
 		"Name": "MvM Currency",
 		"Main": "resource\\ui\\hudcurrencyaccount.res",
+		"Dependencies": {
+			"HUDLayout": [
+				"CurrencyStatusPanel"
+			],
+			"HUDMannVsMachineStatus": [
+				"InWorldCurrencyPanel"
+			]
+		},
 		"Files": [
 			"resource\\ui\\mvminworldcurrency.res"
 		]
