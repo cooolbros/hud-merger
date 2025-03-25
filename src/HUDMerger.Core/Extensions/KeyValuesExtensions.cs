@@ -12,8 +12,9 @@ public static class KeyValuesExtensions
 	{
 		return source
 			.Where((kv) => StringComparer.OrdinalIgnoreCase.Equals(kv.Key, "#base"))
-			.Select((kv) => App.PathSeparatorRegex().Replace(kv.Value, "\\"))
-			.OfType<string>();
+			.Select((kv) => kv.Value)
+			.OfType<string>()
+			.Select((value) => App.PathSeparatorRegex().Replace(value, "\\"));
 	}
 
 	public static KeyValues Header(this KeyValues source, string? name = null)
