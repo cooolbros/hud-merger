@@ -17,14 +17,6 @@ public partial class VPK
 
 	private readonly string _archivePath;
 
-	public uint Signature { get; }
-	public uint Version { get; }
-	public uint TreeSize { get; }
-	public uint FileDataSectionSize { get; }
-	public uint ArchiveMD5SectionSize { get; }
-	public uint OtherMD5SectionSize { get; }
-	public uint SignatureSectionSize { get; }
-
 	/// <summary>
 	/// VPK Files
 	/// </summary>
@@ -33,11 +25,11 @@ public partial class VPK
 	/// </remarks>
 	private Dictionary<string, VPKFile> Files { get; } = new(StringComparer.OrdinalIgnoreCase);
 
-	public record class VPKFile
+	public readonly record struct VPKFile
 	{
-		public ushort ArchiveIndex { get; init; }
-		public uint EntryOffset { get; init; }
-		public uint EntryLength { get; init; }
+		public readonly ushort ArchiveIndex { get; init; }
+		public readonly uint EntryOffset { get; init; }
+		public readonly uint EntryLength { get; init; }
 	}
 
 	public VPK(string path)
@@ -48,39 +40,39 @@ public partial class VPK
 		using FileStream stream = File.Open(path, FileMode.Open);
 		using BinaryReader reader = new(stream, Encoding.UTF8, false);
 
-		Signature = reader.ReadUInt32();
-		if (Signature != 1437209140)
+		uint signature = reader.ReadUInt32();
+		if (signature != 1437209140)
 		{
-			throw new Exception("Signature != 1437209140");
+			throw new Exception($"Invalid VPK signature in {path}: Expected 1437209140, got {signature}. File is not a VPK");
 		}
 
-		Version = reader.ReadUInt32();
-		if (Version != 2)
+		uint version = reader.ReadUInt32();
+		uint treeSize = reader.ReadUInt32();
+
+		if (version == 2)
 		{
-			throw new Exception("Version != 2");
+			uint fileDataSectionSize = reader.ReadUInt32();
+			if (fileDataSectionSize != 0)
+			{
+				throw new Exception("fileDataSectionSize != 0");
+			}
+
+			uint archiveMD5SectionSize = reader.ReadUInt32();
+
+			uint otherMD5SectionSize = reader.ReadUInt32();
+			if (otherMD5SectionSize != 48)
+			{
+				throw new Exception("otherMD5SectionSize != 48");
+			}
+
+			uint signatureSectionSize = reader.ReadUInt32();
+			if (signatureSectionSize != 296)
+			{
+				throw new Exception("signatureSectionSize != 296");
+			}
 		}
 
-		TreeSize = reader.ReadUInt32();
-
-		FileDataSectionSize = reader.ReadUInt32();
-		if (FileDataSectionSize != 0)
-		{
-			throw new Exception("FileDataSectionSize != 0");
-		}
-
-		ArchiveMD5SectionSize = reader.ReadUInt32();
-
-		OtherMD5SectionSize = reader.ReadUInt32();
-		if (OtherMD5SectionSize != 48)
-		{
-			throw new Exception("OtherMD5SectionSize != 48");
-		}
-
-		SignatureSectionSize = reader.ReadUInt32();
-		if (SignatureSectionSize != 296)
-		{
-			throw new Exception("SignatureSectionSize != 296");
-		}
+		uint headerSize = (uint)reader.BaseStream.Position;
 
 		while (true)
 		{
@@ -115,11 +107,25 @@ public partial class VPK
 					ushort terminator = reader.ReadUInt16();
 					if (terminator != ushort.MaxValue)
 					{
-						throw new Exception("terminator != 65535");
+						throw new Exception($"Invalid VPK terminator in {path}: Expected {ushort.MaxValue}, got {terminator}");
 					}
 
-					string key = $"{(folderPath != " " ? $"{folderPath}/" : "")}{fileName}.{extension}";
-					Files[key] = new VPKFile { ArchiveIndex = archiveIndex, EntryOffset = entryOffset, EntryLength = entryLength };
+					string folder = folderPath != " " ? $"{folderPath}/" : "";
+
+					if (extension != " ")
+					{
+						fileName += $".{extension}";
+					}
+
+					string key = $"{folder}{fileName}";
+					Files[key] = new VPKFile
+					{
+						ArchiveIndex = archiveIndex,
+						EntryOffset = entryOffset == short.MaxValue
+							? headerSize + treeSize + entryOffset
+							: entryOffset,
+						EntryLength = entryLength
+					};
 				}
 			}
 		}
@@ -137,7 +143,7 @@ public partial class VPK
 		using FileStream stream = File.Open(vpkPath, FileMode.Open);
 		stream.Seek(entry.EntryOffset, SeekOrigin.Begin);
 		byte[] bytes = new byte[entry.EntryLength];
-		stream.Read(bytes, 0, (int)entry.EntryLength);
+		stream.ReadExactly(bytes, 0, (int)entry.EntryLength);
 		return bytes;
 	}
 }
