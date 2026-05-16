@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using HUDMerger.Core.Extensions;
 using HUDMerger.Core.Services;
 using VDF;
@@ -10,8 +11,11 @@ using VDF.Models;
 
 namespace HUDMerger.Core.Models;
 
-public class Dependencies
+public partial class Dependencies
 {
+	[GeneratedRegex(@"_(minmode|(lo|hi)def)$", RegexOptions.Compiled)]
+	private static partial Regex ResolutionKeysRegex();
+
 	private static readonly Dependencies PropertyNames = JsonSerializer.Deserialize<Dependencies>(File.ReadAllText("Resources\\Dependencies.json"))!;
 
 	public SchemeDependencies ClientScheme { get; init; } = new();
@@ -92,59 +96,42 @@ public class Dependencies
 		keyValues.ForAll((KeyValue keyValue) =>
 		{
 			if (keyValue.Value is KeyValues) return;
+			string key = ResolutionKeysRegex().Replace(keyValue.Key, "");
 
 			// Colours
-			foreach (string colourProperty in PropertyNames.ClientScheme.Colours)
+			if (PropertyNames.ClientScheme.Colours.Contains(key))
 			{
-				if (keyValue.Key.Contains(colourProperty, StringComparison.OrdinalIgnoreCase))
-				{
-					ClientScheme.Colours.Add(keyValue.Value);
-				}
+				ClientScheme.Colours.Add(keyValue.Value);
 			}
 
 			// Borders
-			foreach (string borderProperty in PropertyNames.ClientScheme.Borders)
+			if (PropertyNames.ClientScheme.Borders.Contains(key))
 			{
-				if (keyValue.Key.Contains(borderProperty, StringComparison.OrdinalIgnoreCase))
-				{
-					ClientScheme.Borders.Add(keyValue.Value);
-				}
+				ClientScheme.Borders.Add(keyValue.Value);
 			}
 
 			// Fonts
-			foreach (string fontProperty in PropertyNames.ClientScheme.Fonts)
+			if (PropertyNames.ClientScheme.Fonts.Contains(key))
 			{
-				if (keyValue.Key.Contains(fontProperty, StringComparison.OrdinalIgnoreCase))
-				{
-					ClientScheme.Fonts.Add(keyValue.Value);
-				}
+				ClientScheme.Fonts.Add(keyValue.Value);
 			}
 
 			// Language
-			foreach (string languageProperty in PropertyNames.LanguageTokens)
+			if (PropertyNames.LanguageTokens.Contains(key) && keyValue.Value is string value && value.StartsWith('#'))
 			{
-				if (keyValue.Value is string str && str.StartsWith('#') && keyValue.Key.Contains(languageProperty, StringComparison.OrdinalIgnoreCase))
-				{
-					LanguageTokens.Add(str);
-				}
+				LanguageTokens.Add(value);
 			}
 
 			// Images
-			foreach (string imageProperty in PropertyNames.Images)
+			if (PropertyNames.Images.Contains(key))
 			{
-				if (keyValue.Key.Contains(imageProperty, StringComparison.OrdinalIgnoreCase))
-				{
-					Images.Add(Path.GetRelativePath(".", $"materials\\vgui\\{keyValue.Value}"));
-				}
+				Images.Add(Path.GetRelativePath(".", $"materials\\vgui\\{keyValue.Value}"));
 			}
 
 			// Audio
-			foreach (string audioProperty in PropertyNames.Audio)
+			if (PropertyNames.Audio.Contains(key))
 			{
-				if (keyValue.Key.Contains(audioProperty, StringComparison.OrdinalIgnoreCase))
-				{
-					Audio.Add(Path.GetRelativePath(".", $"sound\\{keyValue.Value}"));
-				}
+				Audio.Add(Path.GetRelativePath(".", $"sound\\{keyValue.Value}"));
 			}
 		});
 	}
