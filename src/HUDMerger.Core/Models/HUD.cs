@@ -537,6 +537,8 @@ public class HUD(string folderPath)
 			return null;
 		}
 
+		string[] sides = ["Left", "Top", "Right", "Bottom"];
+
 		reader.Require([
 			(source, "resource\\clientscheme.res", FileType.VDF),
 			(target, $"resource\\clientscheme_{source.Name}.res", FileType.VDF),
@@ -553,8 +555,10 @@ public class HUD(string folderPath)
 			? new ClientScheme(reader, target, targetMergeSchemeRelativePath, targetMergeClientSchemeKeyValues)
 			: new();
 
-		void AddBorderDependencies(string borderName, bool directDependency)
+		HashSet<string> AddBorderDependencies(string borderName)
 		{
+			HashSet<string> borderReferences = new(StringComparer.OrdinalIgnoreCase);
+
 			IEnumerable<KeyValuePair<KeyValue, dynamic>> borders = sourceClientScheme.GetBorder(borderName);
 			targetMergeClientScheme.SetBorder(borders.ToList());
 
@@ -563,29 +567,67 @@ public class HUD(string folderPath)
 				switch (border.Value)
 				{
 					case IEnumerable<KeyValue> borderValue:
-						foreach (KeyValue kv in borderValue)
-						{
-							if (kv.Key.Contains("color", StringComparison.OrdinalIgnoreCase) && kv.Value is string colour)
-							{
-								dependencies.ClientScheme.Colours.Add(colour);
-							}
+						string? borderType = borderValue.FirstOrDefault((kv) => StringComparer.OrdinalIgnoreCase.Equals(kv.Key, "bordertype")).Value is string str
+							? str.ToLower()
+							: null;
 
-							if (kv.Key.Contains("image", StringComparison.OrdinalIgnoreCase) && kv.Value is string image)
-							{
-								dependencies.Images.Add($"materials\\vgui\\{image}");
-							}
+						switch (borderType)
+						{
+							case "image":
+							case "scalable_image":
+								foreach (KeyValue kv in borderValue)
+								{
+									if (kv.Key.Contains("image", StringComparison.OrdinalIgnoreCase) && kv.Value is string image)
+									{
+										dependencies.Images.Add($"materials\\vgui\\{image}");
+									}
+
+									if (kv.Key.Contains("color", StringComparison.OrdinalIgnoreCase) && kv.Value is string colour)
+									{
+										dependencies.ClientScheme.Colours.Add(colour);
+									}
+								}
+								break;
+							default:
+								foreach (string side in sides)
+								{
+									HashSet<KeyValue>? sideKeyValues = borderValue.FirstOrDefault((kv) => StringComparer.OrdinalIgnoreCase.Equals(kv.Key, side)).Value is HashSet<KeyValue> keyValues ? keyValues : null;
+									foreach (KeyValue index in sideKeyValues ?? [])
+									{
+										if (index.Value is HashSet<KeyValue> value)
+										{
+											foreach (KeyValue kv in value)
+											{
+												if (kv.Key.Contains("color", StringComparison.OrdinalIgnoreCase) && kv.Value is string colour)
+												{
+													dependencies.ClientScheme.Colours.Add(colour);
+												}
+											}
+										}
+									}
+								}
+								break;
 						}
 						break;
-					case string borderReference when directDependency: // border references are not recursive
-						AddBorderDependencies(borderReference, false);
+					case string borderReference:
+						borderReferences.Add(borderReference);
 						break;
 				}
 			}
+
+			return borderReferences;
 		}
 
+		// border references are not recursive
+		HashSet<string> borderReferences = new(StringComparer.OrdinalIgnoreCase);
 		foreach (string borderName in dependencies.ClientScheme.Borders)
 		{
-			AddBorderDependencies(borderName, true);
+			borderReferences.UnionWith(AddBorderDependencies(borderName));
+		}
+
+		foreach (string borderReference in borderReferences)
+		{
+			AddBorderDependencies(borderReference);
 		}
 
 		foreach (string colourName in dependencies.ClientScheme.Colours)
