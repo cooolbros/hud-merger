@@ -1049,7 +1049,7 @@ public class HUD(string folderPath)
 
 		List<string> languages = ["english"];
 
-		string settingsLanguage = settingsService.Settings.Language;
+		string settingsLanguage = settingsService.Settings.Language.ToLower();
 
 		if (settingsLanguage != "english")
 		{
