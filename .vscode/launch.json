@@ -12,7 +12,7 @@
 			// If you have changed target frameworks, make sure to update the program path.
 			"program": "${workspaceFolder}/src/HUDMerger/bin/Debug/net10.0-windows/win-x64/HUDMerger.dll",
 			"args": [],
-			"cwd": "${workspaceFolder}/src/HUDMerger",
+			"cwd": "${workspaceFolder}/src/HUDMerger/bin/Debug/net10.0-windows/win-x64",
 			// For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
 			"console": "internalConsole",
 			"stopAtEntry": false
